@@ -15,7 +15,15 @@ module.exports = {
   entry: entries,
   output: {
     filename: "[name].bundle.js",
+    publicPath: "/examples/dist/",
     path:  path.join(__dirname, "examples", "dist")
+  },
+  devServer: {
+    hot: true,
+    hotOnly: true,
+    inline: true,
+    contentBase: __dirname,
+    publicPath: "/examples/dist/"
   },
   module: {
     rules: [
@@ -48,7 +56,9 @@ module.exports = {
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       filename: 'vendor.js'
-    })
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin()
   ]
 }
 
