@@ -3,15 +3,13 @@ module Test.Main where
 import Prelude
 
 import Control.Monad.Eff (Eff)
-import Test.Spec (describe, it)
-import Test.Spec.Assertions (shouldEqual)
+import Test.PureGL.Math.Matrix (matrixSpec)
+import Test.PureGL.Math.Vector (vectorSpec)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (RunnerEffects, run)
 
 main :: Eff (RunnerEffects ()) Unit
-main = run [consoleReporter] do
-  describe "test" do
-    it "testing" do
-      let x = 10
-      shouldEqual x 10
+main = run [consoleReporter] do 
+  vectorSpec
+  matrixSpec
 

@@ -1,0 +1,1 @@
+exports.logObject = str => o => () => { console.log(str, o); };
