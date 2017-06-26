@@ -3,15 +3,102 @@ module PureGL.Math.Vector.Fast where
 import Prelude
 
 import Control.Monad.Eff (Eff)
-import Control.Monad.ST (ST, STRef, newSTRef, pureST, readSTRef)
+import Control.Monad.ST (ST, STRef)
+import PureGL.Math.Vector (class InnerProduct)
+import PureGL.TypedArrays (Float32Array)
 
-foreign import data Vector2 :: Type
+foreign import data FVector2 :: Type
+foreign import data FVector3 :: Type
+foreign import data FVector4 :: Type
 
-foreign import mkVector2 :: Number -> Number -> Vector2
-foreign import addVector2 :: forall h eff. Vector2 -> Vector2 -> (STRef h Vector2) -> Eff (st :: ST h | eff) Unit
+foreign import mkFVector2 :: Number -> Number -> FVector2
+foreign import mkFVector3 :: Number -> Number -> Number -> FVector3
+foreign import mkFVector4 :: Number -> Number -> Number -> Number -> FVector4
 
-testAdd :: Vector2 -> Vector2 -> Vector2
-testAdd v1 v2 = pureST do
-  r <- newSTRef (mkVector2 0.0 0.0)
-  addVector2 v1 v2 r
-  readSTRef r
+instance fvector2Eq :: Eq FVector2 where
+  eq = eqFVector2
+
+instance fvector3Eq :: Eq FVector3 where
+  eq = eqFVector3
+
+instance fvector4Eq :: Eq FVector4 where
+  eq = eqFVector4
+
+instance fvector2Show :: Show FVector2 where
+  show = toStringFVector2
+
+instance fvector3Show :: Show FVector3 where
+  show = toStringFVector3
+
+instance fvector4Show :: Show FVector4 where
+  show = toStringFVector4
+
+class FVector a where
+  add :: forall h eff. a -> a -> STRef h a -> Eff (st :: ST h | eff) Unit
+  sub :: forall h eff. a -> a -> STRef h a -> Eff (st :: ST h | eff) Unit
+  zero :: a
+  inv :: forall h eff.  a -> STRef h a -> Eff (st :: ST h | eff) Unit
+  mul :: forall h eff. Number -> a -> STRef h a -> Eff (st :: ST h | eff) Unit
+  toFloat32Array :: a -> Float32Array
+
+instance fvectorFVector2 :: FVector FVector2 where
+  add = addFVector2
+  sub = subFVector2
+  zero  = mkFVector2 0.0 0.0
+  inv = invFVector2
+  mul = mulFVector2
+  toFloat32Array = toFloat32ArrayFVector2
+
+instance fvector2InnerProduct :: InnerProduct FVector2 where
+  dot = dotFVector2
+
+instance fvectorFVector3 :: FVector FVector3 where
+  add = addFVector3
+  sub = subFVector3
+  zero  = mkFVector3 0.0 0.0 0.0
+  inv = invFVector3
+  mul = mulFVector3
+  toFloat32Array = toFloat32ArrayFVector3
+
+instance fvector3InnerProduct :: InnerProduct FVector3 where
+  dot = dotFVector3
+
+instance fvectorFVector4 :: FVector FVector4 where
+  add = addFVector4
+  sub = subFVector4
+  zero  = mkFVector4 0.0 0.0 0.0 0.0
+  inv = invFVector4
+  mul = mulFVector4
+  toFloat32Array = toFloat32ArrayFVector4
+
+instance fVector4InnerProduct :: InnerProduct FVector4 where
+  dot = dotFVector4
+
+foreign import eqFVector2 :: FVector2 -> FVector2 -> Boolean 
+foreign import eqFVector3 :: FVector3 -> FVector3 -> Boolean
+foreign import eqFVector4 :: FVector4 -> FVector4 -> Boolean
+
+foreign import addFVector2 :: forall h eff. FVector2 -> FVector2 -> STRef h FVector2 -> Eff (st :: ST h | eff) Unit
+foreign import subFVector2 :: forall h eff. FVector2 -> FVector2 -> STRef h FVector2 -> Eff (st :: ST h | eff) Unit
+foreign import invFVector2 :: forall h eff. FVector2 -> STRef h FVector2 -> Eff (st :: ST h | eff) Unit
+foreign import mulFVector2 :: forall h eff. Number -> FVector2 -> STRef h FVector2 -> Eff (st :: ST h | eff) Unit
+foreign import toFloat32ArrayFVector2 :: FVector2 -> Float32Array
+foreign import toStringFVector2 :: FVector2 -> String
+foreign import dotFVector2 :: FVector2 -> FVector2 -> Number
+
+foreign import addFVector3 :: forall h eff. FVector3 -> FVector3 -> STRef h FVector3 -> Eff (st :: ST h | eff) Unit
+foreign import subFVector3 :: forall h eff. FVector3 -> FVector3 -> STRef h FVector3 -> Eff (st :: ST h | eff) Unit
+foreign import invFVector3 :: forall h eff. FVector3 -> STRef h FVector3 -> Eff (st :: ST h | eff) Unit
+foreign import mulFVector3 :: forall h eff. Number -> FVector3 -> STRef h FVector3 -> Eff (st :: ST h | eff) Unit
+foreign import toFloat32ArrayFVector3 :: FVector3 -> Float32Array
+foreign import toStringFVector3 :: FVector3 -> String
+foreign import dotFVector3 :: FVector3 -> FVector3 -> Number
+
+
+foreign import addFVector4 :: forall h eff. FVector4 -> FVector4 -> STRef h FVector4 -> Eff (st :: ST h | eff) Unit
+foreign import subFVector4 :: forall h eff. FVector4 -> FVector4 -> STRef h FVector4 -> Eff (st :: ST h | eff) Unit
+foreign import invFVector4 :: forall h eff. FVector4 -> STRef h FVector4 -> Eff (st :: ST h | eff) Unit
+foreign import mulFVector4 :: forall h eff. Number -> FVector4 -> STRef h FVector4 -> Eff (st :: ST h | eff) Unit
+foreign import toFloat32ArrayFVector4 :: FVector4 -> Float32Array
+foreign import toStringFVector4 :: FVector4 -> String
+foreign import dotFVector4 :: FVector4 -> FVector4 -> Number

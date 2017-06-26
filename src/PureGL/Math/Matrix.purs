@@ -1,4 +1,23 @@
-module PureGL.Math.Matrix where
+module PureGL.Math.Matrix 
+  ( Matrix2
+  , Matrix3
+  , Matrix4
+  , mkMatrix2
+  , mkMatrix3
+  , mkMatrix4
+  , class SquareMatrix
+  , identity
+  , transpose
+  , mulMatrix
+  , determinant
+  , invert
+  , fromArray
+  , mkOrtho
+  , mkOrtho'
+  , mkPerspective
+  , mkPerspective'
+  , mkPerspective''
+  ) where
 
 import Prelude
 
@@ -7,10 +26,28 @@ import Data.Nullable (Nullable, toMaybe)
 import PureGL.Math.Vector (class Vector)
 import PureGL.TypedArrays (Float32Array)
 
+-- | A 2x2 Matrix (Implemented as a javascript array)
 foreign import data Matrix2 :: Type
+
+-- | A 3x3 Matrix (Implemented as a javascript array)
 foreign import data Matrix3 :: Type 
+
+-- | A 4x4 Matrix (Implemented as a javascript array)
 foreign import data Matrix4 :: Type
 
+-- | The `SquareMatrix` class extends the `Vector` class 
+-- | by adding the following Matrix operations for square
+-- | matrices:
+-- |
+-- | - The identity matrix: `identity`
+-- | - Matrix transpose: `transpose`
+-- | - Matrix multiplication: `mulMatrix`
+-- | - Matrix determinant: `determinant`
+-- | - Matrix inversion: `invert`
+-- |
+-- | and a method, `fromArray`, to create a matrix from a
+-- | purescript array.
+-- |
 class Vector a <= SquareMatrix a  where
   identity :: a
   transpose :: a -> a
@@ -19,6 +56,7 @@ class Vector a <= SquareMatrix a  where
   invert :: a -> Maybe a
   fromArray :: Array Number -> a
 
+-- Eq, Show and SquareMatrixinstances for Matrix{2,3,4}
 instance matrix2Eq :: Eq Matrix2 where
   eq = eqMatrix2
 
@@ -92,6 +130,48 @@ instance matrix4SquareMatrix :: SquareMatrix Matrix4 where
   invert = toMaybe <<< invertMatrix4
   fromArray = fromArrayMatrix4
 
+-- | Create a Orthographic projection matrix with the give
+-- | frustum parameters:
+-- |
+-- | `mkOrtho right left top bottom near far`
+-- | 
+foreign import mkOrtho :: Number -> Number -> Number -> Number -> Number -> Number -> Matrix4
+
+-- | Create a Orthographic projection matrix with the give
+-- | frustum parameters:
+-- |
+-- | `mkOrtho width height near far`
+-- | 
+mkOrtho' :: Number -> Number -> Number -> Number -> Matrix4
+mkOrtho' = mkOrtho2
+
+-- | Create a perspective projection matrix with the give
+-- | frustum parameters:
+-- |
+-- | `mkPerspective right left top bottom near far`
+-- |
+foreign import mkPerspective :: Number -> Number -> Number -> Number -> Number -> Number -> Matrix4
+
+-- | Create a perspective projection matrix with the give
+-- | frustum parameters:
+-- |
+-- | `mkPerspective width height near far`
+-- |
+mkPerspective' :: Number -> Number -> Number -> Number -> Matrix4
+mkPerspective' = mkPerspective2
+
+-- | Create a perspective projection matrix with the give
+-- | frustum parameters:
+-- |
+-- | `mkPerspective aspect fov near far`
+-- |
+-- | where `aspect = width / height` is the aspect ratio 
+-- | of the view plane, `fov` is the horizontal field of
+-- | view angle in radians. 
+mkPerspective'' :: Number -> Number -> Number -> Number -> Matrix4
+mkPerspective'' = mkPerspective3
+
+-- other foreign imports
 foreign import _toFloat32Array :: forall m. m -> Float32Array
 foreign import _toStringMatrix :: forall m. m -> String
 
@@ -135,3 +215,6 @@ foreign import determinantMatrix4 :: Matrix4 -> Number
 foreign import invertMatrix4 :: Matrix4 -> Nullable Matrix4
 foreign import fromArrayMatrix4 :: Array Number -> Matrix4
 
+foreign import mkOrtho2 :: Number -> Number -> Number -> Number -> Matrix4
+foreign import mkPerspective2 :: Number -> Number -> Number -> Number -> Matrix4
+foreign import mkPerspective3 :: Number -> Number -> Number -> Number -> Matrix4

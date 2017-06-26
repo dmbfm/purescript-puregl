@@ -3,21 +3,30 @@ module PureGL.Math.Vector where
 import Prelude
 
 import Math (sqrt)
-import PureGL.TypedArrays (Float32Array, fromArray, toArrayFloat32Array)
+import PureGL.TypedArrays (Float32Array, fromArray)
 
+-- | A two component vector, defined as a record
 newtype Vector2 = Vector2 {x :: Number, y :: Number}
+
+-- | A three component vector, defined as a record
 newtype Vector3 = Vector3 {x :: Number, y :: Number, z :: Number}
+
+-- | A four component vector, defined as a record
 newtype Vector4 = Vector4 {x :: Number, y :: Number, z :: Number, w :: Number}
 
+-- | Create a `Vector2` from two given numbers
 mkVector2 :: Number -> Number -> Vector2
 mkVector2 x y = Vector2 {x: x, y: y}
 
+-- | Create a `Vector3` from three given numbers
 mkVector3 :: Number -> Number -> Number -> Vector3
 mkVector3 x y z = Vector3 {x: x, y: y, z: z}
 
+-- | Create a `Vector4` from four given numbers
 mkVector4 :: Number -> Number -> Number -> Number -> Vector4
 mkVector4 x y z w = Vector4 {x: x, y: y, z: z, w: w}
 
+-- Eq and show instances for Vector{2,3,4}
 instance vec2Eq :: Eq Vector2 where
   eq (Vector2 v1) (Vector2 v2) = (v1.x == v2.x) && (v1.y == v2.y)
 
@@ -36,6 +45,13 @@ instance vec3Show :: Show Vector3 where
 instance vec4Show :: Show Vector4 where
   show (Vector4 v) = "(" <> (show v.x) <> ", " <> (show v.y) <> ", " <> (show v.z) <> ", " <> (show v.w) <> ")"    
 
+-- | The `Vector` class provides the basic operations in a vector space: 
+-- |  - Vector addition: `add` 
+-- |  - Subtraction: `sub`
+-- |  - Zero element: `zero` 
+-- |  - Inverse: `inv`  
+-- |  - Scalar multiplication: `mul`, 
+-- | and a function to convert the vector to a `Float32Array` (`toFloat32Array`).
 class Vector a where
   add :: a -> a -> a
   sub :: a -> a -> a 
@@ -44,12 +60,16 @@ class Vector a where
   mul :: Number -> a -> a
   toFloat32Array :: a -> Float32Array
 
-class Vector a <= InnerProduct a where
+-- | This class implements the dot, or inner product, between elements
+-- | in an Inner product space
+class InnerProduct a where
   dot :: a -> a -> Number
 
+-- | Computes the norm of an inner product space element
 norm :: forall a. InnerProduct a => a -> Number
 norm v = sqrt $ dot v v 
 
+-- Vector and InnerProduct instances for Vector{2,3,4}
 instance vector2Vector :: Vector Vector2 where
   add (Vector2 v1) (Vector2 v2) = Vector2 {x: v1.x + v2.x, y: v1.y + v2.y}
   sub (Vector2 v1) (Vector2 v2) = Vector2 {x: v1.x - v2.x, y: v1.y - v2.y}
@@ -83,6 +103,7 @@ instance vector4Vector :: Vector Vector4 where
 instance vector4InnerProduct :: InnerProduct Vector4 where
   dot (Vector4 v1) (Vector4 v2) = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w
 
+-- | Computes the cross product between to `Vector3`
 cross :: Vector3 -> Vector3 -> Vector3 
 cross (Vector3 v1) (Vector3 v2) = 
   Vector3 { x: v1.y * v2.z - v1.z * v2.y 

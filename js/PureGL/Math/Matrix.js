@@ -313,3 +313,43 @@ exports.invertMatrix4 = a => {
     );
 }
 exports.fromArrayMatrix4 = fromArray(16);
+
+
+exports.mkOrtho = r => l => t => b => n => f => 
+[ 2 / (r - l), 0, 0, - (r + l) / (r - l)
+, 0, 2 / (t - b), 0, - (t + b) / (t - b)
+, 0, 0, -2 / (f - n), -(f + n) / (f - n)
+, 0, 0, 0, 1
+];
+
+exports.mkOrtho2 = w => h => n => f => 
+[ 2 / w, 0, 0, 0
+, 0, 2 / h, 0, 0
+, 0, 0, -2 * (f - n), -(f + n) / (f - n)
+, 0, 0, 0, 1
+];
+
+exports.mkPerspective = r => l => t => b => n => f => 
+[ 2 * n / (r - l), 0, (r + l) / (r - l), 0
+, 0, 2 * n / (t - b), (t + b) / (t - b), 0
+, 0, 0, - (f + n) / (f - n), -2 * f * n / (f - n)
+, 0, 0, -1, 0
+];
+
+exports.mkPerspective2 = w => h => n => f => 
+[ 2 * n / w, 0, 0, 0
+, 0, 2 * n / h, 0, 0
+, 0, 0, - (f + n) / (f - n), -2 * f * n / (f - n)
+, 0, 0, -1, 0
+];
+
+exports.mkPerspective3 = ratio => fov => n => f => {
+  let S = (n / f) * ( 1 / Math.tan(fov/2));
+  return (
+    [ S, 0, 0, 0
+    , 0, ratio * S, 0, 0
+    , 0, 0, - (f + n) / (f - n), -2 * f * n / (f - n)
+    , 0, 0, -1, 0
+    ]
+  );
+}

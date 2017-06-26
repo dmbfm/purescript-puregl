@@ -340,3 +340,62 @@ exports.invertMatrix4 = function (a) {
   return [(a11 * b11 - a12 * b10 + a13 * b09) * det, (a02 * b10 - a01 * b11 - a03 * b09) * det, (a31 * b05 - a32 * b04 + a33 * b03) * det, (a22 * b04 - a21 * b05 - a23 * b03) * det, (a12 * b08 - a10 * b11 - a13 * b07) * det, (a00 * b11 - a02 * b08 + a03 * b07) * det, (a32 * b02 - a30 * b05 - a33 * b01) * det, (a20 * b05 - a22 * b02 + a23 * b01) * det, (a10 * b10 - a11 * b08 + a13 * b06) * det, (a01 * b08 - a00 * b10 - a03 * b06) * det, (a30 * b04 - a31 * b02 + a33 * b00) * det, (a21 * b02 - a20 * b04 - a23 * b00) * det, (a11 * b07 - a10 * b09 - a12 * b06) * det, (a00 * b09 - a01 * b07 + a02 * b06) * det, (a31 * b01 - a30 * b03 - a32 * b00) * det, (a20 * b03 - a21 * b01 + a22 * b00) * det];
 };
 exports.fromArrayMatrix4 = fromArray(16);
+
+exports.mkOrtho = function (r) {
+  return function (l) {
+    return function (t) {
+      return function (b) {
+        return function (n) {
+          return function (f) {
+            return [2 / (r - l), 0, 0, -(r + l) / (r - l), 0, 2 / (t - b), 0, -(t + b) / (t - b), 0, 0, -2 / (f - n), -(f + n) / (f - n), 0, 0, 0, 1];
+          };
+        };
+      };
+    };
+  };
+};
+
+exports.mkOrtho2 = function (w) {
+  return function (h) {
+    return function (n) {
+      return function (f) {
+        return [2 / w, 0, 0, 0, 0, 2 / h, 0, 0, 0, 0, -2 * (f - n), -(f + n) / (f - n), 0, 0, 0, 1];
+      };
+    };
+  };
+};
+
+exports.mkPerspective = function (r) {
+  return function (l) {
+    return function (t) {
+      return function (b) {
+        return function (n) {
+          return function (f) {
+            return [2 * n / (r - l), 0, (r + l) / (r - l), 0, 0, 2 * n / (t - b), (t + b) / (t - b), 0, 0, 0, -(f + n) / (f - n), -2 * f * n / (f - n), 0, 0, -1, 0];
+          };
+        };
+      };
+    };
+  };
+};
+
+exports.mkPerspective2 = function (w) {
+  return function (h) {
+    return function (n) {
+      return function (f) {
+        return [2 * n / w, 0, 0, 0, 0, 2 * n / h, 0, 0, 0, 0, -(f + n) / (f - n), -2 * f * n / (f - n), 0, 0, -1, 0];
+      };
+    };
+  };
+};
+
+exports.mkPerspective3 = function (ratio) {
+  return function (fov) {
+    return function (n) {
+      return function (f) {
+        var S = n / f * (1 / Math.tan(fov / 2));
+        return [S, 0, 0, 0, 0, ratio * S, 0, 0, 0, 0, -(f + n) / (f - n), -2 * f * n / (f - n), 0, 0, -1, 0];
+      };
+    };
+  };
+};
