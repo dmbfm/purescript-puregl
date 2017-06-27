@@ -1,11 +1,11 @@
-module PureGL.DataView where
+module PureGL.Data.DataView where
 
 import Prelude
 
 import Control.Monad.Eff (Eff)
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe)
-import PureGL.TypedArrays (ARRAY_BUFFER, ArrayBuffer, ByteLength, ByteOffset)
+import PureGL.Data.TypedArrays (ARRAY_BUFFER, ArrayBuffer, ByteLength, ByteOffset)
 
 foreign import data DataView :: Type
 type Endianness = Boolean 

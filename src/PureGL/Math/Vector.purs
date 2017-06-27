@@ -3,7 +3,7 @@ module PureGL.Math.Vector where
 import Prelude
 
 import Math (sqrt)
-import PureGL.TypedArrays (Float32Array, fromArray)
+import PureGL.Data.TypedArrays (Float32Array, fromArray)
 
 -- | A two component vector, defined as a record
 newtype Vector2 = Vector2 {x :: Number, y :: Number}

@@ -24,7 +24,7 @@ import Prelude
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe)
 import PureGL.Math.Vector (class Vector)
-import PureGL.TypedArrays (Float32Array)
+import PureGL.Data.TypedArrays (Float32Array)
 
 -- | A 2x2 Matrix (Implemented as a javascript array)
 foreign import data Matrix2 :: Type
@@ -34,6 +34,22 @@ foreign import data Matrix3 :: Type
 
 -- | A 4x4 Matrix (Implemented as a javascript array)
 foreign import data Matrix4 :: Type
+
+-- | Create a `Matrix2` from given numbers (row-major order, 
+-- | e.g. `mkMatrix2 a00 a01 a10 a11`)
+foreign import mkMatrix2 :: Number -> Number -> Number -> Number -> Matrix2
+
+-- | Create a `Matrix3` from given numbers (row-major order, 
+-- | e.g. `mkMatrix3 a00 a01 a10 a11 ...`)
+foreign import mkMatrix3 :: Number -> Number -> Number -> Number -> 
+                            Number -> Number -> Number -> Number -> Number -> Matrix3
+
+-- | Create a `Matrix4` from given numbers (row-major order, 
+-- | e.g. `mkMatrix4 a00 a01 a10 a11 ...`)
+foreign import mkMatrix4 :: Number -> Number -> Number -> Number -> 
+                            Number -> Number -> Number -> Number -> 
+                            Number -> Number -> Number -> Number -> 
+                            Number -> Number -> Number -> Number -> Matrix4
 
 -- | The `SquareMatrix` class extends the `Vector` class 
 -- | by adding the following Matrix operations for square
@@ -175,7 +191,6 @@ mkPerspective'' = mkPerspective3
 foreign import _toFloat32Array :: forall m. m -> Float32Array
 foreign import _toStringMatrix :: forall m. m -> String
 
-foreign import mkMatrix2 :: Number -> Number -> Number -> Number -> Matrix2
 foreign import eqMatrix2 :: Matrix2 -> Matrix2 -> Boolean
 foreign import addMatrix2 :: Matrix2 -> Matrix2 -> Matrix2
 foreign import subMatrix2 :: Matrix2 -> Matrix2 -> Matrix2
@@ -187,8 +202,6 @@ foreign import determinantMatrix2 :: Matrix2 -> Number
 foreign import invertMatrix2 :: Matrix2 -> Nullable Matrix2
 foreign import fromArrayMatrix2 :: Array Number -> Matrix2
 
-foreign import mkMatrix3 :: Number -> Number -> Number -> Number -> 
-                            Number -> Number -> Number -> Number -> Number -> Matrix3
 foreign import eqMatrix3 :: Matrix3 -> Matrix3 -> Boolean
 foreign import addMatrix3 :: Matrix3 -> Matrix3 -> Matrix3
 foreign import subMatrix3 :: Matrix3 -> Matrix3 -> Matrix3
@@ -200,10 +213,6 @@ foreign import determinantMatrix3 :: Matrix3 -> Number
 foreign import invertMatrix3 :: Matrix3 -> Nullable Matrix3
 foreign import fromArrayMatrix3 :: Array Number -> Matrix3
 
-foreign import mkMatrix4 :: Number -> Number -> Number -> Number -> 
-                            Number -> Number -> Number -> Number -> 
-                            Number -> Number -> Number -> Number -> 
-                            Number -> Number -> Number -> Number -> Matrix4
 foreign import eqMatrix4 :: Matrix4 -> Matrix4 -> Boolean
 foreign import addMatrix4 :: Matrix4 -> Matrix4 -> Matrix4
 foreign import subMatrix4 :: Matrix4 -> Matrix4 -> Matrix4

@@ -1,4 +1,4 @@
-module PureGL.TypedArrays where
+module PureGL.Data.TypedArrays where
 
 
 import Prelude
