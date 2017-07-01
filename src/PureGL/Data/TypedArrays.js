@@ -153,3 +153,6 @@ exports.fromBufferInt16Array2 = function (b) {
     };
   };
 };
+exports._byteOffset = function (b) {
+  return b.byteOffset;
+};

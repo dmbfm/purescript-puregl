@@ -11,7 +11,7 @@ import Type.Proxy (Proxy)
 -- | Raw binary array buffer
 foreign import data ArrayBuffer :: Type
 
--- | Typed Arrays/Array Buffer Views
+-- Typed Arrays/Array Buffer Views
 foreign import data Int8Array :: Type
 foreign import data Int16Array :: Type
 foreign import data Int32Array :: Type
@@ -31,30 +31,61 @@ foreign import mkArrayBuffer :: Int -> ArrayBuffer
 type ByteOffset = Int
 type ByteLength = Int
 
-class TypedArray a b | a -> b where
-  fromArray :: Array b -> a
+-- | This class represents a View on a underlying `ArrayBufer`. This should
+-- | include all the `TypedArray` types, plus the `DataView` type.
+class ArrayBufferView a where
+  -- | Create a `TypedArray` view for an `ArrayBuffer`
   fromBuffer :: ArrayBuffer -> a
+  -- | Create a `TypedArray` view for an `ArrayBuffer` with given offset and lenght
   fromBuffer' :: ArrayBuffer -> ByteOffset -> ByteLength -> a
-  toArray :: a -> Array b
-  bytesPerElement :: Proxy a -> Int
-  name :: Proxy a -> String
-  length :: a -> Int
-  byteLength :: a -> Int
+  -- | Get the `ArrayBuffer` for the `TypedArray`
   getBuffer :: a -> ArrayBuffer
+  -- | Get the `TypedArray` name, e.g., "Float32Array"
+  name :: Proxy a -> String
+  -- | Get the length, in bytes, of the `TypedArray`
+  byteLength :: a -> ByteLength
+  -- | Get the length, in bytes, of the `TypedArray`
+  byteOffset :: a -> ByteOffset
+
+-- | Type-class for all TypedArray buffers, like Float32Array, Int32Array, etc.
+class ArrayBufferView a <= TypedArray a b | a -> b where
+  -- | Create a `TypedArray` from an `Array` of elements
+  fromArray :: Array b -> a    
+  -- | Convert the `TypedArray` to a regular `Array`
+  toArray :: a -> Array b
+  -- | Get `TypedArray` element size, in bytes
+  bytesPerElement :: Proxy a -> Int  
+  -- | Get the number of elements in the `TypedArray`
+  length :: a -> Int  
+  -- | Fill the `TypedArray` with a given value
   fill :: forall eff. a -> b -> Eff (arrayBuffer :: ARRAY_BUFFER | eff) a
+  -- | Get the element at a given index
   getAt :: a -> Int -> Maybe b
+  -- | Set the element at a given index
   setAt :: forall eff. a -> Int -> b -> Eff (arrayBuffer :: ARRAY_BUFFER | eff) Unit
 
-instance float32ArrayTypedArray :: TypedArray Float32Array Number where
-  fromArray = fromArrayFloat32Array
+-- | Emtpy class, representing all buffers, i.e., the `ArrayBuffer` type 
+-- | and all `ArrayBufferView` instance types.
+class BufferSource a
+
+-- Instances 
+instance arrayBufferBufferSource :: BufferSource ArrayBuffer
+
+instance float32ArrayBufferSource :: BufferSource Float32Array
+
+instance float32ArrayArrayBufferView :: ArrayBufferView Float32Array where
   fromBuffer = fromBufferFloat32Array
   fromBuffer' = fromBufferFloat32Array2
-  toArray = toArrayFloat32Array
-  bytesPerElement _ = 4
-  name _ = "Float32Array"
-  length = lengthFloat32Array  
-  byteLength = byteLengthFloat32Array
   getBuffer = getBufferFloat32Array
+  name _ = "Float32Array"
+  byteLength = byteLengthFloat32Array  
+  byteOffset = _byteOffset
+
+instance float32ArrayTypedArray :: TypedArray Float32Array Number where
+  fromArray = fromArrayFloat32Array  
+  toArray = toArrayFloat32Array
+  bytesPerElement _ = 4  
+  length = lengthFloat32Array  
   fill = fillFloat32Array
   getAt arr = toMaybe <<< getAtFloat32Array arr
   setAt = setAtFloat32Array
@@ -62,16 +93,21 @@ instance float32ArrayTypedArray :: TypedArray Float32Array Number where
 instance float32ArrayShow :: Show Float32Array where
   show  = toStringFloat32Array
 
-instance int8ArrayTypedArray :: TypedArray Int8Array Number where
-  fromArray = fromArrayInt8Array
+instance int8ArrayBufferSource :: BufferSource Int8Array
+
+instance int8ArrayArrayBufferView :: ArrayBufferView Int8Array where
   fromBuffer = fromBufferInt8Array
   fromBuffer' = fromBufferInt8Array2
-  toArray = toArrayInt8Array
-  bytesPerElement _ = 1
   name _ = "Int8Array"
-  length = lengthInt8Array  
   byteLength = byteLengthInt8Array
+  byteOffset = _byteOffset
   getBuffer = getBufferInt8Array
+
+instance int8ArrayTypedArray :: TypedArray Int8Array Number where
+  fromArray = fromArrayInt8Array  
+  toArray = toArrayInt8Array
+  bytesPerElement _ = 1  
+  length = lengthInt8Array  
   fill = fillInt8Array
   getAt arr = toMaybe <<< getAtInt8Array arr
   setAt = setAtInt8Array
@@ -79,16 +115,21 @@ instance int8ArrayTypedArray :: TypedArray Int8Array Number where
 instance int8ArrayShow :: Show Int8Array where
   show  = toStringInt8Array
 
-instance int16ArrayTypedArray :: TypedArray Int16Array Number where
-  fromArray = fromArrayInt16Array
+instance int16ArrayBufferSource :: BufferSource Int16Array
+
+instance int16ArrayArrayBufferView :: ArrayBufferView Int16Array where
   fromBuffer = fromBufferInt16Array
   fromBuffer' = fromBufferInt16Array2
-  toArray = toArrayInt16Array
-  bytesPerElement _ = 4
   name _ = "Int16Array"
-  length = lengthInt16Array  
   byteLength = byteLengthInt16Array
   getBuffer = getBufferInt16Array
+  byteOffset = _byteOffset
+
+instance int16ArrayTypedArray :: TypedArray Int16Array Number where
+  fromArray = fromArrayInt16Array
+  toArray = toArrayInt16Array
+  bytesPerElement _ = 4  
+  length = lengthInt16Array    
   fill = fillInt16Array
   getAt arr = toMaybe <<< getAtInt16Array arr
   setAt = setAtInt16Array
@@ -131,3 +172,5 @@ foreign import getAtInt16Array :: Int16Array -> Int -> Nullable Number
 foreign import setAtInt16Array :: forall eff. Int16Array -> Int -> Number -> Eff (arrayBuffer :: ARRAY_BUFFER | eff) Unit
 foreign import fromBufferInt16Array2 :: ArrayBuffer -> ByteOffset -> ByteLength -> Int16Array
 foreign import fromBufferInt16Array :: ArrayBuffer -> Int16Array
+
+foreign import _byteOffset :: forall a. a -> ByteOffset

@@ -36,3 +36,4 @@ exports.getAtInt16Array = f => i => typeof f[i] === "undefined" ? null : f[i];
 exports.setAtInt16Array = f => i => a => () => { f[i] = a; };
 exports.fromBufferInt16Array = b => new Int16Array(b);
 exports.fromBufferInt16Array2 = b => o => l => new Int16Array(b, o, l);
+exports._byteOffset = b => b.byteOffset;
