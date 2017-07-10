@@ -4,33 +4,27 @@ exports.nullBufferObject = null;
 exports.nullVertexArrayObject = null;
 
 // Buffers
-exports.createBuffer = function (_) {
-    return function (ctx) {
-        return function () {
-            return ctx.createBuffer();
-        };
+exports.createBuffer = function (ctx) {
+    return function () {
+        return ctx.createBuffer();
     };
 };
-exports.bindBuffer = function (_) {
-    return function (ctx) {
-        return function (target) {
-            return function (buffer) {
-                return function () {
-                    ctx.bindBuffer(target, buffer);
-                };
+exports.bindBuffer = function (ctx) {
+    return function (target) {
+        return function (buffer) {
+            return function () {
+                ctx.bindBuffer(target, buffer);
             };
         };
     };
 };
 exports.bufferData = function (_) {
-    return function (_) {
-        return function (ctx) {
-            return function (target) {
-                return function (array) {
-                    return function (usage) {
-                        return function () {
-                            ctx.bufferData(target, array, usage);
-                        };
+    return function (ctx) {
+        return function (target) {
+            return function (array) {
+                return function (usage) {
+                    return function () {
+                        ctx.bufferData(target, array, usage);
                     };
                 };
             };
@@ -38,14 +32,12 @@ exports.bufferData = function (_) {
     };
 };
 exports.bufferData2 = function (_) {
-    return function (_) {
-        return function (ctx) {
-            return function (target) {
-                return function (size) {
-                    return function (usage) {
-                        return function () {
-                            ctx.bufferData(target, size, usage);
-                        };
+    return function (ctx) {
+        return function (target) {
+            return function (size) {
+                return function (usage) {
+                    return function () {
+                        ctx.bufferData(target, size, usage);
                     };
                 };
             };
@@ -53,16 +45,14 @@ exports.bufferData2 = function (_) {
     };
 };
 exports.bufferData3 = function (_) {
-    return function (_) {
-        return function (ctx) {
-            return function (target) {
-                return function (array) {
-                    return function (usage) {
-                        return function (offset) {
-                            return function (length) {
-                                return function () {
-                                    ctx.bufferData(target, array, usage, offset, length);
-                                };
+    return function (ctx) {
+        return function (target) {
+            return function (array) {
+                return function (usage) {
+                    return function (offset) {
+                        return function (length) {
+                            return function () {
+                                ctx.bufferData(target, array, usage, offset, length);
                             };
                         };
                     };
@@ -71,240 +61,209 @@ exports.bufferData3 = function (_) {
         };
     };
 };
-exports.deleteBuffer = function (_) {
+exports.deleteBuffer = function (ctx) {
+    return function (buffer) {
+        return function () {
+            ctx.deleteBuffer(buffer);
+        };
+    };
+};
+exports.bufferSubData = function (_) {
     return function (ctx) {
-        return function (buffer) {
-            return function () {
-                ctx.deleteBuffer(buffer);
+        return function (target) {
+            return function (offset) {
+                return function (array) {
+                    return function () {
+                        ctx.bufferSubData(target, offset, array);
+                    };
+                };
             };
         };
     };
 };
 
 // Shaders
-exports.createShader = function (_) {
-    return function (ctx) {
-        return function (type) {
-            return function () {
-                return ctx.createShader(type);
-            };
-        };
-    };
-};
-exports.createProgram = function (_) {
-    return function (ctx) {
+exports.createShader = function (ctx) {
+    return function (type) {
         return function () {
-            return ctx.createProgram();
+            return ctx.createShader(type);
         };
     };
 };
-exports.shaderSource = function (_) {
-    return function (ctx) {
-        return function (shader) {
-            return function (source) {
-                return function () {
-                    ctx.shaderSource(shader, source);
-                };
-            };
-        };
+exports.createProgram = function (ctx) {
+    return function () {
+        return ctx.createProgram();
     };
 };
-exports.compileShader = function (_) {
-    return function (ctx) {
-        return function (shader) {
+exports.shaderSource = function (ctx) {
+    return function (shader) {
+        return function (source) {
             return function () {
-                ctx.compileShader(shader);
+                ctx.shaderSource(shader, source);
             };
         };
     };
 };
-exports.getShaderInfoLog = function (_) {
-    return function (ctx) {
-        return function (shader) {
-            return function () {
-                return ctx.getShaderInfoLog(shader);
-            };
+exports.compileShader = function (ctx) {
+    return function (shader) {
+        return function () {
+            ctx.compileShader(shader);
         };
     };
 };
-exports.attachShader = function (_) {
-    return function (ctx) {
-        return function (program) {
-            return function (shader) {
-                return function () {
-                    ctx.attachShader(program, shader);
-                };
-            };
+exports.getShaderInfoLog = function (ctx) {
+    return function (shader) {
+        return function () {
+            return ctx.getShaderInfoLog(shader);
         };
     };
 };
-exports.deleteProgram = function (_) {
-    return function (ctx) {
-        return function (program) {
-            return function () {
-                ctx.deleteProgram(program);
-            };
-        };
-    };
-};
-exports.deleteShader = function (_) {
-    return function (ctx) {
+exports.attachShader = function (ctx) {
+    return function (program) {
         return function (shader) {
             return function () {
-                ctx.deleteShader(shader);
+                ctx.attachShader(program, shader);
             };
         };
     };
 };
-exports.getProgramInfoLog = function (_) {
-    return function (ctx) {
-        return function (program) {
+exports.deleteProgram = function (ctx) {
+    return function (program) {
+        return function () {
+            ctx.deleteProgram(program);
+        };
+    };
+};
+exports.deleteShader = function (ctx) {
+    return function (shader) {
+        return function () {
+            ctx.deleteShader(shader);
+        };
+    };
+};
+exports.getProgramInfoLog = function (ctx) {
+    return function (program) {
+        return function () {
+            return ctx.getProgramInfoLog(program);
+        };
+    };
+};
+exports.linkProgram = function (ctx) {
+    return function (program) {
+        return function () {
+            ctx.linkProgram(program);
+        };
+    };
+};
+exports.useProgram = function (ctx) {
+    return function (program) {
+        return function () {
+            ctx.useProgram(program);
+        };
+    };
+};
+exports.getShaderParameter = function (ctx) {
+    return function (shader) {
+        return function (pname) {
             return function () {
-                return ctx.getProgramInfoLog(program);
+                return ctx.getShaderParameter(shader, pname);
             };
         };
     };
 };
-exports.linkProgram = function (_) {
-    return function (ctx) {
-        return function (program) {
+exports.getProgramParameter = function (ctx) {
+    return function (program) {
+        return function (pname) {
             return function () {
-                ctx.linkProgram(program);
-            };
-        };
-    };
-};
-exports.useProgram = function (_) {
-    return function (ctx) {
-        return function (program) {
-            return function () {
-                ctx.useProgram(program);
-            };
-        };
-    };
-};
-exports.getShaderParameter = function (_) {
-    return function (ctx) {
-        return function (shader) {
-            return function (pname) {
-                return function () {
-                    return ctx.getShaderParameter(shader, pname);
-                };
-            };
-        };
-    };
-};
-exports.getProgramParameter = function (_) {
-    return function (ctx) {
-        return function (program) {
-            return function (pname) {
-                return function () {
-                    return ctx.getProgramParameter(program, pname);
-                };
+                return ctx.getProgramParameter(program, pname);
             };
         };
     };
 };
 
 // VAOs
-exports.createVertexArray = function (_) {
-    return function (ctx) {
+exports.createVertexArray = function (ctx) {
+    return function () {
+        if (ctx instanceof WebGL2RenderingContext) return ctx.createVertexArray();
+
+        var ext = ctx.getExtension('OES_vertex_array_object');
+
+        if (ext) return ext.createVertexArrayOES();
+
+        throw "OES_vertex_array_object extension not found.";
+    };
+};
+
+exports.bindVertexArray = function (ctx) {
+    return function (vao) {
         return function () {
-            if (ctx instanceof WebGL2RenderingContext) return ctx.createVertexArray();
+            if (ctx instanceof WebGL2RenderingContext) return ctx.bindVertexArray(vao);
 
             var ext = ctx.getExtension('OES_vertex_array_object');
 
-            if (ext) return ext.createVertexArrayOES();
+            if (ext) return ext.bindVertexArrayOES(vao);
 
             throw "OES_vertex_array_object extension not found.";
         };
     };
 };
 
-exports.bindVertexArray = function (_) {
-    return function (ctx) {
-        return function (vao) {
-            return function () {
-                if (ctx instanceof WebGL2RenderingContext) return ctx.bindVertexArray(vao);
+exports.deleteVertexArray = function (ctx) {
+    return function (vao) {
+        return function () {
+            if (ctx instanceof WebGL2RenderingContext) return ctx.deleteVertexArray(vao);
 
-                var ext = ctx.getExtension('OES_vertex_array_object');
+            var ext = ctx.getExtension('OES_vertex_array_object');
 
-                if (ext) return ext.bindVertexArrayOES(vao);
+            if (ext) return ext.deleteVertexArrayOES(vao);
 
-                throw "OES_vertex_array_object extension not found.";
-            };
-        };
-    };
-};
-
-exports.deleteVertexArray = function (_) {
-    return function (ctx) {
-        return function (vao) {
-            return function () {
-                if (ctx instanceof WebGL2RenderingContext) return ctx.deleteVertexArray(vao);
-
-                var ext = ctx.getExtension('OES_vertex_array_object');
-
-                if (ext) return ext.deleteVertexArrayOES(vao);
-
-                throw "OES_vertex_array_object extension not found.";
-            };
+            throw "OES_vertex_array_object extension not found.";
         };
     };
 };
 
 // Vertex Attributes
-exports.enableVertexAttribArray = function (_) {
-    return function (ctx) {
-        return function (i) {
+exports.enableVertexAttribArray = function (ctx) {
+    return function (i) {
+        return function () {
+            ctx.enableVertexAttribArray(i);
+        };
+    };
+};
+exports.disableVertexAttribArray = function (ctx) {
+    return function (i) {
+        return function () {
+            ctx.disableVertexAttribArray(i);
+        };
+    };
+};
+exports.getAttribLocation = function (ctx) {
+    return function (program) {
+        return function (name) {
             return function () {
-                ctx.enableVertexAttribArray(i);
+                return ctx.getAttribLocation(program, name);
             };
         };
     };
 };
-exports.disableVertexAttribArray = function (_) {
-    return function (ctx) {
-        return function (i) {
+exports.getUniformLocation = function (ctx) {
+    return function (program) {
+        return function (name) {
             return function () {
-                ctx.disableVertexAttribArray(i);
+                return ctx.getUniformLocation(program, name);
             };
         };
     };
 };
-exports.getAttribLocation = function (_) {
-    return function (ctx) {
-        return function (program) {
-            return function (name) {
-                return function () {
-                    return ctx.getAttribLocation(program, name);
-                };
-            };
-        };
-    };
-};
-exports.getUniformLocation = function (_) {
-    return function (ctx) {
-        return function (program) {
-            return function (name) {
-                return function () {
-                    return ctx.getUniformLocation(program, name);
-                };
-            };
-        };
-    };
-};
-exports.vertexAttribPointer = function (_) {
-    return function (ctx) {
-        return function (i) {
-            return function (s) {
-                return function (t) {
-                    return function (n) {
-                        return function (st) {
-                            return function (o) {
-                                return function () {
-                                    ctx.vertexAttribPointer(i, s, t, n, st, o);
-                                };
+exports.vertexAttribPointer = function (ctx) {
+    return function (i) {
+        return function (s) {
+            return function (t) {
+                return function (n) {
+                    return function (st) {
+                        return function (o) {
+                            return function () {
+                                ctx.vertexAttribPointer(i, s, t, n, st, o);
                             };
                         };
                     };
@@ -313,17 +272,15 @@ exports.vertexAttribPointer = function (_) {
         };
     };
 };
-exports.vertexAttribIPointer = function (_) {
-    return function (ctx) {
-        return function (i) {
-            return function (s) {
-                return function (t) {
-                    return function (n) {
-                        return function (st) {
-                            return function (o) {
-                                return function () {
-                                    ctx.vertexAttribIPointer(i, s, t, n, st, o);
-                                };
+exports.vertexAttribIPointer = function (ctx) {
+    return function (i) {
+        return function (s) {
+            return function (t) {
+                return function (n) {
+                    return function (st) {
+                        return function (o) {
+                            return function () {
+                                ctx.vertexAttribIPointer(i, s, t, n, st, o);
                             };
                         };
                     };
@@ -334,108 +291,137 @@ exports.vertexAttribIPointer = function (_) {
 };
 
 // Uniforms
-exports.uniform1f = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v) {
-                return function () {
-                    ctx.uniform1f(loc, v);
-                };
+exports.uniform1f = function (ctx) {
+    return function (loc) {
+        return function (v) {
+            return function () {
+                ctx.uniform1f(loc, v);
             };
         };
     };
 };
-exports.uniform1i = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v) {
-                return function () {
-                    ctx.uniform1i(loc, v);
-                };
+exports.uniform1i = function (ctx) {
+    return function (loc) {
+        return function (v) {
+            return function () {
+                ctx.uniform1i(loc, v);
             };
         };
     };
 };
-exports.uniform1fv = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v) {
-                return function () {
-                    ctx.uniform1fv(loc, v);
-                };
+exports.uniform1fv = function (ctx) {
+    return function (loc) {
+        return function (v) {
+            return function () {
+                ctx.uniform1fv(loc, v);
             };
         };
     };
 };
-exports.uniform1iv = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v) {
-                return function () {
-                    ctx.uniform1iv(loc, v);
-                };
+exports.uniform1iv = function (ctx) {
+    return function (loc) {
+        return function (v) {
+            return function () {
+                ctx.uniform1iv(loc, v);
             };
         };
     };
 };
 
-exports.uniform2f = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v1) {
-                return function (v2) {
+exports.uniform2f = function (ctx) {
+    return function (loc) {
+        return function (v1) {
+            return function (v2) {
+                return function () {
+                    ctx.uniform2f(loc, v1, v2);
+                };
+            };
+        };
+    };
+};
+exports.uniform2i = function (ctx) {
+    return function (loc) {
+        return function (v1) {
+            return function (v2) {
+                return function () {
+                    ctx.uniform2i(loc, v1, v2);
+                };
+            };
+        };
+    };
+};
+exports.uniform2fv = function (ctx) {
+    return function (loc) {
+        return function (v) {
+            return function () {
+                ctx.uniform2fv(loc, v);
+            };
+        };
+    };
+};
+exports.uniform2iv = function (ctx) {
+    return function (loc) {
+        return function (v) {
+            return function () {
+                ctx.uniform2iv(loc, v);
+            };
+        };
+    };
+};
+
+exports.uniform3f = function (ctx) {
+    return function (loc) {
+        return function (v1) {
+            return function (v2) {
+                return function (v3) {
                     return function () {
-                        ctx.uniform2f(loc, v1, v2);
+                        ctx.uniform3f(loc, v1, v2, v3);
                     };
                 };
             };
         };
     };
 };
-exports.uniform2i = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v1) {
-                return function (v2) {
+exports.uniform3i = function (ctx) {
+    return function (loc) {
+        return function (v1) {
+            return function (v2) {
+                return function (v3) {
                     return function () {
-                        ctx.uniform2i(loc, v1, v2);
+                        ctx.uniform3i(loc, v1, v2, v3);
                     };
                 };
             };
         };
     };
 };
-exports.uniform2fv = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v) {
-                return function () {
-                    ctx.uniform2fv(loc, v);
-                };
+exports.uniform3fv = function (ctx) {
+    return function (loc) {
+        return function (v) {
+            return function () {
+                ctx.uniform3fv(loc, v);
             };
         };
     };
 };
-exports.uniform2iv = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v) {
-                return function () {
-                    ctx.uniform2iv(loc, v);
-                };
+exports.uniform3iv = function (ctx) {
+    return function (loc) {
+        return function (v) {
+            return function () {
+                ctx.uniform3iv(loc, v);
             };
         };
     };
 };
 
-exports.uniform3f = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v1) {
-                return function (v2) {
-                    return function (v3) {
+exports.uniform4f = function (ctx) {
+    return function (loc) {
+        return function (v1) {
+            return function (v2) {
+                return function (v3) {
+                    return function (v4) {
                         return function () {
-                            ctx.uniform3f(loc, v1, v2, v3);
+                            ctx.uniform4f(loc, v1, v2, v3, v4);
                         };
                     };
                 };
@@ -443,14 +429,14 @@ exports.uniform3f = function (_) {
         };
     };
 };
-exports.uniform3i = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v1) {
-                return function (v2) {
-                    return function (v3) {
+exports.uniform4i = function (ctx) {
+    return function (loc) {
+        return function (v1) {
+            return function (v2) {
+                return function (v3) {
+                    return function (v4) {
                         return function () {
-                            ctx.uniform3i(loc, v1, v2, v3);
+                            ctx.uniform4i(loc, v1, v2, v3, v4);
                         };
                     };
                 };
@@ -458,175 +444,100 @@ exports.uniform3i = function (_) {
         };
     };
 };
-exports.uniform3fv = function (_) {
-    return function (ctx) {
-        return function (loc) {
+exports.uniform4fv = function (ctx) {
+    return function (loc) {
+        return function (v) {
+            return function () {
+                ctx.uniform4fv(loc, v);
+            };
+        };
+    };
+};
+exports.uniform4iv = function (ctx) {
+    return function (loc) {
+        return function (v) {
+            return function () {
+                ctx.uniform4iv(loc, v);
+            };
+        };
+    };
+};
+
+exports.uniformMatrix2fv = function (ctx) {
+    return function (loc) {
+        return function (t) {
             return function (v) {
                 return function () {
-                    ctx.uniform3fv(loc, v);
+                    ctx.uniformMatrix2fv(loc, t, v);
                 };
             };
         };
     };
 };
-exports.uniform3iv = function (_) {
-    return function (ctx) {
-        return function (loc) {
+exports.uniformMatrix3fv = function (ctx) {
+    return function (loc) {
+        return function (t) {
             return function (v) {
                 return function () {
-                    ctx.uniform3iv(loc, v);
+                    ctx.uniformMatrix3fv(loc, t, v);
+                };
+            };
+        };
+    };
+};
+exports.uniformMatrix4fv = function (ctx) {
+    return function (loc) {
+        return function (t) {
+            return function (v) {
+                return function () {
+                    ctx.uniformMatrix4fv(loc, t, v);
                 };
             };
         };
     };
 };
 
-exports.uniform4f = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v1) {
-                return function (v2) {
-                    return function (v3) {
-                        return function (v4) {
-                            return function () {
-                                ctx.uniform4f(loc, v1, v2, v3, v4);
-                            };
-                        };
-                    };
-                };
+exports.uniform1ui = function (ctx) {
+    return function (loc) {
+        return function (v) {
+            return function () {
+                ctx.uniform1ui(loc, v);
             };
         };
     };
 };
-exports.uniform4i = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v1) {
-                return function (v2) {
-                    return function (v3) {
-                        return function (v4) {
-                            return function () {
-                                ctx.uniform4i(loc, v1, v2, v3, v4);
-                            };
-                        };
-                    };
-                };
-            };
-        };
-    };
-};
-exports.uniform4fv = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v) {
+exports.uniform2ui = function (ctx) {
+    return function (loc) {
+        return function (v1) {
+            return function (v2) {
                 return function () {
-                    ctx.uniform4fv(loc, v);
+                    ctx.uniform1ui(loc, v1, v2);
                 };
             };
         };
     };
 };
-exports.uniform4iv = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v) {
-                return function () {
-                    ctx.uniform4iv(loc, v);
-                };
-            };
-        };
-    };
-};
-
-exports.uniformMatrix2fv = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (t) {
-                return function (v) {
+exports.uniform3ui = function (ctx) {
+    return function (loc) {
+        return function (v1) {
+            return function (v2) {
+                return function (v3) {
                     return function () {
-                        ctx.uniformMatrix2fv(loc, t, v);
+                        ctx.uniform1ui(loc, v1, v2, v3);
                     };
                 };
             };
         };
     };
 };
-exports.uniformMatrix3fv = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (t) {
-                return function (v) {
-                    return function () {
-                        ctx.uniformMatrix3fv(loc, t, v);
-                    };
-                };
-            };
-        };
-    };
-};
-exports.uniformMatrix4fv = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (t) {
-                return function (v) {
-                    return function () {
-                        ctx.uniformMatrix4fv(loc, t, v);
-                    };
-                };
-            };
-        };
-    };
-};
-
-exports.uniform1ui = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v) {
-                return function () {
-                    ctx.uniform1ui(loc, v);
-                };
-            };
-        };
-    };
-};
-exports.uniform2ui = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v1) {
-                return function (v2) {
-                    return function () {
-                        ctx.uniform1ui(loc, v1, v2);
-                    };
-                };
-            };
-        };
-    };
-};
-exports.uniform3ui = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v1) {
-                return function (v2) {
-                    return function (v3) {
+exports.uniform4ui = function (ctx) {
+    return function (loc) {
+        return function (v1) {
+            return function (v2) {
+                return function (v3) {
+                    return function (v4) {
                         return function () {
-                            ctx.uniform1ui(loc, v1, v2, v3);
-                        };
-                    };
-                };
-            };
-        };
-    };
-};
-exports.uniform4ui = function (_) {
-    return function (ctx) {
-        return function (loc) {
-            return function (v1) {
-                return function (v2) {
-                    return function (v3) {
-                        return function (v4) {
-                            return function () {
-                                ctx.uniform1ui(loc, v1, v2, v3, v4);
-                            };
+                            ctx.uniform1ui(loc, v1, v2, v3, v4);
                         };
                     };
                 };
@@ -672,28 +583,24 @@ exports.uniform4uiv = function (ctx) {
     };
 };
 
-exports.drawArrays = function (_) {
-    return function (ctx) {
-        return function (mode) {
-            return function (first) {
-                return function (count) {
-                    return function () {
-                        ctx.drawArrays(mode, first, count);
-                    };
-                };
-            };
-        };
-    };
-};
-exports.drawElements = function (_) {
-    return function (ctx) {
-        return function (mode) {
+exports.drawArrays = function (ctx) {
+    return function (mode) {
+        return function (first) {
             return function (count) {
-                return function (type) {
-                    return function (offset) {
-                        return function () {
-                            ctx.drawElements(mode, first, count);
-                        };
+                return function () {
+                    ctx.drawArrays(mode, first, count);
+                };
+            };
+        };
+    };
+};
+exports.drawElements = function (ctx) {
+    return function (mode) {
+        return function (count) {
+            return function (type) {
+                return function (offset) {
+                    return function () {
+                        ctx.drawElements(mode, first, count);
                     };
                 };
             };
@@ -701,47 +608,39 @@ exports.drawElements = function (_) {
     };
 };
 
-exports.getShaderParameter = function (_) {
-    return function (ctx) {
-        return function (shader) {
-            return function (pname) {
-                return function () {
-                    return ctx.getShaderParameter(shader, pname);
-                };
+exports.getShaderParameter = function (ctx) {
+    return function (shader) {
+        return function (pname) {
+            return function () {
+                return ctx.getShaderParameter(shader, pname);
             };
         };
     };
 };
-exports.getProgramParameter = function (_) {
-    return function (ctx) {
-        return function (program) {
-            return function (pname) {
-                return function () {
-                    return ctx.getProgramParameter(program, pname);
-                };
+exports.getProgramParameter = function (ctx) {
+    return function (program) {
+        return function (pname) {
+            return function () {
+                return ctx.getProgramParameter(program, pname);
             };
         };
     };
 };
 
-exports.clear = function (_) {
-    return function (ctx) {
-        return function (b) {
-            return function () {
-                ctx.clear(b);
-            };
+exports.clear = function (ctx) {
+    return function (b) {
+        return function () {
+            ctx.clear(b);
         };
     };
 };
-exports.clearColor = function (_) {
-    return function (ctx) {
-        return function (r) {
-            return function (g) {
-                return function (b) {
-                    return function (a) {
-                        return function () {
-                            ctx.clearColor(r, g, b, a);
-                        };
+exports.clearColor = function (ctx) {
+    return function (r) {
+        return function (g) {
+            return function (b) {
+                return function (a) {
+                    return function () {
+                        ctx.clearColor(r, g, b, a);
                     };
                 };
             };

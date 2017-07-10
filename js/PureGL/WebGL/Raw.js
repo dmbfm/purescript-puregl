@@ -2,31 +2,33 @@ exports.nullBufferObject = null;
 exports.nullVertexArrayObject = null;
 
 // Buffers
-exports.createBuffer = _ => ctx => () => ctx.createBuffer();
-exports.bindBuffer = _ => ctx => target => buffer => () => { ctx.bindBuffer(target, buffer); };
-exports.bufferData = _ => _ => ctx => target => array => usage => () => { ctx.bufferData(target, array, usage); };
-exports.bufferData2 = _ => _ => ctx => target => size => usage => () => { ctx.bufferData(target, size, usage); };
-exports.bufferData3 = _ => _ => ctx => target => array => 
+exports.createBuffer = ctx => () => ctx.createBuffer();
+exports.bindBuffer = ctx => target => buffer => () => { ctx.bindBuffer(target, buffer); };
+exports.bufferData = _ => ctx => target => array => usage => () => { ctx.bufferData(target, array, usage); };
+exports.bufferData2 = _ => ctx => target => size => usage => () => { ctx.bufferData(target, size, usage); };
+exports.bufferData3 = _ => ctx => target => array => 
       usage => offset => length => () => { ctx.bufferData(target, array, usage, offset, length); };
-exports.deleteBuffer = _ => ctx => buffer => () => { ctx.deleteBuffer(buffer); };
+exports.deleteBuffer = ctx => buffer => () => { ctx.deleteBuffer(buffer); };
+exports.bufferSubData = _ => ctx => target => offset => array => () => { ctx.bufferSubData(target, offset, array); };
+
 
 // Shaders
-exports.createShader = _ => ctx => type => () => ctx.createShader(type);
-exports.createProgram = _ => ctx => () => ctx.createProgram();
-exports.shaderSource = _ => ctx => shader => source => () => { ctx.shaderSource(shader, source); };
-exports.compileShader = _ => ctx => shader => () => { ctx.compileShader(shader); };
-exports.getShaderInfoLog = _ => ctx => shader => () => ctx.getShaderInfoLog(shader);
-exports.attachShader = _ => ctx => program => shader => () => { ctx.attachShader(program, shader); };
-exports.deleteProgram = _ => ctx => program => () => { ctx.deleteProgram(program); };
-exports.deleteShader = _ => ctx => shader => () => { ctx.deleteShader(shader); };
-exports.getProgramInfoLog = _ => ctx => program => () => ctx.getProgramInfoLog(program);
-exports.linkProgram = _ => ctx => program => () => { ctx.linkProgram(program); };
-exports.useProgram = _ => ctx => program => () => { ctx.useProgram(program); };
-exports.getShaderParameter = _ => ctx => shader => pname => () => ctx.getShaderParameter(shader, pname);
-exports.getProgramParameter = _ => ctx => program => pname => () => ctx.getProgramParameter(program, pname);
+exports.createShader = ctx => type => () => ctx.createShader(type);
+exports.createProgram = ctx => () => ctx.createProgram();
+exports.shaderSource = ctx => shader => source => () => { ctx.shaderSource(shader, source); };
+exports.compileShader = ctx => shader => () => { ctx.compileShader(shader); };
+exports.getShaderInfoLog = ctx => shader => () => ctx.getShaderInfoLog(shader);
+exports.attachShader = ctx => program => shader => () => { ctx.attachShader(program, shader); };
+exports.deleteProgram = ctx => program => () => { ctx.deleteProgram(program); };
+exports.deleteShader = ctx => shader => () => { ctx.deleteShader(shader); };
+exports.getProgramInfoLog = ctx => program => () => ctx.getProgramInfoLog(program);
+exports.linkProgram = ctx => program => () => { ctx.linkProgram(program); };
+exports.useProgram = ctx => program => () => { ctx.useProgram(program); };
+exports.getShaderParameter = ctx => shader => pname => () => ctx.getShaderParameter(shader, pname);
+exports.getProgramParameter = ctx => program => pname => () => ctx.getProgramParameter(program, pname);
 
 // VAOs
-exports.createVertexArray = _ => ctx => () => {
+exports.createVertexArray = ctx => () => {
   if (ctx instanceof WebGL2RenderingContext)
     return ctx.createVertexArray();
 
@@ -39,7 +41,7 @@ exports.createVertexArray = _ => ctx => () => {
 
 };
 
-exports.bindVertexArray = _ => ctx => vao => () => {
+exports.bindVertexArray = ctx => vao => () => {
   if (ctx instanceof WebGL2RenderingContext)
     return ctx.bindVertexArray(vao);
 
@@ -51,7 +53,7 @@ exports.bindVertexArray = _ => ctx => vao => () => {
   throw "OES_vertex_array_object extension not found.";
 }
 
-exports.deleteVertexArray = _ => ctx => vao => () => {
+exports.deleteVertexArray = ctx => vao => () => {
   if (ctx instanceof WebGL2RenderingContext)
     return ctx.deleteVertexArray(vao);
 
@@ -65,58 +67,58 @@ exports.deleteVertexArray = _ => ctx => vao => () => {
 
 
 // Vertex Attributes
-exports.enableVertexAttribArray = _ => ctx => i => () => { ctx.enableVertexAttribArray(i); };
-exports.disableVertexAttribArray = _ => ctx => i => () => { ctx.disableVertexAttribArray(i); };
-exports.getAttribLocation = _ => ctx => program => name => () => ctx.getAttribLocation(program, name);
-exports.getUniformLocation = _ => ctx => program => name => () => ctx.getUniformLocation(program, name);
-exports.vertexAttribPointer = _ => ctx => i => s => t => n => st => o => () =>
+exports.enableVertexAttribArray = ctx => i => () => { ctx.enableVertexAttribArray(i); };
+exports.disableVertexAttribArray = ctx => i => () => { ctx.disableVertexAttribArray(i); };
+exports.getAttribLocation = ctx => program => name => () => ctx.getAttribLocation(program, name);
+exports.getUniformLocation = ctx => program => name => () => ctx.getUniformLocation(program, name);
+exports.vertexAttribPointer = ctx => i => s => t => n => st => o => () =>
   { ctx.vertexAttribPointer(i, s, t, n, st, o); };
-exports.vertexAttribIPointer = _ => ctx => i => s => t => n => st => o => () =>
+exports.vertexAttribIPointer = ctx => i => s => t => n => st => o => () =>
   { ctx.vertexAttribIPointer(i, s, t, n, st, o); };
 
 // Uniforms
-exports.uniform1f = _ => ctx => loc => v => () => { ctx.uniform1f(loc, v); };
-exports.uniform1i = _ => ctx => loc => v => () => { ctx.uniform1i(loc, v); };
-exports.uniform1fv = _ => ctx => loc => v => () => { ctx.uniform1fv(loc, v); };
-exports.uniform1iv = _ => ctx => loc => v => () => { ctx.uniform1iv(loc, v); };
+exports.uniform1f = ctx => loc => v => () => { ctx.uniform1f(loc, v); };
+exports.uniform1i = ctx => loc => v => () => { ctx.uniform1i(loc, v); };
+exports.uniform1fv = ctx => loc => v => () => { ctx.uniform1fv(loc, v); };
+exports.uniform1iv = ctx => loc => v => () => { ctx.uniform1iv(loc, v); };
 
-exports.uniform2f = _ => ctx => loc => v1 => v2 => () => { ctx.uniform2f(loc, v1, v2); };
-exports.uniform2i = _ => ctx => loc => v1 => v2 => () => { ctx.uniform2i(loc, v1, v2); };
-exports.uniform2fv = _ =>  ctx => loc => v => () => { ctx.uniform2fv(loc, v); };
-exports.uniform2iv = _ =>  ctx => loc => v => () => { ctx.uniform2iv(loc, v); };
+exports.uniform2f = ctx => loc => v1 => v2 => () => { ctx.uniform2f(loc, v1, v2); };
+exports.uniform2i = ctx => loc => v1 => v2 => () => { ctx.uniform2i(loc, v1, v2); };
+exports.uniform2fv =  ctx => loc => v => () => { ctx.uniform2fv(loc, v); };
+exports.uniform2iv =  ctx => loc => v => () => { ctx.uniform2iv(loc, v); };
 
-exports.uniform3f = _ => ctx => loc => v1 => v2 => v3 => () => { ctx.uniform3f(loc, v1, v2, v3); };
-exports.uniform3i = _ => ctx => loc => v1 => v2 => v3 => () => { ctx.uniform3i(loc, v1, v2, v3); };
-exports.uniform3fv = _ => ctx => loc => v => () => { ctx.uniform3fv(loc, v); };
-exports.uniform3iv = _ => ctx => loc => v => () => { ctx.uniform3iv(loc, v); };
+exports.uniform3f = ctx => loc => v1 => v2 => v3 => () => { ctx.uniform3f(loc, v1, v2, v3); };
+exports.uniform3i = ctx => loc => v1 => v2 => v3 => () => { ctx.uniform3i(loc, v1, v2, v3); };
+exports.uniform3fv = ctx => loc => v => () => { ctx.uniform3fv(loc, v); };
+exports.uniform3iv = ctx => loc => v => () => { ctx.uniform3iv(loc, v); };
 
-exports.uniform4f = _ => ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform4f(loc, v1, v2, v3, v4); };
-exports.uniform4i = _ => ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform4i(loc, v1, v2, v3, v4); };
-exports.uniform4fv = _ => ctx => loc => v => () => { ctx.uniform4fv(loc, v); };
-exports.uniform4iv = _ => ctx => loc => v => () => { ctx.uniform4iv(loc, v); };
+exports.uniform4f = ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform4f(loc, v1, v2, v3, v4); };
+exports.uniform4i = ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform4i(loc, v1, v2, v3, v4); };
+exports.uniform4fv = ctx => loc => v => () => { ctx.uniform4fv(loc, v); };
+exports.uniform4iv = ctx => loc => v => () => { ctx.uniform4iv(loc, v); };
 
-exports.uniformMatrix2fv = _ => ctx => loc => t => v => () => { ctx.uniformMatrix2fv(loc, t, v); };
-exports.uniformMatrix3fv = _ => ctx => loc => t => v => () => { ctx.uniformMatrix3fv(loc, t, v); };
-exports.uniformMatrix4fv = _ => ctx => loc => t => v => () => { ctx.uniformMatrix4fv(loc, t, v); };
+exports.uniformMatrix2fv = ctx => loc => t => v => () => { ctx.uniformMatrix2fv(loc, t, v); };
+exports.uniformMatrix3fv = ctx => loc => t => v => () => { ctx.uniformMatrix3fv(loc, t, v); };
+exports.uniformMatrix4fv = ctx => loc => t => v => () => { ctx.uniformMatrix4fv(loc, t, v); };
 
-exports.uniform1ui = _ => ctx => loc => v => () => { ctx.uniform1ui(loc, v); };
-exports.uniform2ui = _ => ctx => loc => v1 => v2 => () => { ctx.uniform1ui(loc, v1, v2); };
-exports.uniform3ui = _ => ctx => loc => v1 => v2 => v3 => () => { ctx.uniform1ui(loc, v1, v2, v3); };
-exports.uniform4ui = _ => ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform1ui(loc, v1, v2, v3, v4); };
+exports.uniform1ui = ctx => loc => v => () => { ctx.uniform1ui(loc, v); };
+exports.uniform2ui = ctx => loc => v1 => v2 => () => { ctx.uniform1ui(loc, v1, v2); };
+exports.uniform3ui = ctx => loc => v1 => v2 => v3 => () => { ctx.uniform1ui(loc, v1, v2, v3); };
+exports.uniform4ui = ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform1ui(loc, v1, v2, v3, v4); };
 
 exports.uniform1uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
 exports.uniform2uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
 exports.uniform3uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
 exports.uniform4uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
 
-exports.drawArrays = _ => ctx => mode => first => count => () => { ctx.drawArrays(mode, first, count); };
-exports.drawElements = _ => ctx => mode => count => type => offset => () => { ctx.drawElements(mode, first, count); };
+exports.drawArrays = ctx => mode => first => count => () => { ctx.drawArrays(mode, first, count); };
+exports.drawElements = ctx => mode => count => type => offset => () => { ctx.drawElements(mode, first, count); };
 
-exports.getShaderParameter = _ => ctx => shader => pname => () => ctx.getShaderParameter(shader, pname);
-exports.getProgramParameter = _ => ctx => program => pname => () => ctx.getProgramParameter(program, pname);
+exports.getShaderParameter = ctx => shader => pname => () => ctx.getShaderParameter(shader, pname);
+exports.getProgramParameter = ctx => program => pname => () => ctx.getProgramParameter(program, pname);
 
-exports.clear = _ => ctx => b => () => { ctx.clear(b); };
-exports.clearColor = _ => ctx => r => g => b => a => () => { ctx.clearColor(r, g, b, a); };
+exports.clear = ctx => b => () => { ctx.clear(b); };
+exports.clearColor = ctx => r => g => b => a => () => { ctx.clearColor(r, g, b, a); };
 
 /*-------  VAO Polyfill from https://github.com/greggman/oes-vertex-array-object-polyfill -------*/
 
