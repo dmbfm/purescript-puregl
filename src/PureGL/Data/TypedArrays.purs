@@ -128,7 +128,7 @@ instance int16ArrayArrayBufferView :: ArrayBufferView Int16Array where
 instance int16ArrayTypedArray :: TypedArray Int16Array Number where
   fromArray = fromArrayInt16Array
   toArray = toArrayInt16Array
-  bytesPerElement _ = 4  
+  bytesPerElement _ = 2
   length = lengthInt16Array    
   fill = fillInt16Array
   getAt arr = toMaybe <<< getAtInt16Array arr
@@ -136,6 +136,26 @@ instance int16ArrayTypedArray :: TypedArray Int16Array Number where
 
 instance int16ArrayShow :: Show Int16Array where
   show  = toStringInt16Array  
+
+instance int32ArrayArrayBufferView :: ArrayBufferView Int32Array where
+  fromBuffer = fromBufferInt32Array
+  fromBuffer' = fromBufferInt32Array2
+  name _ = "Int32Array"
+  byteLength = byteLengthInt32Array
+  getBuffer = getBufferInt32Array
+  byteOffset = _byteOffset
+
+instance int32ArrayTypedArray :: TypedArray Int32Array Number where
+  fromArray = fromArrayInt32Array
+  toArray = toArrayInt32Array
+  bytesPerElement _ = 2
+  length = lengthInt32Array    
+  fill = fillInt32Array
+  getAt arr = toMaybe <<< getAtInt32Array arr
+  setAt = setAtInt32Array
+
+instance int32ArrayShow :: Show Int32Array where
+  show  = toStringInt32Array  
 
 foreign import fromArrayFloat32Array :: Array Number -> Float32Array
 foreign import toArrayFloat32Array :: Float32Array -> Array Number
@@ -172,5 +192,17 @@ foreign import getAtInt16Array :: Int16Array -> Int -> Nullable Number
 foreign import setAtInt16Array :: forall eff. Int16Array -> Int -> Number -> Eff (arrayBuffer :: ARRAY_BUFFER | eff) Unit
 foreign import fromBufferInt16Array2 :: ArrayBuffer -> ByteOffset -> ByteLength -> Int16Array
 foreign import fromBufferInt16Array :: ArrayBuffer -> Int16Array
+
+foreign import fromArrayInt32Array :: Array Number -> Int32Array
+foreign import toArrayInt32Array :: Int32Array -> Array Number
+foreign import lengthInt32Array :: Int32Array -> Int
+foreign import getBufferInt32Array :: Int32Array -> ArrayBuffer
+foreign import byteLengthInt32Array :: Int32Array -> Int
+foreign import fillInt32Array :: forall eff. Int32Array -> Number -> Eff (arrayBuffer :: ARRAY_BUFFER | eff) Int32Array
+foreign import toStringInt32Array :: Int32Array -> String
+foreign import getAtInt32Array :: Int32Array -> Int -> Nullable Number
+foreign import setAtInt32Array :: forall eff. Int32Array -> Int -> Number -> Eff (arrayBuffer :: ARRAY_BUFFER | eff) Unit
+foreign import fromBufferInt32Array2 :: ArrayBuffer -> ByteOffset -> ByteLength -> Int32Array
+foreign import fromBufferInt32Array :: ArrayBuffer -> Int32Array
 
 foreign import _byteOffset :: forall a. a -> ByteOffset

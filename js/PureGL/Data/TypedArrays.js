@@ -37,3 +37,17 @@ exports.setAtInt16Array = f => i => a => () => { f[i] = a; };
 exports.fromBufferInt16Array = b => new Int16Array(b);
 exports.fromBufferInt16Array2 = b => o => l => new Int16Array(b, o, l);
 exports._byteOffset = b => b.byteOffset;
+
+
+exports.fromArrayInt32Array = arr => new Int32Array(arr);
+exports.toArrayInt32Array = f => Array.from(f);
+exports.lengthInt32Array = f => f.length;
+exports.getBufferInt32Array = f => f.buffer;
+exports.byteLengthInt32Array = f => f.byteLength;
+exports.fillInt32Array = f => v => () => f.fill(v);
+exports.toStringInt32Array = f => f.toString();
+exports.getAtInt32Array = f => i => typeof f[i] === "undefined" ? null : f[i];
+exports.setAtInt32Array = f => i => a => () => { f[i] = a; };
+exports.fromBufferInt32Array = b => new Int32Array(b);
+exports.fromBufferInt32Array2 = b => o => l => new Int32Array(b, o, l);
+exports._byteOffset = b => b.byteOffset;

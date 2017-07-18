@@ -1,6 +1,8 @@
 module PureGL.WebGL.Types where
 
 import Control.Monad.Eff (Eff, kind Effect)
+import DOM.HTML.Types (HTMLCanvasElement, HTMLImageElement, HTMLVideoElement)
+import PureGL.Data.TypedArrays (Uint8Array)
 
 -- | The Effect type for WebGL operations
 foreign import data WEBGL :: Effect
@@ -12,12 +14,23 @@ type WebGLEff e = Eff (webgl :: WEBGL | e)
 -- | by calling HTMLCanvasElement.getContext('webgl')
 foreign import data WebGLContext :: Type
 
+foreign import data ImageData :: Type
+
+class TextureSource a 
+
+instance htmlImageElementTextureSource :: TextureSource HTMLImageElement 
+instance htmlCanvasElementTextureSource :: TextureSource HTMLCanvasElement
+instance htmlVideoElementTextureSource :: TextureSource HTMLVideoElement
+instance imageDataTextureSource :: TextureSource ImageData
+instance uint8ArrayTextureSource :: TextureSource Uint8Array 
+
 -- Other WebGL Raw Types
 foreign import data WebGLShader :: Type
 foreign import data WebGLProgram :: Type
 foreign import data WebGLVertexArrayObject :: Type
 foreign import data WebGLUniformLocation :: Type
 foreign import data WebGLBuffer :: Type
+foreign import data WebGLTexture :: Type
 
 -- Type alisases for WebGL primtive types
 type GLenum       = Int

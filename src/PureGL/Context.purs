@@ -6,8 +6,8 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Reader.Trans (ReaderT)
 import DOM (DOM)
 import DOM.HTML.Types (HTMLCanvasElement)
-import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
+import PureGL.Extensions (EnabledExtensions, initExtensions)
 import PureGL.Utils.DOM (getCanvasElement, getWebGL1Context, getWebGL2Context)
 import PureGL.WebGL.Types (WEBGL, WebGLContext, WebGLEff)
 
@@ -19,6 +19,7 @@ data GLVersion = WebGL1 | WebGL2
 -- | and the canvas element it is attached to.
 newtype Context = Context { glContext :: WebGLContext
                           , glVersion :: GLVersion
+                          , enabledExtensions :: EnabledExtensions
                           , canvas :: HTMLCanvasElement
                           }
 
@@ -43,15 +44,21 @@ fromCanvasElement:: forall eff. HTMLCanvasElement -> Eff (webgl :: WEBGL | eff) 
 fromCanvasElement canvas = do
   ctx2 <- getWebGL2Context canvas
   case ctx2 of 
-    Just ctx2' -> pure $ Just $ Context { glContext: ctx2'
-                                        , glVersion: WebGL2
-                                        , canvas: canvas
-                                        }
+    Just ctx2' -> do
+      enabledExtensions <- initExtensions ctx2' 
+      pure $ Just $ Context { glContext: ctx2'
+                            , glVersion: WebGL2
+                            , enabledExtensions: enabledExtensions
+                            , canvas: canvas
+                            }
     Nothing -> do
       ctx <- getWebGL1Context canvas
       case ctx of
-        Just ctx' -> pure $ Just $ Context { glContext: ctx'
-                                           , glVersion: WebGL1
-                                           , canvas: canvas
-                                           }
+        Just ctx' -> do
+          enabledExtensions <- initExtensions ctx' 
+          pure $ Just $ Context { glContext: ctx'
+                                , glVersion: WebGL1
+                                , enabledExtensions: enabledExtensions
+                                , canvas: canvas
+                                }
         Nothing -> pure $ Nothing

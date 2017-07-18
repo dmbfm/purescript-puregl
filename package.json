@@ -8,7 +8,8 @@
   "scripts": {
     "build:js": "yarn run babel -- js --out-dir src",
     "watch:js": "yarn run babel -- js --out-dir src --watch",
-    "dev": "concurrently \"node server.js\" \"yarn run http-server .\" \"yarn run opn http://localhost:8080/examples/basic/ \" "
+    "watch:purs": "yarn run pulp -- -w build", 
+    "dev": "concurrently \" yarn run webpack-dev-server\" \" yarn run watch:js \" "
   },
   "dependencies": {},
   "devDependencies": {

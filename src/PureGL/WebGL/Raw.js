@@ -184,7 +184,7 @@ exports.getProgramParameter = function (ctx) {
 // VAOs
 exports.createVertexArray = function (ctx) {
     return function () {
-        if (ctx instanceof WebGL2RenderingContext) return ctx.createVertexArray();
+        if (ctx.createVertexArray) return ctx.createVertexArray();
 
         var ext = ctx.getExtension('OES_vertex_array_object');
 
@@ -197,7 +197,7 @@ exports.createVertexArray = function (ctx) {
 exports.bindVertexArray = function (ctx) {
     return function (vao) {
         return function () {
-            if (ctx instanceof WebGL2RenderingContext) return ctx.bindVertexArray(vao);
+            if (ctx.bindVertexArray) return ctx.bindVertexArray(vao);
 
             var ext = ctx.getExtension('OES_vertex_array_object');
 
@@ -211,7 +211,7 @@ exports.bindVertexArray = function (ctx) {
 exports.deleteVertexArray = function (ctx) {
     return function (vao) {
         return function () {
-            if (ctx instanceof WebGL2RenderingContext) return ctx.deleteVertexArray(vao);
+            if (ctx.deleteVertexArray) return ctx.deleteVertexArray(vao);
 
             var ext = ctx.getExtension('OES_vertex_array_object');
 
@@ -641,6 +641,84 @@ exports.clearColor = function (ctx) {
                 return function (a) {
                     return function () {
                         ctx.clearColor(r, g, b, a);
+                    };
+                };
+            };
+        };
+    };
+};
+
+exports.getExtension = function (ctx) {
+    return function (name) {
+        return function () {
+            return ctx.getExtension(name);
+        };
+    };
+};
+
+exports.createTexture = function (ctx) {
+    return function () {
+        return ctx.createTexture();
+    };
+};
+exports.bindTexture = function (ctx) {
+    return function (t) {
+        return function (tex) {
+            return function () {
+                ctx.bindTexture(t, tex);
+            };
+        };
+    };
+};
+exports.texParameteri = function (ctx) {
+    return function (t) {
+        return function (pname) {
+            return function (val) {
+                return function () {
+                    ctx.texParameteri(t, pname, val);
+                };
+            };
+        };
+    };
+};
+exports.texParameterf = function (ctx) {
+    return function (t) {
+        return function (pname) {
+            return function (val) {
+                return function () {
+                    ctx.texParameterf(t, pname, val);
+                };
+            };
+        };
+    };
+};
+exports.generateMipmap = function (ctx) {
+    return function (t) {
+        return function () {
+            ctx.generateMipmap(t);
+        };
+    };
+};
+exports.activeTexture = function (ctx) {
+    return function (slot) {
+        return function () {
+            ctx.activeTexture(slot);
+        };
+    };
+};
+exports.texImage2D = function (_) {
+    return function (ctx) {
+        return function (target) {
+            return function (level) {
+                return function (iformat) {
+                    return function (format) {
+                        return function (type) {
+                            return function (pixels) {
+                                return function () {
+                                    ctx.texImage2D(target, level, iformat, format, type, pixels);
+                                };
+                            };
+                        };
                     };
                 };
             };

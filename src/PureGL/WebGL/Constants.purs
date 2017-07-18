@@ -34,3 +34,87 @@ gl_LINE_STRIP                     = 0x0003 :: Int
 gl_TRIANGLES                      = 0x0004 :: Int
 gl_TRIANGLE_STRIP                 = 0x0005 :: Int
 gl_TRIANGLE_FAN                   = 0x0006 :: Int
+
+gl_TEXTURE_MAX_ANISOTROPY_EXT       = 0x84FE :: Int
+gl_MAX_TEXTURE_MAX_ANISOTROPY_EXT   = 0x84FF :: Int
+
+ 
+gl_NEAREST                        = 0x2600 :: Int
+gl_LINEAR                         = 0x2601 :: Int
+
+ 
+gl_NEAREST_MIPMAP_NEAREST         = 0x2700 :: Int
+gl_LINEAR_MIPMAP_NEAREST          = 0x2701 :: Int
+gl_NEAREST_MIPMAP_LINEAR          = 0x2702 :: Int
+gl_LINEAR_MIPMAP_LINEAR           = 0x2703 :: Int
+
+ 
+gl_TEXTURE_MAG_FILTER             = 0x2800 :: Int
+gl_TEXTURE_MIN_FILTER             = 0x2801 :: Int
+gl_TEXTURE_WRAP_S                 = 0x2802 :: Int
+gl_TEXTURE_WRAP_T                 = 0x2803 :: Int
+
+    
+gl_TEXTURE_2D                     = 0x0DE1 :: Int
+gl_TEXTURE                        = 0x1702 :: Int
+
+gl_TEXTURE_CUBE_MAP               = 0x8513 :: Int
+gl_TEXTURE_BINDING_CUBE_MAP       = 0x8514 :: Int
+gl_TEXTURE_CUBE_MAP_POSITIVE_X    = 0x8515 :: Int
+gl_TEXTURE_CUBE_MAP_NEGATIVE_X    = 0x8516 :: Int
+gl_TEXTURE_CUBE_MAP_POSITIVE_Y    = 0x8517 :: Int
+gl_TEXTURE_CUBE_MAP_NEGATIVE_Y    = 0x8518 :: Int
+gl_TEXTURE_CUBE_MAP_POSITIVE_Z    = 0x8519 :: Int
+gl_TEXTURE_CUBE_MAP_NEGATIVE_Z    = 0x851A :: Int
+gl_MAX_CUBE_MAP_TEXTURE_SIZE      = 0x851C :: Int
+
+    
+gl_TEXTURE0                       = 0x84C0 :: Int
+gl_TEXTURE1                       = 0x84C1 :: Int
+gl_TEXTURE2                       = 0x84C2 :: Int
+gl_TEXTURE3                       = 0x84C3 :: Int
+gl_TEXTURE4                       = 0x84C4 :: Int
+gl_TEXTURE5                       = 0x84C5 :: Int
+gl_TEXTURE6                       = 0x84C6 :: Int
+gl_TEXTURE7                       = 0x84C7 :: Int
+gl_TEXTURE8                       = 0x84C8 :: Int
+gl_TEXTURE9                       = 0x84C9 :: Int
+gl_TEXTURE10                      = 0x84CA :: Int
+gl_TEXTURE11                      = 0x84CB :: Int
+gl_TEXTURE12                      = 0x84CC :: Int
+gl_TEXTURE13                      = 0x84CD :: Int
+gl_TEXTURE14                      = 0x84CE :: Int
+gl_TEXTURE15                      = 0x84CF :: Int
+gl_TEXTURE16                      = 0x84D0 :: Int
+gl_TEXTURE17                      = 0x84D1 :: Int
+gl_TEXTURE18                      = 0x84D2 :: Int
+gl_TEXTURE19                      = 0x84D3 :: Int
+gl_TEXTURE20                      = 0x84D4 :: Int
+gl_TEXTURE21                      = 0x84D5 :: Int
+gl_TEXTURE22                      = 0x84D6 :: Int
+gl_TEXTURE23                      = 0x84D7 :: Int
+gl_TEXTURE24                      = 0x84D8 :: Int
+gl_TEXTURE25                      = 0x84D9 :: Int
+gl_TEXTURE26                      = 0x84DA :: Int
+gl_TEXTURE27                      = 0x84DB :: Int
+gl_TEXTURE28                      = 0x84DC :: Int
+gl_TEXTURE29                      = 0x84DD :: Int
+gl_TEXTURE30                      = 0x84DE :: Int
+gl_TEXTURE31                      = 0x84DF :: Int
+gl_ACTIVE_TEXTURE                 = 0x84E0 :: Int
+
+    
+gl_REPEAT                         = 0x2901 :: Int
+gl_CLAMP_TO_EDGE                  = 0x812F :: Int
+gl_MIRRORED_REPEAT                = 0x8370 :: Int
+
+gl_DEPTH_COMPONENT                = 0x1902 :: Int
+gl_ALPHA                          = 0x1906 :: Int
+gl_RGB                            = 0x1907 :: Int
+gl_RGBA                           = 0x1908 :: Int
+gl_LUMINANCE                      = 0x1909 :: Int
+gl_LUMINANCE_ALPHA                = 0x190A :: Int
+
+gl_UNSIGNED_SHORT_4_4_4_4         = 0x8033 :: Int
+gl_UNSIGNED_SHORT_5_5_5_1         = 0x8034 :: Int
+gl_UNSIGNED_SHORT_5_6_5           = 0x8363 :: Int

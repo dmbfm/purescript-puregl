@@ -156,3 +156,56 @@ exports.fromBufferInt16Array2 = function (b) {
 exports._byteOffset = function (b) {
   return b.byteOffset;
 };
+
+exports.fromArrayInt32Array = function (arr) {
+  return new Int32Array(arr);
+};
+exports.toArrayInt32Array = function (f) {
+  return Array.from(f);
+};
+exports.lengthInt32Array = function (f) {
+  return f.length;
+};
+exports.getBufferInt32Array = function (f) {
+  return f.buffer;
+};
+exports.byteLengthInt32Array = function (f) {
+  return f.byteLength;
+};
+exports.fillInt32Array = function (f) {
+  return function (v) {
+    return function () {
+      return f.fill(v);
+    };
+  };
+};
+exports.toStringInt32Array = function (f) {
+  return f.toString();
+};
+exports.getAtInt32Array = function (f) {
+  return function (i) {
+    return typeof f[i] === "undefined" ? null : f[i];
+  };
+};
+exports.setAtInt32Array = function (f) {
+  return function (i) {
+    return function (a) {
+      return function () {
+        f[i] = a;
+      };
+    };
+  };
+};
+exports.fromBufferInt32Array = function (b) {
+  return new Int32Array(b);
+};
+exports.fromBufferInt32Array2 = function (b) {
+  return function (o) {
+    return function (l) {
+      return new Int32Array(b, o, l);
+    };
+  };
+};
+exports._byteOffset = function (b) {
+  return b.byteOffset;
+};

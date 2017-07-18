@@ -4,7 +4,7 @@ import Data.Foreign (Foreign)
 import Data.Nullable (Nullable)
 import Prelude (Unit)
 import PureGL.Data.TypedArrays (class BufferSource, Float32Array, Int32Array, Uint32Array)
-import PureGL.WebGL.Types (GLbitfield, GLboolean, GLenum, GLfloat, GLint, GLintptr, GLsizei, GLsizeiptr, GLuint, WebGLBuffer, WebGLContext, WebGLEff, WebGLProgram, WebGLShader, WebGLUniformLocation, WebGLVertexArrayObject)
+import PureGL.WebGL.Types (class TextureSource, GLbitfield, GLboolean, GLenum, GLfloat, GLint, GLintptr, GLsizei, GLsizeiptr, GLuint, WebGLBuffer, WebGLContext, WebGLEff, WebGLProgram, WebGLShader, WebGLTexture, WebGLUniformLocation, WebGLVertexArrayObject)
 
 
 -- | Null `WebGLBuffer`, used for unbinding
@@ -123,3 +123,24 @@ foreign import drawElements :: forall eff. WebGLContext -> GLenum -> GLsizei -> 
 
 foreign import clearColor :: forall eff. WebGLContext -> Number -> Number -> Number -> Number -> WebGLEff eff Unit
 foreign import clear :: forall eff. WebGLContext -> GLbitfield -> WebGLEff eff Unit
+
+foreign import getExtension :: forall eff a. WebGLContext -> String -> WebGLEff eff a
+
+
+foreign import createTexture :: forall eff. WebGLContext -> WebGLEff eff WebGLTexture
+foreign import bindTexture :: forall eff. WebGLContext -> GLenum -> WebGLTexture -> WebGLEff eff Unit
+foreign import texParameteri :: forall eff. WebGLContext -> GLenum -> GLenum -> Int -> WebGLEff eff Unit
+foreign import texParameterf :: forall eff. WebGLContext -> GLenum -> GLenum -> Number -> WebGLEff eff Unit
+foreign import generateMipmap :: forall eff. WebGLContext -> GLenum -> WebGLEff eff Unit
+foreign import activeTexture :: forall eff. WebGLContext -> GLenum -> WebGLEff eff Unit
+foreign import texImage2D :: forall eff s. 
+                             TextureSource s =>
+                             WebGLContext -> 
+                             GLenum -> 
+                             GLint -> 
+                             GLenum ->
+                             GLenum -> 
+                             GLenum -> 
+                             s ->
+                             WebGLEff eff Unit
+                             

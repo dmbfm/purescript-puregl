@@ -1,40 +1,51 @@
 module PureGL.Renderer where
 
 import Prelude
-
 import Control.Monad.Eff.Class (liftEff)
+import Control.Monad.Reader.Class (ask)
 import Control.Monad.Reader.Trans (runReaderT)
 import Control.Monad.State.Class (get, modify)
-import Control.Monad.State.Trans (StateT(..))
-import Data.Array (cons, head, tail)
+import Control.Monad.State.Trans (StateT)
+import Data.Array (cons, head, mapWithIndex, tail, unsafeIndex)
 import Data.Either (Either(..))
 import Data.Foldable (elem)
-import Data.Map (Map, delete, insert, lookup)
-import Data.Maybe (Maybe(..), fromJust)
-import Data.Traversable (traverse)
+import Data.Map (Map, empty, insert, lookup)
+import Data.Maybe (Maybe(..))
+import Data.Traversable (sequence)
 import Partial.Unsafe (unsafePartial)
-import PureGL.Buffer (Buffer(..), BufferResource(..), BufferTarget, BufferUsage, mkBuffer)
-import PureGL.Context (Context)
-import PureGL.Data.TypedArrays (Float32Array)
-import PureGL.Geometry (Geometry(..), GeometryResource(..), mkGeometry)
-import PureGL.Resource (loadResource)
-import PureGL.VertexBuffer (Attribute(..), VertexBuffer(..), mkVertexBuffer)
-import PureGL.WebGL (getValue)
-import PureGL.WebGL as WGL
+import PureGL.Context (Context(..), ContextR)
+import PureGL.Geometry (Geometry(..), LoadedGeometry(..), VertexAttribute(..))
+import PureGL.Program (LoadedProgram(..), Program(..), buildProgram, getProgramAttribLocationsMap, getProgramUniformLocationsMap)
+import PureGL.Texture (LoadedTexture(..), Texture(..), TexturePixels(..))
+import PureGL.WebGL (bindBuffer, bindTexture, bindVertexArray, bufferData, clear, clearColor, createBuffer, createTexture, createVertexArray, drawArrays, enableVertexAttribArray, generateMipmap, getValue, texImage2D, texParameterf, texParameteri, useProgram, vertexAttribPointer)
+import PureGL.WebGL.Constants (gl_ARRAY_BUFFER, gl_COLOR_BUFFER_BIT, gl_FLOAT, gl_STATIC_DRAW, gl_TEXTURE_MAG_FILTER, gl_TEXTURE_MAX_ANISOTROPY_EXT, gl_TEXTURE_MIN_FILTER, gl_TEXTURE_WRAP_S, gl_TEXTURE_WRAP_T, gl_TRIANGLES)
+import PureGL.WebGL.Raw (nullBufferObject, nullVertexArrayObject)
 import PureGL.WebGL.Types (WebGLEff)
 
-type RenderState = { context :: Context
-                   , loadedBuffers :: Map Int BufferResource
-                   , loadedGeometries :: Map Int GeometryResource
-                   , idCounter :: Int
-                   , idPool :: Array Int
-                   }
+type ResourceId = Int
+
+type RenderState =  { context :: Context 
+                    , loadedGeometries :: Map ResourceId LoadedGeometry
+                    , loadedPrograms :: Map ResourceId LoadedProgram
+                    , loadedTextures :: Map ResourceId LoadedTexture
+                    , idCounter :: ResourceId
+                    , idPool :: Array ResourceId
+                    }
 
 type RenderStateT eff a = StateT RenderState (WebGLEff eff) a
 
+fromContext :: Context -> RenderState
+fromContext ctx = { context: ctx
+                  , loadedGeometries: empty
+                  , loadedPrograms: empty
+                  , loadedTextures: empty
+                  , idCounter: 0
+                  , idPool: []
+                  }
+
 -- | Increments the `RenderState`'s `idCounter` 
 incrementIdCounter :: RenderState -> RenderState
-incrementIdCounter s = s { idCounter = s.idCounter + 1}
+incrementIdCounter s =  s { idCounter = s.idCounter + 1}
 
 -- | Remove the head element from the `RenderState`'s `idPool`
 removeIdPoolHead :: RenderState -> RenderState
@@ -71,54 +82,132 @@ returnId id = do
         modify $ addIdPoolHead id
         pure unit
 
--- | Add a `BufferResource` to the `loadedBuffers` map of the `RenderState`
-addLoadedBuffer :: Int -> BufferResource -> RenderState -> RenderState
-addLoadedBuffer id b s = s { loadedBuffers = insert id b s.loadedBuffers }
+addLoadedGeometry :: Int -> LoadedGeometry -> RenderState ->  RenderState
+addLoadedGeometry id lg s = s { loadedGeometries = insert id lg s.loadedGeometries }
 
-getLoadedBuffer :: Int -> RenderState -> Maybe BufferResource 
-getLoadedBuffer id s = lookup id s.loadedBuffers 
+addLoadedProgram :: Int -> LoadedProgram -> RenderState -> RenderState
+addLoadedProgram id lp s = s { loadedPrograms = insert id lp s.loadedPrograms }
 
--- | Remove a `BufferResource` from the `loadedBuffers` map of the `RenderState`
-removeLoadedBuffer :: Int -> RenderState -> RenderState
-removeLoadedBuffer id s = s { loadedBuffers = delete id s.loadedBuffers }
+addLoadedTexture :: Int -> LoadedTexture -> RenderState -> RenderState
+addLoadedTexture id lt s = s { loadedTextures = insert id lt s.loadedTextures }
 
--- | Add a `GeometryResource` to the `loadedBuffers` map of the `RenderState`
-addLoadedGeometry :: Int -> GeometryResource -> RenderState -> RenderState
-addLoadedGeometry id gr s = s { loadedGeometries = insert id gr s.loadedGeometries }
+addLoadedTextureT :: forall eff. LoadedTexture -> RenderStateT eff ResourceId
+addLoadedTextureT lt = do
+  id <- genId
+  modify $ addLoadedTexture id lt
+  pure id
 
--- | Remove a `GeometryResource` from the `loadedBuffers` map of the `RenderState`
-removeLoadedGeometry :: Int -> RenderState -> RenderState
-removeLoadedGeometry id s = s { loadedGeometries = delete id s.loadedGeometries }
-
--- | Create a buffer from given parameters in the `RenderStateT` transformer
-createBuffer :: forall eff. Float32Array -> BufferTarget -> BufferUsage -> RenderStateT eff Buffer
-createBuffer src target usage = do
+addLoadedGeometryT :: forall eff. LoadedGeometry -> RenderStateT eff ResourceId
+addLoadedGeometryT gr = do
   state <- get
   id <- genId
-  let buffer = mkBuffer src target usage id
-  bufferResourceE <- liftEff $ runReaderT (loadResource buffer) state.context
-  case (bufferResourceE) of
-    Right bufferResource -> do 
-        modify (addLoadedBuffer id bufferResource)
-        pure buffer
-    Left err -> pure buffer
+  modify $ addLoadedGeometry id gr
+  pure id
 
--- | Delete a buffer in the `RenderStateT` transformer
-deleteBuffer :: forall eff. Buffer -> RenderStateT eff Unit
-deleteBuffer (Buffer b) = do
+addLoadedProgramT :: forall eff. LoadedProgram -> RenderStateT eff ResourceId
+addLoadedProgramT lp = do
+  id <- genId
+  modify $ addLoadedProgram id lp
+  pure id
+
+loadGeometry :: forall eff.  Geometry -> RenderStateT eff ResourceId
+loadGeometry (Geometry g) = do
   state <- get
-  case (lookup b.id state.loadedBuffers) of
-    Just (BufferResource bufferResource) -> do
-          liftEff $ runReaderT (WGL.deleteBuffer bufferResource.buffer) state.context
-          returnId b.id
-          pure unit
+  loadedGeo <- liftEff $ runReaderT (
+    do 
+      buffer <- createBuffer
+      vao <- createVertexArray
+      bindVertexArray vao
+      bindBuffer gl_ARRAY_BUFFER buffer
+      bufferData gl_ARRAY_BUFFER g.vertexData gl_STATIC_DRAW
+      _ <- sequence $ mapWithIndex (\idx attr -> 
+        case attr of 
+          FloatAttribute size -> do
+            --liftEff $ secretLog "loadGeometry:vao" { size: size, idx: idx }
+            vertexAttribPointer idx size gl_FLOAT false g.vertexSize (unsafePartial $ unsafeIndex g.offsets idx)
+            enableVertexAttribArray idx
+      ) g.attributes
+      bindVertexArray nullVertexArrayObject
+      bindBuffer gl_ARRAY_BUFFER nullBufferObject
+      pure $ LoadedGeometry { buffer: buffer, vao: vao, vertexCount: g.vertexCount }
+  ) state.context
+
+  addLoadedGeometryT $ loadedGeo 
+
+loadProgram :: forall eff. Program -> RenderStateT eff (Either String ResourceId)
+loadProgram (Program p) = do
+  state <- get
+  loadedProgramE <- liftEff $ runReaderT (
+    do
+      programE <- buildProgram p.vertexShaderSource p.fragmentShaderSource
+      case programE of
+        Left e -> pure $ Left e
+        Right program -> do
+          uniformLocsE <- getProgramUniformLocationsMap program p.uniforms
+          case uniformLocsE of
+            Left e' -> pure $ Left e'
+            Right uniformLocs -> do
+              attrLocsE <- getProgramAttribLocationsMap program p.attributes
+              case attrLocsE of
+                Left e'' -> pure $ Left e''
+                Right attrLocs -> pure $ Right $ LoadedProgram { program: program 
+                                                             , uniformLocations: uniformLocs
+                                                             , attributeLocations: attrLocs
+                                                             }
+  ) state.context
+
+  case loadedProgramE of
+    Left e -> pure $ Left e
+    Right loadedProgram -> do
+      id <- addLoadedProgramT loadedProgram
+      pure $ Right id      
+
+loadTexture :: forall eff. Texture -> RenderStateT eff ResourceId
+loadTexture (Texture t) = do
+  state <- get
+  loadedTexture <- liftEff $ runReaderT doLoadTexture state.context
+  id <- addLoadedTextureT loadedTexture
+  pure id
+  where 
+    doLoadTexture :: ContextR eff LoadedTexture
+    doLoadTexture = do
+      (Context context) <- ask
+      texture <- createTexture
+      let target = getValue t.textureTarget
+      bindTexture target texture
+      texParameteri target gl_TEXTURE_MAG_FILTER (getValue t.magFilter)
+      texParameteri target gl_TEXTURE_MIN_FILTER (getValue t.minFilter)
+      texParameteri target gl_TEXTURE_WRAP_S (getValue t.wrapS)
+      texParameteri target gl_TEXTURE_WRAP_T (getValue t.wrapT)
+      case context.enabledExtensions.ext_texture_filter_anisotropic of
+        true -> texParameterf target gl_TEXTURE_MAX_ANISOTROPY_EXT (getValue t.maxAnisotropy)
+        false -> pure unit
+      case t.pixels of
+        (HTMLImagePixels p) -> texImage2D target 0 (getValue t.internalFormat) (getValue t.format) (getValue t.texelDataType) p
+        (HTMLVideoPixels p) -> texImage2D target 0 (getValue t.internalFormat) (getValue t.format) (getValue t.texelDataType) p
+        (HTMLCanvasPixels p) -> texImage2D target 0 (getValue t.internalFormat) (getValue t.format) (getValue t.texelDataType) p
+        (ImageDataPixels p) -> texImage2D target 0 (getValue t.internalFormat) (getValue t.format) (getValue t.texelDataType) p
+        (Uint8ArrayPixels p) -> texImage2D target 0 (getValue t.internalFormat) (getValue t.format) (getValue t.texelDataType) p
+      generateMipmap target
+      pure $ LoadedTexture { texture: texture 
+                           , textureTarget: t.textureTarget
+                           }
+
+renderGeometry :: forall eff. ResourceId -> ResourceId -> RenderStateT eff Unit
+renderGeometry geoId progId = do
+  state <- get
+  case lookup geoId state.loadedGeometries of
     Nothing -> pure unit
-
--- | Create a `VertexBuffer` 
-createVertexBuffer :: forall eff.  Float32Array -> BufferTarget -> BufferUsage -> Array Attribute -> RenderStateT eff VertexBuffer
-createVertexBuffer src target usage attrs = do
-  buffer <- createBuffer src target usage
-  pure $ mkVertexBuffer buffer attrs
-
-
+    Just geo -> do
+      case lookup progId state.loadedPrograms of
+        Nothing -> pure unit
+        Just program -> liftEff $ runReaderT (doRenderGeometry geo program) state.context
   
+  where
+    doRenderGeometry :: LoadedGeometry -> LoadedProgram -> ContextR eff Unit
+    doRenderGeometry (LoadedGeometry g) (LoadedProgram p) = do
+      clearColor 0.0 0.0 0.0 1.0
+      clear gl_COLOR_BUFFER_BIT
+      useProgram p.program
+      bindVertexArray g.vao
+      drawArrays gl_TRIANGLES 0 g.vertexCount

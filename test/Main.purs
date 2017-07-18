@@ -3,6 +3,7 @@ module Test.Main where
 import Prelude
 
 import Control.Monad.Eff (Eff)
+import Test.PureGL.Geometry (geometrySpec)
 import Test.PureGL.Math.Matrix (matrixSpec)
 import Test.PureGL.Math.Matrix.Fast (matrixFastSpec)
 import Test.PureGL.Math.Vector (vectorSpec)
@@ -16,4 +17,5 @@ main = run [consoleReporter] do
   matrixSpec
   vectorFastSpec
   matrixFastSpec
+  geometrySpec
 

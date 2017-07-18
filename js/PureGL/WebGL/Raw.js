@@ -29,7 +29,7 @@ exports.getProgramParameter = ctx => program => pname => () => ctx.getProgramPar
 
 // VAOs
 exports.createVertexArray = ctx => () => {
-  if (ctx instanceof WebGL2RenderingContext)
+  if (ctx.createVertexArray)
     return ctx.createVertexArray();
 
   let ext = ctx.getExtension('OES_vertex_array_object');
@@ -42,7 +42,7 @@ exports.createVertexArray = ctx => () => {
 };
 
 exports.bindVertexArray = ctx => vao => () => {
-  if (ctx instanceof WebGL2RenderingContext)
+  if (ctx.bindVertexArray)
     return ctx.bindVertexArray(vao);
 
   let ext = ctx.getExtension('OES_vertex_array_object');
@@ -54,7 +54,7 @@ exports.bindVertexArray = ctx => vao => () => {
 }
 
 exports.deleteVertexArray = ctx => vao => () => {
-  if (ctx instanceof WebGL2RenderingContext)
+  if (ctx.deleteVertexArray)
     return ctx.deleteVertexArray(vao);
 
   let ext = ctx.getExtension('OES_vertex_array_object');
@@ -119,6 +119,17 @@ exports.getProgramParameter = ctx => program => pname => () => ctx.getProgramPar
 
 exports.clear = ctx => b => () => { ctx.clear(b); };
 exports.clearColor = ctx => r => g => b => a => () => { ctx.clearColor(r, g, b, a); };
+
+exports.getExtension = ctx => name => () => ctx.getExtension(name);
+
+exports.createTexture = ctx => () => ctx.createTexture();
+exports.bindTexture = ctx => t => tex => () => { ctx.bindTexture(t, tex); };
+exports.texParameteri = ctx => t => pname => val => () => { ctx.texParameteri(t, pname, val); };
+exports.texParameterf = ctx => t => pname => val => () => { ctx.texParameterf(t, pname, val); };
+exports.generateMipmap = ctx => t => () => { ctx.generateMipmap(t); };
+exports.activeTexture = ctx => slot => () => { ctx.activeTexture(slot); };
+exports.texImage2D = _ => ctx => target => level => iformat => format => type => pixels => () =>
+    { ctx.texImage2D(target, level, iformat, format, type, pixels); };
 
 /*-------  VAO Polyfill from https://github.com/greggman/oes-vertex-array-object-polyfill -------*/
 
