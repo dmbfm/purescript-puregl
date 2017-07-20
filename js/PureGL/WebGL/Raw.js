@@ -1,5 +1,6 @@
 exports.nullBufferObject = null;
 exports.nullVertexArrayObject = null;
+exports.nullFramebufferObject = null;
 
 // Buffers
 exports.createBuffer = ctx => () => ctx.createBuffer();
@@ -129,7 +130,23 @@ exports.texParameterf = ctx => t => pname => val => () => { ctx.texParameterf(t,
 exports.generateMipmap = ctx => t => () => { ctx.generateMipmap(t); };
 exports.activeTexture = ctx => slot => () => { ctx.activeTexture(slot); };
 exports.texImage2D = _ => ctx => target => level => iformat => format => type => pixels => () =>
-    { ctx.texImage2D(target, level, iformat, format, type, pixels); };
+{ ctx.texImage2D(target, level, iformat, format, type, pixels); };
+exports.texImage2D2 = _ => ctx => target => level => iformat => width => height => format => type => () =>
+{ ctx.texImage2D(target, level, iformat, width, height, 0, format, type, null); };    
+
+
+exports.createFramebuffer = ctx => () => ctx.createFramebuffer();
+exports.bindFramebuffer = ctx => target => fbo => () => { ctx.bindFramebuffer(target, fbo); };
+exports.deleteFramebuffer = ctx => fbo => () => { ctx.deleteFramebuffer(fbo); };
+exports.framebufferTexture2D = ctx => target => att => textarget => texture => level => () =>
+    { ctx.framebufferTexture2D(target, att, textarget, texture, level); };
+exports.framebufferRenderbuffer = ctx => target => att => rbtarget => rb => () =>
+    { ctx.framebufferRenderbuffer(target, att, rbtarget, rb); };    
+
+exports.createRenderbuffer = ctx => () => ctx.createRenderbuffer();
+exports.bindRenderbuffer = ctx => target => rb => () => { ctx.bindRenderbuffer(target, rb); };
+exports.deleteRenderbuffer = ctx => rb => () => { ctx.deleteRenderbuffer(rb); };
+exports.renderbufferStorage = ctx => target => format => w => h => () => { ctx.renderbufferStorage(target, format, w, h); };
 
 /*-------  VAO Polyfill from https://github.com/greggman/oes-vertex-array-object-polyfill -------*/
 

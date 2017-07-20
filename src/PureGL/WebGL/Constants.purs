@@ -118,3 +118,47 @@ gl_LUMINANCE_ALPHA                = 0x190A :: Int
 gl_UNSIGNED_SHORT_4_4_4_4         = 0x8033 :: Int
 gl_UNSIGNED_SHORT_5_5_5_1         = 0x8034 :: Int
 gl_UNSIGNED_SHORT_5_6_5           = 0x8363 :: Int
+
+gl_FRAMEBUFFER                    = 0x8D40 :: Int
+gl_RENDERBUFFER                   = 0x8D41 :: Int
+
+gl_RGBA4                          = 0x8056 :: Int
+gl_RGB5_A1                        = 0x8057 :: Int
+gl_RGB565                         = 0x8D62 :: Int
+gl_DEPTH_COMPONENT16              = 0x81A5 :: Int
+gl_STENCIL_INDEX8                 = 0x8D48 :: Int
+gl_DEPTH_STENCIL                  = 0x84F9 :: Int
+
+gl_RENDERBUFFER_WIDTH             = 0x8D42 :: Int
+gl_RENDERBUFFER_HEIGHT            = 0x8D43 :: Int
+gl_RENDERBUFFER_INTERNAL_FORMAT   = 0x8D44 :: Int
+gl_RENDERBUFFER_RED_SIZE          = 0x8D50 :: Int
+gl_RENDERBUFFER_GREEN_SIZE        = 0x8D51 :: Int
+gl_RENDERBUFFER_BLUE_SIZE         = 0x8D52 :: Int
+gl_RENDERBUFFER_ALPHA_SIZE        = 0x8D53 :: Int
+gl_RENDERBUFFER_DEPTH_SIZE        = 0x8D54 :: Int
+gl_RENDERBUFFER_STENCIL_SIZE      = 0x8D55 :: Int
+
+gl_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE           = 0x8CD0 :: Int
+gl_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME           = 0x8CD1 :: Int
+gl_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL         = 0x8CD2 :: Int
+gl_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE = 0x8CD3 :: Int
+
+gl_COLOR_ATTACHMENT0              = 0x8CE0 :: Int
+gl_DEPTH_ATTACHMENT               = 0x8D00 :: Int
+gl_STENCIL_ATTACHMENT             = 0x8D20 :: Int
+gl_DEPTH_STENCIL_ATTACHMENT       = 0x821A :: Int
+
+gl_NONE                           = 0 :: Int
+
+gl_FRAMEBUFFER_COMPLETE                      = 0x8CD5 :: Int
+gl_FRAMEBUFFER_INCOMPLETE_ATTACHMENT         = 0x8CD6 :: Int
+gl_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = 0x8CD7 :: Int
+gl_FRAMEBUFFER_INCOMPLETE_DIMENSIONS         = 0x8CD9 :: Int
+gl_FRAMEBUFFER_UNSUPPORTED                   = 0x8CDD :: Int
+
+gl_FRAMEBUFFER_BINDING            = 0x8CA6 :: Int
+gl_RENDERBUFFER_BINDING           = 0x8CA7 :: Int
+gl_MAX_RENDERBUFFER_SIZE          = 0x84E8 :: Int
+
+gl_INVALID_FRAMEBUFFER_OPERATION  = 0x0506 :: Int

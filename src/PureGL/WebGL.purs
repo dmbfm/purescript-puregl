@@ -10,7 +10,7 @@ import Data.Nullable (toMaybe)
 import PureGL.Context (Context(..), ContextR)
 import PureGL.Data.TypedArrays (class BufferSource)
 import PureGL.WebGL.Raw as RAW
-import PureGL.WebGL.Types (class TextureSource, GLbitfield, GLboolean, GLenum, GLint, GLintptr, GLsizei, GLuint, WebGLBuffer, WebGLProgram, WebGLShader, WebGLTexture, WebGLUniformLocation, WebGLVertexArrayObject)
+import PureGL.WebGL.Types (class TextureSource, GLbitfield, GLboolean, GLenum, GLint, GLintptr, GLsizei, GLuint, WebGLBuffer, WebGLFramebuffer, WebGLProgram, WebGLRenderbuffer, WebGLShader, WebGLTexture, WebGLUniformLocation, WebGLVertexArrayObject)
 
 
 
@@ -126,3 +126,46 @@ texImage2D :: forall eff s. TextureSource s =>
                             ContextR eff Unit
 texImage2D tgt lvl intf f tp pxs = 
   ask >>= \(Context ctx) -> liftEff $ RAW.texImage2D ctx.glContext tgt lvl intf f tp pxs
+
+texImage2D' :: forall eff.    GLenum -> 
+                              GLint -> 
+                              GLenum ->
+                              Int -> 
+                              Int -> 
+                              GLenum -> 
+                              GLenum -> 
+                              ContextR eff Unit
+texImage2D' tgt lvl intf w h f tp = 
+  ask >>= \(Context ctx) -> liftEff $ RAW.texImage2D2 ctx.glContext tgt lvl intf w h f tp 
+
+createFramebuffer :: forall eff. ContextR eff WebGLFramebuffer
+createFramebuffer = ask >>= \(Context ctx) -> liftEff $ RAW.createFramebuffer ctx.glContext
+
+bindFramebuffer :: forall eff. GLenum -> WebGLFramebuffer -> ContextR eff Unit
+bindFramebuffer t f = ask >>= \(Context ctx) -> liftEff $ RAW.bindFramebuffer ctx.glContext t f
+
+deleteFramebuffer :: forall eff. WebGLFramebuffer -> ContextR eff Unit
+deleteFramebuffer f = ask >>= \(Context ctx) -> liftEff $ RAW.deleteFramebuffer ctx.glContext f
+
+framebufferTexture2D :: forall eff. GLenum -> GLenum -> GLenum -> WebGLTexture -> GLint -> ContextR eff Unit
+framebufferTexture2D target att textarget texture level = 
+  ask >>= \(Context ctx) -> liftEff $ RAW.framebufferTexture2D ctx.glContext target att textarget texture level
+
+framebufferRenderbuffer :: forall eff. GLenum -> GLenum -> GLenum -> WebGLRenderbuffer -> ContextR eff Unit
+framebufferRenderbuffer target att rbtarget rb = 
+  ask >>= \(Context ctx) -> liftEff $ RAW.framebufferRenderbuffer ctx.glContext target att rbtarget rb
+
+
+createRenderbuffer :: forall eff. ContextR eff WebGLRenderbuffer
+createRenderbuffer = ask >>= \(Context ctx) -> liftEff $ RAW.createRenderbuffer ctx.glContext
+
+bindRenderbuffer :: forall eff. GLenum -> WebGLRenderbuffer -> ContextR eff Unit
+bindRenderbuffer t f = ask >>= \(Context ctx) -> liftEff $ RAW.bindRenderbuffer ctx.glContext t f
+
+deleteRenderbuffer :: forall eff. WebGLRenderbuffer -> ContextR eff Unit
+deleteRenderbuffer f = ask >>= \(Context ctx) -> liftEff $ RAW.deleteRenderbuffer ctx.glContext f
+
+renderbufferStorage :: forall eff. GLenum -> GLenum -> GLsizei -> GLsizei -> ContextR eff Unit
+renderbufferStorage target format w h = 
+  ask >>= \(Context ctx) -> liftEff $ RAW.renderbufferStorage ctx.glContext target format w h
+  

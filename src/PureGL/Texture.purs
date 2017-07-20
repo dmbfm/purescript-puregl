@@ -1,89 +1,88 @@
 module PureGL.Texture where
 
 import Prelude
-
 import DOM.HTML.Types (HTMLCanvasElement, HTMLImageElement, HTMLVideoElement)
 import PureGL.Data.TypedArrays (Uint8Array)
 import PureGL.WebGL (class GLConstant)
 import PureGL.WebGL.Constants (gl_CLAMP_TO_EDGE, gl_LINEAR, gl_LINEAR_MIPMAP_LINEAR, gl_LINEAR_MIPMAP_NEAREST, gl_MIRRORED_REPEAT, gl_NEAREST, gl_NEAREST_MIPMAP_LINEAR, gl_NEAREST_MIPMAP_NEAREST, gl_REPEAT, gl_RGB, gl_RGBA, gl_TEXTURE_2D, gl_TEXTURE_CUBE_MAP, gl_UNSIGNED_BYTE, gl_UNSIGNED_SHORT_4_4_4_4, gl_UNSIGNED_SHORT_5_5_5_1, gl_UNSIGNED_SHORT_5_6_5)
 import PureGL.WebGL.Types (ImageData, WebGLTexture)
 
-newtype TextureSampler = TextureSampler {  magFilter :: TextureMagFilter
+newtype TextureSampler = TextureSampler { magFilter :: TextureMagFilter
                                         , minFilter :: TextureMinFilter
                                         , wrapS :: TextureWrap
                                         , wrapT :: TextureWrap
                                         , maxAnisotropy :: TextureMaxAnisotropy
                                         }
 
+newtype TextureFormat = TextureFormat { format :: TextureImageFormat
+                                      , internalFormat :: TextureInternalFormat
+                                      , texelDataType :: TexelDataType 
+                                      }
+
+type TextureDimension = { width :: Int, height :: Int}
+
 newtype Texture = Texture { pixels :: TexturePixels
-                          , magFilter :: TextureMagFilter
-                          , minFilter :: TextureMinFilter
-                          , wrapS :: TextureWrap
-                          , wrapT :: TextureWrap
-                          , maxAnisotropy :: TextureMaxAnisotropy
+                          , sampler :: TextureSampler 
                           , format :: TextureFormat
-                          , internalFormat :: TextureInternalFormat
-                          , texelDataType :: TexelDataType
                           , textureTarget :: TextureTarget
                           }
 
-
+newtype RenderTexture = RenderTexture { size :: TextureDimension 
+                                      , sampler :: TextureSampler 
+                                      , format :: TextureFormat
+                                      , textureTarget :: TextureTarget
+                                      } 
+                
 newtype LoadedTexture = LoadedTexture { texture :: WebGLTexture 
                                       , textureTarget :: TextureTarget
                                       }
 
-setPixels ::  TexturePixels -> Texture -> Texture
-setPixels p (Texture t) = Texture $ t { pixels = p }                          
+mkTextureSampler :: TextureMagFilter -> 
+                    TextureMinFilter ->
+                    TextureWrap -> 
+                    TextureWrap -> 
+                    TextureMaxAnisotropy -> 
+                    TextureSampler
+mkTextureSampler mag min ws wt ma = TextureSampler { magFilter: mag 
+                                                   , minFilter: min
+                                                   , wrapS: ws
+                                                   , wrapT: wt
+                                                   , maxAnisotropy: ma
+                                                   }
 
-setMaxAnisotropy :: TextureMaxAnisotropy -> Texture -> Texture
-setMaxAnisotropy a (Texture t) = Texture $ t { maxAnisotropy = a }
+mkTextureSampler' :: TextureMaxAnisotropy -> TextureSampler
+mkTextureSampler' a = mkTextureSampler MagLinear MinLinearMipMapLiner WrapRepeat WrapRepeat a
 
-mkTexture :: TexturePixels -> 
-             TextureMagFilter -> 
-             TextureMinFilter ->
-             TextureWrap -> 
-             TextureWrap -> 
-             TextureMaxAnisotropy -> 
-             TextureFormat -> 
-             TextureInternalFormat -> 
-             TexelDataType -> 
-             TextureTarget -> 
-             Texture 
-mkTexture p mag min ws wt ma f f' t tg = 
-  Texture { pixels: p
-          , magFilter: mag
-          , minFilter: min
-          , wrapS: ws
-          , wrapT: wt
-          , maxAnisotropy: ma
-          , format: f
-          , internalFormat: f'
-          , texelDataType: t
-          , textureTarget: tg
-          }
+texSampler0 :: TextureSampler
+texSampler0 = mkTextureSampler MagLinear MinLinearMipMapLiner WrapRepeat WrapRepeat 1.0
 
-mkTexture' :: TexturePixels -> 
-              TextureMagFilter -> 
-              TextureMinFilter -> 
-              TextureWrap -> 
-              TextureWrap ->
-              TextureMaxAnisotropy ->
-              Texture
-mkTexture' p mag min ws wt m = 
-  mkTexture p mag min ws wt m TF_RGBA TIF_RGBA TexelUnsignedByte TextureTarget2D
+mkTextureFormat :: TextureImageFormat -> 
+                   TextureInternalFormat -> 
+                   TexelDataType ->
+                   TextureFormat 
+mkTextureFormat  f f' d = TextureFormat { format: f
+                                        , internalFormat: f'
+                                        , texelDataType: d
+                                        }
 
-mkTexture'':: TexturePixels ->
-              TextureMagFilter -> 
-              TextureMinFilter -> 
-              TextureMaxAnisotropy -> 
-              Texture 
-mkTexture'' p mag min m = mkTexture' p mag min WrapRepeat WrapRepeat m
+texFormatRGBAU :: TextureFormat
+texFormatRGBAU = mkTextureFormat TF_RGBA TIF_RGBA TexelUnsignedByte
 
-mkTexture''' ::  TexturePixels -> TextureMaxAnisotropy -> Texture
-mkTexture''' p a = mkTexture'' p MagLinear MinLinear a
+mkTexture :: TexturePixels -> TextureSampler -> TextureFormat -> TextureTarget -> Texture
+mkTexture p s f t = Texture { pixels: p 
+                            , sampler: s
+                            , format: f
+                            , textureTarget: t
+                            }
 
-mkTexture'''' :: TexturePixels -> Texture
-mkTexture'''' p = mkTexture''' p (TextureMaxAnisotropy 1.0)
+mkRenderTexture :: TextureDimension -> TextureSampler -> TextureFormat -> TextureTarget -> RenderTexture
+mkRenderTexture d s f t = RenderTexture { size: d
+                                        , sampler: s
+                                        , format: f
+                                        , textureTarget: t
+                                        }
+
+data TextureObjectType = TextureObjectTexture | TextureObjectRenderTexture
 
 data TextureTarget = 
     TextureTarget2D
@@ -95,7 +94,6 @@ data TexturePixels =
   | HTMLCanvasPixels HTMLCanvasElement
   | ImageDataPixels ImageData
   | Uint8ArrayPixels Uint8Array
-  | NullPixels
 
 data TextureMagFilter = 
     MagLinear 
@@ -114,9 +112,9 @@ data TextureWrap =
   | WrapClampToEdge
   | WrapMirroredRepeat
 
-data TextureMaxAnisotropy = TextureMaxAnisotropy Number
+type TextureMaxAnisotropy =  Number
 
-data TextureFormat = 
+data TextureImageFormat = 
     TF_RGBA
   | TF_RGB
 
@@ -157,10 +155,7 @@ instance texWrapGLconstant :: GLConstant TextureWrap Int where
   getValue WrapClampToEdge = gl_CLAMP_TO_EDGE
   getValue WrapMirroredRepeat = gl_MIRRORED_REPEAT
 
-instance texAnisotropy :: GLConstant TextureMaxAnisotropy Number where
-  getValue (TextureMaxAnisotropy v) = v
-
-instance textureFormatGLConstant :: GLConstant TextureFormat Int where
+instance textureFormatGLConstant :: GLConstant TextureImageFormat Int where
   getValue TF_RGB = gl_RGB
   getValue TF_RGBA = gl_RGBA
 

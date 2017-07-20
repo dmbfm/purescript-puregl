@@ -4,7 +4,7 @@ import Data.Foreign (Foreign)
 import Data.Nullable (Nullable)
 import Prelude (Unit)
 import PureGL.Data.TypedArrays (class BufferSource, Float32Array, Int32Array, Uint32Array)
-import PureGL.WebGL.Types (class TextureSource, GLbitfield, GLboolean, GLenum, GLfloat, GLint, GLintptr, GLsizei, GLsizeiptr, GLuint, WebGLBuffer, WebGLContext, WebGLEff, WebGLProgram, WebGLShader, WebGLTexture, WebGLUniformLocation, WebGLVertexArrayObject)
+import PureGL.WebGL.Types (class TextureSource, GLbitfield, GLboolean, GLenum, GLfloat, GLint, GLintptr, GLsizei, GLsizeiptr, GLuint, WebGLBuffer, WebGLContext, WebGLEff, WebGLFramebuffer, WebGLProgram, WebGLRenderbuffer, WebGLShader, WebGLTexture, WebGLUniformLocation, WebGLVertexArrayObject)
 
 
 -- | Null `WebGLBuffer`, used for unbinding
@@ -12,6 +12,8 @@ foreign import nullBufferObject :: WebGLBuffer
 
 -- | Null `WebGLVertexArrayObject`, used for unbinding
 foreign import nullVertexArrayObject :: WebGLVertexArrayObject
+
+foreign import nullFramebufferObject :: WebGLFramebuffer
 
 -- | WebGLBuffer gl.createBuffer();
 foreign import createBuffer :: forall eff.  WebGLContext -> WebGLEff eff WebGLBuffer
@@ -143,4 +145,27 @@ foreign import texImage2D :: forall eff s.
                              GLenum -> 
                              s ->
                              WebGLEff eff Unit
-                             
+
+-- texImage2D(target, level, internalformat, width, height, 0, format, type, null);
+foreign import texImage2D2 :: forall eff. 
+                              WebGLContext -> 
+                              GLenum -> 
+                              GLint -> 
+                              GLenum ->
+                              Int -> 
+                              Int -> 
+                              GLenum -> 
+                              GLenum -> 
+                              WebGLEff eff Unit
+
+
+foreign import createFramebuffer :: forall eff. WebGLContext -> WebGLEff eff WebGLFramebuffer
+foreign import deleteFramebuffer :: forall eff. WebGLContext -> WebGLFramebuffer -> WebGLEff eff Unit
+foreign import bindFramebuffer :: forall eff. WebGLContext -> GLenum -> WebGLFramebuffer -> WebGLEff eff Unit
+foreign import framebufferTexture2D :: forall eff. WebGLContext -> GLenum -> GLenum -> GLenum -> WebGLTexture -> GLint -> WebGLEff eff Unit
+foreign import framebufferRenderbuffer :: forall eff. WebGLContext -> GLenum -> GLenum -> GLenum -> WebGLRenderbuffer -> WebGLEff eff Unit
+
+foreign import createRenderbuffer :: forall eff. WebGLContext -> WebGLEff eff WebGLRenderbuffer
+foreign import bindRenderbuffer :: forall eff. WebGLContext -> GLenum -> WebGLRenderbuffer -> WebGLEff eff Unit
+foreign import renderbufferStorage :: forall eff. WebGLContext -> GLenum -> GLenum -> GLsizei -> GLsizei -> WebGLEff eff Unit
+foreign import deleteRenderbuffer :: forall eff. WebGLContext -> WebGLRenderbuffer -> WebGLEff eff Unit

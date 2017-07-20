@@ -31,6 +31,8 @@ foreign import data WebGLVertexArrayObject :: Type
 foreign import data WebGLUniformLocation :: Type
 foreign import data WebGLBuffer :: Type
 foreign import data WebGLTexture :: Type
+foreign import data WebGLFramebuffer :: Type
+foreign import data WebGLRenderbuffer :: Type
 
 -- Type alisases for WebGL primtive types
 type GLenum       = Int

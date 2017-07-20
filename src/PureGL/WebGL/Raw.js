@@ -2,6 +2,7 @@
 
 exports.nullBufferObject = null;
 exports.nullVertexArrayObject = null;
+exports.nullFramebufferObject = null;
 
 // Buffers
 exports.createBuffer = function (ctx) {
@@ -719,6 +720,112 @@ exports.texImage2D = function (_) {
                                 };
                             };
                         };
+                    };
+                };
+            };
+        };
+    };
+};
+exports.texImage2D2 = function (_) {
+    return function (ctx) {
+        return function (target) {
+            return function (level) {
+                return function (iformat) {
+                    return function (width) {
+                        return function (height) {
+                            return function (format) {
+                                return function (type) {
+                                    return function () {
+                                        ctx.texImage2D(target, level, iformat, width, height, 0, format, type, null);
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        };
+    };
+};
+
+exports.createFramebuffer = function (ctx) {
+    return function () {
+        return ctx.createFramebuffer();
+    };
+};
+exports.bindFramebuffer = function (ctx) {
+    return function (target) {
+        return function (fbo) {
+            return function () {
+                ctx.bindFramebuffer(target, fbo);
+            };
+        };
+    };
+};
+exports.deleteFramebuffer = function (ctx) {
+    return function (fbo) {
+        return function () {
+            ctx.deleteFramebuffer(fbo);
+        };
+    };
+};
+exports.framebufferTexture2D = function (ctx) {
+    return function (target) {
+        return function (att) {
+            return function (textarget) {
+                return function (texture) {
+                    return function (level) {
+                        return function () {
+                            ctx.framebufferTexture2D(target, att, textarget, texture, level);
+                        };
+                    };
+                };
+            };
+        };
+    };
+};
+exports.framebufferRenderbuffer = function (ctx) {
+    return function (target) {
+        return function (att) {
+            return function (rbtarget) {
+                return function (rb) {
+                    return function () {
+                        ctx.framebufferRenderbuffer(target, att, rbtarget, rb);
+                    };
+                };
+            };
+        };
+    };
+};
+
+exports.createRenderbuffer = function (ctx) {
+    return function () {
+        return ctx.createRenderbuffer();
+    };
+};
+exports.bindRenderbuffer = function (ctx) {
+    return function (target) {
+        return function (rb) {
+            return function () {
+                ctx.bindRenderbuffer(target, rb);
+            };
+        };
+    };
+};
+exports.deleteRenderbuffer = function (ctx) {
+    return function (rb) {
+        return function () {
+            ctx.deleteRenderbuffer(rb);
+        };
+    };
+};
+exports.renderbufferStorage = function (ctx) {
+    return function (target) {
+        return function (format) {
+            return function (w) {
+                return function (h) {
+                    return function () {
+                        ctx.renderbufferStorage(target, format, w, h);
                     };
                 };
             };
