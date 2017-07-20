@@ -8,7 +8,7 @@
   "scripts": {
     "build:js": "yarn run babel -- js --out-dir src",
     "watch:js": "yarn run babel -- js --out-dir src --watch",
-    "watch:purs": "yarn run pulp -- -w build", 
+    "watch:purs": "yarn run pulp -- -w build",
     "dev": "concurrently \" yarn run webpack-dev-server\" \" yarn run watch:js \" "
   },
   "dependencies": {},
@@ -19,7 +19,7 @@
     "http-server": "^0.10.0",
     "opn-cli": "^3.1.0",
     "pulp": "^11.0.0",
-    "purescript": "^0.11.5",
+    "purescript": "^0.11.6",
     "purescript-psa": "^0.5.1",
     "purs-loader": "^3.0.0",
     "webpack": "^3.0.0",

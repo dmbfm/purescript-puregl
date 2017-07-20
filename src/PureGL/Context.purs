@@ -3,11 +3,13 @@ module PureGL.Context where
 import Prelude
 
 import Control.Monad.Eff (Eff)
-import Control.Monad.Reader.Trans (ReaderT)
+import Control.Monad.Except.Trans (ExceptT(..), runExceptT)
+import Control.Monad.Reader.Trans (ReaderT, runReaderT)
 import DOM (DOM)
 import DOM.HTML.Types (HTMLCanvasElement)
 import Data.Maybe (Maybe(..))
 import PureGL.Extensions (EnabledExtensions, initExtensions)
+import PureGL.Types (RenderError)
 import PureGL.Utils.DOM (getCanvasElement, getWebGL1Context, getWebGL2Context)
 import PureGL.WebGL.Types (WEBGL, WebGLContext, WebGLEff)
 
@@ -24,7 +26,11 @@ newtype Context = Context { glContext :: WebGLContext
                           }
 
 -- | A Reader Transformer for `Context` with WebGL Effects
-type ContextR eff a = ReaderT Context (WebGLEff eff) a
+-- type ContextR eff a = ReaderT Context (WebGLEff eff) a
+-- type ContextR eff a =  ReaderT Context (ExceptT RenderError (WebGLEff eff)) a
+type ContextR eff a =  ExceptT RenderError ( ReaderT Context (WebGLEff eff)) a
+-- runContextR :: forall eff a. Context -> ContextR eff a -> ExceptT RenderError (WebGLEff eff) a
+-- runContextR context action = runReaderT action context
 
 -- | A Reader Transofmer to be used with `GLContext`s
 type WebGLContextR eff a = ReaderT WebGLContext (WebGLEff eff) a

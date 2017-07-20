@@ -3533,15 +3533,15 @@ purescript-psa@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/purescript-psa/-/purescript-psa-0.5.1.tgz#2e435eef22bd2f57eba182cbff120022ca0f265f"
 
-purescript@^0.11.5:
-  version "0.11.5"
-  resolved "https://registry.yarnpkg.com/purescript/-/purescript-0.11.5.tgz#3cf3bb35c28ba033341d75b8b9bf61b5851f4bcb"
+purescript@^0.11.6:
+  version "0.11.6"
+  resolved "https://registry.yarnpkg.com/purescript/-/purescript-0.11.6.tgz#42cf3f2eb40eb001ca58773c4044d93742452f2d"
   dependencies:
     bin-build "^2.2.0"
     bin-wrapper "^3.0.2"
     logalot "^2.1.0"
     rimraf "^2.6.1"
-    to-executable-name "^1.0.0"
+    to-executable-name "^1.1.0"
 
 purs-loader@^3.0.0:
   version "3.0.0"
@@ -4345,7 +4345,7 @@ to-arraybuffer@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/to-arraybuffer/-/to-arraybuffer-1.0.1.tgz#7d229b1fcc637e466ca081180836a7aabff83f43"
 
-to-executable-name@^1.0.0:
+to-executable-name@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/to-executable-name/-/to-executable-name-1.1.0.tgz#3efbf9a370e5d7fb7820530df76f085959b27778"
 
