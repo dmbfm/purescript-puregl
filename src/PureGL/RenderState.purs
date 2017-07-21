@@ -2,15 +2,26 @@ module PureGL.RenderState where
 
 import Prelude
 
-import Data.Array (cons, tail)
+import Control.Monad.Except (ExceptT)
+import Control.Monad.Reader (ReaderT)
+import Control.Monad.State (StateT, get, modify)
+import Data.Array (cons, elem, head, tail)
 import Data.Map (Map, delete, insert, lookup)
 import Data.Maybe (Maybe(..))
-import PureGL.Context (Context(..))
-import PureGL.Framebuffer (LoadedFramebuffer(..), LoadedRenderbuffer(..))
-import PureGL.Geometry (LoadedGeometry(..))
-import PureGL.Program (LoadedProgram(..))
-import PureGL.Texture (LoadedTexture(..))
+import PureGL.Context (Context)
+import PureGL.Framebuffer (LoadedFramebuffer, LoadedRenderbuffer)
+import PureGL.Geometry (LoadedGeometry)
+import PureGL.Program (LoadedProgram)
+import PureGL.Texture (LoadedTexture)
 import PureGL.Types (ResourceId)
+import PureGL.WebGL.Types (WebGLEff)
+
+-- | Possible Renderer error types
+data RenderError = 
+    DefaultError 
+  | LookupResourceError ResourceId
+  | OtherErrors
+
 
 -- | This type holds the state of the Renderer
 type RenderState =  { context :: Context 
@@ -22,6 +33,8 @@ type RenderState =  { context :: Context
                     , idCounter :: ResourceId
                     , idPool :: Array ResourceId
                     }
+
+type RenderT eff a = ExceptT RenderError (ReaderT Context (StateT RenderState (WebGLEff eff))) a
 
 -- | Increments the `RenderState`'s `idCounter` 
 incrementIdCounter :: RenderState -> RenderState
@@ -96,3 +109,27 @@ deleteLoadedRenderbuffer id s = s { loadedRenderbuffers = delete id s.loadedRend
 -- | Deletes a `LoadedFramebuffer` of a given ID from the `RenderState`
 deleteLoadedFramebuffer :: Int -> RenderState -> RenderState 
 deleteLoadedFramebuffer id s = s { loadedFramebuffers = delete id s.loadedFramebuffers }
+
+-- | Get a new ID from the `RenderState`.
+genId :: forall eff. RenderT eff ResourceId
+genId = do
+  state <- get
+  case (head state.idPool) of
+    Just id -> do
+      modify removeIdPoolHead
+      pure id
+    Nothing -> do
+      modify incrementIdCounter
+      pure state.idCounter
+
+-- |  Release an id, returning it to the `idPool` of the 
+-- | `RenderState` in the `RenderStateT`
+returnId :: forall eff. Int ->  RenderT eff Unit
+returnId id = do
+  state <- get
+  case (elem id state.idPool) of 
+    true -> pure unit
+    false -> do
+        modify $ addIdPoolHead id
+        pure unit
+        

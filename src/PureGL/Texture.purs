@@ -1,10 +1,7 @@
 module PureGL.Texture where
 
-import Prelude
 import DOM.HTML.Types (HTMLCanvasElement, HTMLImageElement, HTMLVideoElement)
 import PureGL.Data.TypedArrays (Uint8Array)
-import PureGL.WebGL (class GLConstant)
-import PureGL.WebGL.Constants (gl_CLAMP_TO_EDGE, gl_LINEAR, gl_LINEAR_MIPMAP_LINEAR, gl_LINEAR_MIPMAP_NEAREST, gl_MIRRORED_REPEAT, gl_NEAREST, gl_NEAREST_MIPMAP_LINEAR, gl_NEAREST_MIPMAP_NEAREST, gl_REPEAT, gl_RGB, gl_RGBA, gl_TEXTURE_2D, gl_TEXTURE_CUBE_MAP, gl_UNSIGNED_BYTE, gl_UNSIGNED_SHORT_4_4_4_4, gl_UNSIGNED_SHORT_5_5_5_1, gl_UNSIGNED_SHORT_5_6_5)
 import PureGL.WebGL.Types (ImageData, WebGLTexture)
 
 newtype TextureSampler = TextureSampler { magFilter :: TextureMagFilter
@@ -127,39 +124,4 @@ data TexelDataType =
   | TexelUnsignedShort565
   | TexelUnsignedShort4444
   | TexelUnsignedShort5551
-
-instance textureTargetGLConstant :: GLConstant TextureTarget Int where
-  getValue TextureTarget2D = gl_TEXTURE_2D
-  getValue TextureTargetCubeMap = gl_TEXTURE_CUBE_MAP
-
-instance texelDataTypeGLConstant :: GLConstant TexelDataType Int where
-  getValue TexelUnsignedByte = gl_UNSIGNED_BYTE
-  getValue TexelUnsignedShort565 = gl_UNSIGNED_SHORT_5_6_5
-  getValue TexelUnsignedShort4444 = gl_UNSIGNED_SHORT_4_4_4_4
-  getValue TexelUnsignedShort5551 = gl_UNSIGNED_SHORT_5_5_5_1
-
-instance textureMagFilterGLConstant :: GLConstant TextureMagFilter Int where
-  getValue MagLinear = gl_LINEAR
-  getValue MagNearest = gl_NEAREST
-
-instance textureMinFilterGLConstant :: GLConstant TextureMinFilter Int where
-  getValue MinLinear = gl_LINEAR
-  getValue MinNearest = gl_NEAREST
-  getValue MinNearestMipMapNearest = gl_NEAREST_MIPMAP_NEAREST
-  getValue MinLinearMipMapNearest = gl_LINEAR_MIPMAP_NEAREST
-  getValue MinNearestMipMapLinear = gl_NEAREST_MIPMAP_LINEAR
-  getValue MinLinearMipMapLiner = gl_LINEAR_MIPMAP_LINEAR
-
-instance texWrapGLconstant :: GLConstant TextureWrap Int where
-  getValue WrapRepeat = gl_REPEAT
-  getValue WrapClampToEdge = gl_CLAMP_TO_EDGE
-  getValue WrapMirroredRepeat = gl_MIRRORED_REPEAT
-
-instance textureFormatGLConstant :: GLConstant TextureImageFormat Int where
-  getValue TF_RGB = gl_RGB
-  getValue TF_RGBA = gl_RGBA
-
-instance textureInternalFormatGLConstant :: GLConstant TextureInternalFormat Int where
-  getValue TIF_RGB = gl_RGB
-  getValue TIF_RGBA = gl_RGBA
 
