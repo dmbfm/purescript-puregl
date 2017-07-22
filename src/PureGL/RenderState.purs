@@ -6,12 +6,12 @@ import Control.Monad.Except (ExceptT)
 import Control.Monad.Reader (ReaderT)
 import Control.Monad.State (StateT, get, modify)
 import Data.Array (cons, elem, head, tail)
-import Data.Map (Map, delete, insert, lookup)
+import Data.Map (Map, delete, empty, insert, lookup)
 import Data.Maybe (Maybe(..))
 import PureGL.Context (Context)
 import PureGL.Framebuffer (LoadedFramebuffer, LoadedRenderbuffer)
 import PureGL.Geometry (LoadedGeometry)
-import PureGL.Program (LoadedProgram)
+import PureGL.Program (LoadedProgram, ShaderType)
 import PureGL.Texture (LoadedTexture)
 import PureGL.Types (ResourceId)
 import PureGL.WebGL.Types (WebGLEff)
@@ -20,6 +20,12 @@ import PureGL.WebGL.Types (WebGLEff)
 data RenderError = 
     DefaultError 
   | LookupResourceError ResourceId
+  | GetShaderParameterError
+  | GetProgramParameterError
+  | ShaderCompileError ShaderType String
+  | ProgramLinkError String
+  | UniformNotFound String
+  | AttributeNotFount String
   | OtherErrors
 
 
@@ -35,6 +41,18 @@ type RenderState =  { context :: Context
                     }
 
 type RenderT eff a = ExceptT RenderError (ReaderT Context (StateT RenderState (WebGLEff eff))) a
+
+fromContext :: Context -> RenderState 
+fromContext context = 
+              { context: context 
+              , loadedGeometries: empty
+              , loadedPrograms: empty
+              , loadedTextures: empty
+              , loadedFramebuffers: empty
+              , loadedRenderbuffers: empty
+              , idCounter: 0
+              , idPool: []
+              }
 
 -- | Increments the `RenderState`'s `idCounter` 
 incrementIdCounter :: RenderState -> RenderState
