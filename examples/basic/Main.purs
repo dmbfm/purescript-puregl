@@ -2,8 +2,10 @@ module PureGL.Examples.Basic.Main where
 
 import Prelude
 
+import Control.Monad.Aff (launchAff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Eff.Exception (EXCEPTION)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.State (evalStateT, get, runStateT)
@@ -15,9 +17,11 @@ import PureGL.Context (fromCanvasId)
 import PureGL.Data.TypedArrays (fromArray)
 import PureGL.Geometry (Geometry(..), VertexAttribute(..), mkGeometry)
 import PureGL.Program (Program(..), Uniform(..))
-import PureGL.RenderResource (loadGeometry, loadProgram)
+import PureGL.RenderResource (loadGeometry, loadProgram, loadTexture)
 import PureGL.RenderState (RenderT, fromContext)
 import PureGL.Renderer (renderGeometry)
+import PureGL.Texture (Texture(..), TexturePixels(..), TextureTarget(..), mkTexture, texFormatRGBAU, texSampler0)
+import PureGL.Utils.DOM (loadImage')
 import PureGL.Utils.Log (logObject)
 import PureGL.WebGL.Types (WebGLEff)
 
@@ -25,51 +29,70 @@ unlines :: Array String -> String
 unlines lines = foldl (\acc s -> acc <> s <> "\n") "" lines
 
 triangleGeometry :: Geometry
-triangleGeometry = mkGeometry (fromArray triangleArray) [ FloatAttribute 3 ]
-  where triangleArray = [ 0.0, 0.0, 0.0 
-                        , 0.0, 0.5, 0.0
-                        , 0.5, 0.0, 0.0
+triangleGeometry = mkGeometry (fromArray triangleArray) [ FloatAttribute 3, FloatAttribute 2]
+  where triangleArray = [ 0.0, 0.0, 0.0, 0.0, 0.0
+                        , 0.0, 0.5, 0.0, 0.0, 1.0
+                        , 0.5, 0.0, 0.0, 1.0, 0.0
                         ]
 
 simpleProgram :: Program
 simpleProgram = 
   Program { vertexShaderSource: unlines   [ ""
                                           , "attribute vec3 position;"
+                                          , "attribute vec2 uv;"
+                                          , "varying vec2 fs_uv;"
                                           , "void main() {"
+                                          , "fs_uv = uv;"
                                           , "gl_Position = vec4(position, 1.0);"
                                           , "}"
                                           ]
           , fragmentShaderSource: unlines [ ""
-                                          , "precision mediump float;"                                          
+                                          , "precision mediump float;"
+                                          , "uniform float myUniform;"
+                                          , "uniform sampler2D uTex;"
+                                          , "varying vec2 fs_uv;"                             
                                           , "void main() {"
-                                          , "gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);"
+                                          --, "gl_FragColor = vec4(1.0, myUniform, 0.0, 1.0);"
+                                          , "float d = myUniform;"
+                                          , "gl_FragColor = texture2D(uTex, fs_uv);"
                                           , "}"
                                           ]
-          , uniforms: []
+          , uniforms: [UFloat "myUniform" 0.5, USampler2D "uTex" 0]
           , attributes: []
           }
 
-main :: forall eff. WebGLEff (console :: CONSOLE, dom :: DOM | eff) Unit
-main = do
-  contextM <- fromCanvasId "canvas"
-  case contextM of
-    Nothing -> log "Error creating WebGL context."
-    Just context -> do
-      let initialState = fromContext context      
-      r <-  evalStateT (runReaderT (runExceptT mainP) context) initialState
-      case r of
-        Left e -> logObject "RenderError" e
-        Right _ -> log "No RenderError!"
+main :: forall eff. WebGLEff (console :: CONSOLE, dom :: DOM, exception :: EXCEPTION | eff) Unit
+main = void $ launchAff do
+  image <- loadImage' "./image.jpg"
+  let texture = mkTexture (HTMLImagePixels image) texSampler0 texFormatRGBAU TextureTarget2D
+  liftEff $ logObject "IMAGE" image
+  liftEff $ logObject "TEXTURE" texture
+  liftEff $ mainP texture 
 
   where
 
-    mainP :: RenderT (console :: CONSOLE, dom :: DOM | eff) Unit
-    mainP = do
-      geoId <- loadGeometry triangleGeometry
-      progId <- loadProgram simpleProgram
-      state <- get
-      liftEff $ logObject "State0" state
-      renderGeometry geoId progId
+    mainP :: Texture ->   WebGLEff (console :: CONSOLE, dom :: DOM | eff) Unit
+    mainP texture = do
+      contextM <- fromCanvasId "canvas"
+      case contextM of
+        Nothing -> log "Error creating WebGL context."
+        Just context -> do
+          let initialState = fromContext context      
+          r <-  evalStateT (runReaderT (runExceptT run) context) initialState
+          case r of
+            Left e -> logObject "RenderError" e
+            Right _ -> log "No RenderError!"
+
+      where
+
+        run :: RenderT (console :: CONSOLE, dom :: DOM | eff) Unit
+        run = do
+          geoId <- loadGeometry triangleGeometry
+          progId <- loadProgram simpleProgram
+          texId <- loadTexture texture
+          state <- get
+          liftEff $ logObject "State0" state
+          renderGeometry geoId progId
 
 -- main :: forall e. Eff (console :: CONSOLE, exception :: EXCEPTION, dom :: DOM, exception :: EXCEPTION, webgl :: WEBGL | e) Unit
 -- main = void $ launchAff do

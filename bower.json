@@ -11,7 +11,8 @@
     "purescript-console": "^3.0.0",
     "purescript-dom": "^4.5.0",
     "purescript-aff": "^3.1.0",
-    "purescript-lens": "^3.0.0"
+    "purescript-lens": "^3.0.0",
+    "purescript-dynamic": "^0.9.2"
   },
   "devDependencies": {
     "purescript-psci-support": "^3.0.0",
