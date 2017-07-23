@@ -10,16 +10,16 @@ import Data.Maybe (Maybe(..))
 import Data.Traversable (sequence)
 import Partial.Unsafe (unsafePartial)
 import PureGL.Framebuffer (FBColorAttachment(..), Framebuffer(..), LoadedFramebuffer(..), LoadedRenderbuffer(..), Renderbuffer(..))
-import PureGL.Framebuffer.Internal (attachToFramebuffer)
 import PureGL.GLConstant (getValue)
 import PureGL.Geometry (Geometry(..), LoadedGeometry(..), VertexAttribute(..))
+import PureGL.Internal.Framebuffer (attachToFramebuffer)
+import PureGL.Internal.Program (buildProgram, getProgramAttribLocationsMap, getProgramUniformLocationsMap, setUniformsMap)
+import PureGL.Internal.Texture (setSamplerState)
 import PureGL.Program (LoadedProgram(..), Program(..))
-import PureGL.Program.Internal (buildProgram, getProgramAttribLocationsMap, getProgramUniformLocationsMap)
 import PureGL.RenderState (RenderError(..), RenderState, RenderT, addLoadedFramebuffer, addLoadedGeometry, addLoadedProgram, addLoadedRenderbuffer, addLoadedTexture, genId)
 import PureGL.Texture (LoadedTexture(..), RenderTexture(..), Texture(..), TextureFormat(..), TexturePixels(..))
-import PureGL.Texture.Internal (setSamplerState)
 import PureGL.Types (ResourceId)
-import PureGL.WebGL (bindBuffer, bindFramebuffer, bindRenderbuffer, bindTexture, bindVertexArray, bufferData, createBuffer, createFramebuffer, createRenderbuffer, createTexture, createVertexArray, enableVertexAttribArray, generateMipmap, renderbufferStorage, texImage2D, texImage2D', vertexAttribPointer)
+import PureGL.WebGL (bindBuffer, bindFramebuffer, bindRenderbuffer, bindTexture, bindVertexArray, bufferData, createBuffer, createFramebuffer, createRenderbuffer, createTexture, createVertexArray, enableVertexAttribArray, generateMipmap, renderbufferStorage, texImage2D, texImage2D', useProgram, vertexAttribPointer)
 import PureGL.WebGL.Constants (gl_ARRAY_BUFFER, gl_COLOR_ATTACHMENT0, gl_DEPTH_ATTACHMENT, gl_FLOAT, gl_FRAMEBUFFER, gl_RENDERBUFFER, gl_STATIC_DRAW)
 import PureGL.WebGL.Raw (nullBufferObject, nullFramebufferObject, nullVertexArrayObject)
   
@@ -103,6 +103,8 @@ loadProgram (Program p) = do
   program <- buildProgram p.vertexShaderSource p.fragmentShaderSource
   uniformLocs <- getProgramUniformLocationsMap program p.uniforms
   attrLocs <- getProgramAttribLocationsMap program p.attributes
+  useProgram program
+  setUniformsMap uniformLocs p.uniforms
   insertResource $ LoadedProgram { program: program
                                  , uniformLocations: uniformLocs
                                  , attributeLocations: attrLocs

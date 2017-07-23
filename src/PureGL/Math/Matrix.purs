@@ -23,8 +23,9 @@ import Prelude
 
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe)
+import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array, toTypedArray)
 import PureGL.Math.Vector (class Vector)
-import PureGL.Data.TypedArrays (Float32Array)
+import PureGL.Math.Vector.Fast (toFloat32Array)
 
 -- | A 2x2 Matrix (Implemented as a javascript array)
 foreign import data Matrix2 :: Type
@@ -145,6 +146,15 @@ instance matrix4SquareMatrix :: SquareMatrix Matrix4 where
   determinant = determinantMatrix4
   invert = toMaybe <<< invertMatrix4
   fromArray = fromArrayMatrix4
+
+instance toTypedArrayMatrix2 :: ToTypedArray Matrix2 Float32Array Number where
+  toTypedArray = _toFloat32Array
+
+instance toTypedArrayMatrix3 :: ToTypedArray Matrix3 Float32Array Number where
+  toTypedArray = _toFloat32Array
+
+instance toTypedArrayMatrix4 :: ToTypedArray Matrix4 Float32Array Number where
+  toTypedArray = _toFloat32Array
 
 -- | Create a Orthographic projection matrix with the give
 -- | frustum parameters:

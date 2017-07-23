@@ -4,8 +4,8 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.ST (ST, STRef)
+import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array)
 import PureGL.Math.Vector (class InnerProduct)
-import PureGL.Data.TypedArrays (Float32Array)
 
 -- | A two-component vector, implemented as a Javascript 
 -- | `Float32Array`
@@ -99,6 +99,16 @@ instance fvectorFVector4 :: FVector FVector4 where
 
 instance fVector4InnerProduct :: InnerProduct FVector4 where
   dot = dotFVector4
+
+instance toTypedArrayFVector2 :: ToTypedArray FVector2 Float32Array Number where
+  toTypedArray = toFloat32ArrayFVector2
+
+instance toTypedArrayFVector3 :: ToTypedArray FVector3 Float32Array Number where
+  toTypedArray = toFloat32ArrayFVector3
+
+instance toTypedArrayFVector4 :: ToTypedArray FVector4 Float32Array Number where
+  toTypedArray = toFloat32ArrayFVector4
+
 
 -- foreign imports
 foreign import eqFVector2 :: FVector2 -> FVector2 -> Boolean 

@@ -2,13 +2,14 @@ module PureGL.WebGL where
   
 import Prelude
 import PureGL.WebGL.Types
+
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Reader (ask)
 import Data.Foreign (Foreign)
 import Data.Maybe (Maybe)
 import Data.Nullable (toMaybe)
 import PureGL.Context (Context(..))
-import PureGL.Data.TypedArrays (class BufferSource)
+import PureGL.Data.TypedArrays (class BufferSource, Float32Array, Int32Array)
 import PureGL.RenderState (RenderT)
 import PureGL.WebGL.Raw as RAW
 
@@ -162,3 +163,50 @@ renderbufferStorage :: forall eff. GLenum -> GLenum -> GLsizei -> GLsizei -> Ren
 renderbufferStorage target format w h = 
   ask >>= \(Context ctx) -> liftEff $ RAW.renderbufferStorage ctx.glContext target format w h
   
+uniform1f :: forall eff. WebGLUniformLocation -> Number -> RenderT eff Unit
+uniform1f loc v = ask >>= \(Context ctx) -> liftEff $ RAW.uniform1f ctx.glContext loc v
+
+uniform2f :: forall eff. WebGLUniformLocation -> Number -> Number -> RenderT eff Unit
+uniform2f loc v1 v2 = ask >>= \(Context ctx) -> liftEff $ RAW.uniform2f ctx.glContext loc v1 v2
+
+uniform3f :: forall eff. WebGLUniformLocation -> Number -> Number -> Number -> RenderT eff Unit
+uniform3f loc v1 v2 v3 = ask >>= \(Context ctx) -> liftEff $ RAW.uniform3f ctx.glContext loc v1 v2 v3
+
+uniform4f :: forall eff. WebGLUniformLocation -> Number -> Number -> Number -> Number -> RenderT eff Unit
+uniform4f loc v1 v2 v3 v4 = ask >>= \(Context ctx) -> liftEff $ RAW.uniform4f ctx.glContext loc v1 v2 v3 v4
+
+uniform1fv :: forall eff. WebGLUniformLocation -> Float32Array -> RenderT eff Unit
+uniform1fv loc v = ask >>= \(Context ctx) -> liftEff $ RAW.uniform1fv ctx.glContext loc v
+
+uniform2fv :: forall eff. WebGLUniformLocation -> Float32Array -> RenderT eff Unit
+uniform2fv loc v = ask >>= \(Context ctx) -> liftEff $ RAW.uniform2fv ctx.glContext loc v
+
+uniform3fv :: forall eff. WebGLUniformLocation -> Float32Array -> RenderT eff Unit
+uniform3fv loc v = ask >>= \(Context ctx) -> liftEff $ RAW.uniform3fv ctx.glContext loc v
+
+uniform4fv :: forall eff. WebGLUniformLocation -> Float32Array -> RenderT eff Unit
+uniform4fv loc v = ask >>= \(Context ctx) -> liftEff $ RAW.uniform4fv ctx.glContext loc v
+
+uniform1i :: forall eff. WebGLUniformLocation -> Int -> RenderT eff Unit
+uniform1i loc v = ask >>= \(Context ctx) -> liftEff $ RAW.uniform1i ctx.glContext loc v
+
+uniform2i :: forall eff. WebGLUniformLocation -> Int -> Int -> RenderT eff Unit
+uniform2i loc v1 v2 = ask >>= \(Context ctx) -> liftEff $ RAW.uniform2i ctx.glContext loc v1 v2
+
+uniform3i :: forall eff. WebGLUniformLocation -> Int -> Int -> Int -> RenderT eff Unit
+uniform3i loc v1 v2 v3 = ask >>= \(Context ctx) -> liftEff $ RAW.uniform3i ctx.glContext loc v1 v2 v3
+
+uniform4i :: forall eff. WebGLUniformLocation -> Int -> Int -> Int -> Int -> RenderT eff Unit
+uniform4i loc v1 v2 v3 v4 = ask >>= \(Context ctx) -> liftEff $ RAW.uniform4i ctx.glContext loc v1 v2 v3 v4
+
+uniform1iv :: forall eff. WebGLUniformLocation -> Int32Array -> RenderT eff Unit
+uniform1iv loc v = ask >>= \(Context ctx) -> liftEff $ RAW.uniform1iv ctx.glContext loc v
+
+uniform2iv :: forall eff. WebGLUniformLocation -> Int32Array -> RenderT eff Unit
+uniform2iv loc v = ask >>= \(Context ctx) -> liftEff $ RAW.uniform2iv ctx.glContext loc v
+
+uniform3iv :: forall eff. WebGLUniformLocation -> Int32Array -> RenderT eff Unit
+uniform3iv loc v = ask >>= \(Context ctx) -> liftEff $ RAW.uniform3iv ctx.glContext loc v
+
+uniform4iv :: forall eff. WebGLUniformLocation -> Int32Array -> RenderT eff Unit
+uniform4iv loc v = ask >>= \(Context ctx) -> liftEff $ RAW.uniform4iv ctx.glContext loc v

@@ -3,7 +3,7 @@ module PureGL.Math.Vector where
 import Prelude
 
 import Math (sqrt)
-import PureGL.Data.TypedArrays (Float32Array, fromArray)
+import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array, fromArray)
 
 -- | A two component vector, defined as a record
 newtype Vector2 = Vector2 {x :: Number, y :: Number}
@@ -102,6 +102,15 @@ instance vector4Vector :: Vector Vector4 where
 
 instance vector4InnerProduct :: InnerProduct Vector4 where
   dot (Vector4 v1) (Vector4 v2) = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w
+
+instance toTypedArrayVector2 :: ToTypedArray Vector2 Float32Array Number where
+  toTypedArray = toFloat32Array
+
+instance toTypedArrayVector3 :: ToTypedArray Vector3 Float32Array Number where
+  toTypedArray = toFloat32Array
+
+instance toTypedArrayVector4 :: ToTypedArray Vector4 Float32Array Number where
+  toTypedArray = toFloat32Array
 
 -- | Computes the cross product between to `Vector3`
 cross :: Vector3 -> Vector3 -> Vector3 

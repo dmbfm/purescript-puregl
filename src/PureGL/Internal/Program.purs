@@ -1,4 +1,4 @@
-module PureGL.Program.Internal where
+module PureGL.Internal.Program where
 
 import Prelude
 
@@ -7,13 +7,15 @@ import Data.Array (zip)
 import Data.Either (Either(..))
 import Data.Foreign (readBoolean, readInt)
 import Data.Maybe (Maybe(..))
-import Data.StrMap (StrMap, fromFoldable)
+import Data.StrMap (StrMap, fromFoldable, lookup)
 import Data.Traversable (sequence, traverse)
+import PureGL.Data.TypedArrays (toTypedArray)
 import PureGL.GLConstant (getValue)
-import PureGL.Program (ProgramParamQuery(..), ProgramParamResponse(..), ShaderParamQuery(..), ShaderParamResponse(..), ShaderType(..), Uniform, uniformName)
+import PureGL.Math.Vector (toFloat32Array)
+import PureGL.Program (ProgramParamQuery(..), ProgramParamResponse(..), ShaderParamQuery(..), ShaderParamResponse(..), ShaderType(..), Uniform(..), uniformName)
 import PureGL.RenderState (RenderError(..), RenderT)
 import PureGL.Utils.Misc (eitherFromMaybe)
-import PureGL.WebGL (attachShader, compileShader, createProgram, createShader, getAttribLocation, getProgramInfoLog, getProgramParameter, getShaderInfoLog, getShaderParameter, getUniformLocation, linkProgram, shaderSource)
+import PureGL.WebGL (attachShader, compileShader, createProgram, createShader, getAttribLocation, getProgramInfoLog, getProgramParameter, getShaderInfoLog, getShaderParameter, getUniformLocation, linkProgram, shaderSource, uniform1f, uniform1i, uniform2fv, uniform3fv, uniform4fv)
 import PureGL.WebGL.Types (WebGLProgram, WebGLShader, WebGLUniformLocation, GLint)
 
 getShaderParameter' :: forall eff. WebGLShader -> ShaderParamQuery -> RenderT eff ShaderParamResponse
@@ -108,3 +110,30 @@ getProgramAttribLocationsMap :: forall eff. WebGLProgram -> (Array String) -> Re
 getProgramAttribLocationsMap p as = do
   locs <- getProgramAttribLocations p as
   pure $ fromFoldable $ zip as locs
+
+setUniform :: forall eff. WebGLUniformLocation -> Uniform -> RenderT eff Unit
+setUniform loc (UFloat _ v) = uniform1f loc v
+setUniform loc (UVec2 _ v) = uniform2fv loc (toTypedArray v)
+setUniform loc (UVec3 _ v) = uniform3fv loc (toTypedArray v)
+setUniform loc (UVec4 _ v) = uniform4fv loc (toTypedArray v)
+setUniform loc (UFVec2 _ v) = uniform2fv loc (toTypedArray v)
+setUniform loc (UFVec3 _ v) = uniform3fv loc (toTypedArray v)
+setUniform loc (UFVec4 _ v) = uniform4fv loc (toTypedArray v)
+setUniform loc (UMat2 _ v) = uniform2fv loc (toTypedArray v)
+setUniform loc (UMat3 _ v) = uniform3fv loc (toTypedArray v)
+setUniform loc (UMat4 _ v) = uniform4fv loc (toTypedArray v)
+setUniform loc (UFMat2 _ v) = uniform2fv loc (toTypedArray v)
+setUniform loc (UFMat3 _ v) = uniform3fv loc (toTypedArray v)
+setUniform loc (UFMat4 _ v) = uniform4fv loc (toTypedArray v)
+setUniform loc (USampler2D _ v) = uniform1i loc v
+
+setUniform' :: forall eff. StrMap WebGLUniformLocation -> Uniform -> RenderT eff Unit
+setUniform' locs u = 
+  case lookup (uniformName u) locs of
+    Nothing -> throwError $ UniformNotFound (uniformName u)
+    Just loc -> setUniform loc u
+
+setUniformsMap :: forall eff. StrMap WebGLUniformLocation -> Array Uniform -> RenderT eff Unit
+setUniformsMap locs us = do
+  _ <- traverse (setUniform' locs) us
+  pure unit

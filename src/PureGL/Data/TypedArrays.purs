@@ -64,6 +64,9 @@ class ArrayBufferView a <= TypedArray a b | a -> b where
   -- | Set the element at a given index
   setAt :: forall eff. a -> Int -> b -> Eff (arrayBuffer :: ARRAY_BUFFER | eff) Unit
 
+class TypedArray b c <= ToTypedArray a b c | a -> b, b-> c where
+  toTypedArray :: a -> b
+
 -- | Emtpy class, representing all buffers, i.e., the `ArrayBuffer` type 
 -- | and all `ArrayBufferView` instance types.
 class BufferSource a

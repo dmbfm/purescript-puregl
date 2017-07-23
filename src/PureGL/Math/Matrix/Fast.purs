@@ -23,8 +23,8 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.ST (ST, STRef)
+import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array, toTypedArray)
 import PureGL.Math.Vector.Fast (class FVector)
-import PureGL.Data.TypedArrays (Float32Array)
 
 -- | A 2x2 Matrix implemented as a Javascript `Float32Array`
 foreign import data FMatrix2 :: Type
@@ -182,6 +182,15 @@ instance fsquareMatrixFMatrix4 :: FSquareMatrix FMatrix4 where
   determinant = determinantFMatrix4
   invert = invertFMatrix4
   fromArray = _fromArrayFMatrix
+
+instance toTypedArrayFMatrix2 :: ToTypedArray FMatrix2 Float32Array Number where
+  toTypedArray = _toFloat32ArrayFMatrix
+
+instance toTypedArrayFMatrix3 :: ToTypedArray FMatrix3 Float32Array Number where
+  toTypedArray = _toFloat32ArrayFMatrix
+
+instance toTypedArrayFMatrix4 :: ToTypedArray FMatrix4 Float32Array Number where
+  toTypedArray = _toFloat32ArrayFMatrix
 
 -- other foreign imports
 foreign import eqFMatrix2 :: FMatrix2 -> FMatrix2 -> Boolean

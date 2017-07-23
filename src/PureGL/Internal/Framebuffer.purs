@@ -1,4 +1,4 @@
-module PureGL.Framebuffer.Internal where
+module PureGL.Internal.Framebuffer where
 
 import Prelude
 

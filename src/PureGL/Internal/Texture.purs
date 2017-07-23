@@ -1,4 +1,4 @@
-module PureGL.Texture.Internal where
+module PureGL.Internal.Texture where
 
 import Prelude
 

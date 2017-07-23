@@ -32,6 +32,7 @@ data Uniform =
   | UFMat2 String FMatrix2
   | UFMat3 String FMatrix3
   | UFMat4 String FMatrix4
+  | USampler2D String Int
 
 uniformName :: Uniform -> String
 uniformName (UFloat n _) = n
@@ -47,6 +48,7 @@ uniformName (UFVec4 n _ ) = n
 uniformName (UFMat2 n _)  = n
 uniformName (UFMat3 n _)  = n
 uniformName (UFMat4 n _)  = n
+uniformName (USampler2D n _) = n
 
 data ShaderType = VertexShader | FragmentShader
 
