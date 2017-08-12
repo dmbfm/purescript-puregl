@@ -23,9 +23,8 @@ import Prelude
 
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe)
-import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array, toTypedArray)
+import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array)
 import PureGL.Math.Vector (class Vector)
-import PureGL.Math.Vector.Fast (toFloat32Array)
 
 -- | A 2x2 Matrix (Implemented as a javascript array)
 foreign import data Matrix2 :: Type

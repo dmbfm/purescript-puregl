@@ -1,4 +1,4 @@
-module PureGL.Extensions where
+module PureGL.WebGL.Extensions where
 
 import PureGL.WebGL.Types (WebGLContext, WebGLEff)
 

@@ -2,7 +2,7 @@ module Test.PureGL.Geometry where
 
 import Prelude
 
-import PureGL.Geometry (attr3P3N2UV, attributeOffsets, vertexByteSize)
+import PureGL.Renderer.Geometry (attr3P3N2UV, attributeOffsets, vertexByteSize)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 

@@ -1,10 +1,12 @@
-module PureGL.GLConstant where
+module PureGL.Renderer.GLConstant where
 
 
 import PureGL.WebGL.Constants
-import PureGL.Framebuffer (RenderbufferFormat(..))
-import PureGL.Program (ProgramParamQuery(..), ShaderParamQuery(..), ShaderType(..))
-import PureGL.Texture (TexelDataType(..), TextureImageFormat(..), TextureInternalFormat(..), TextureMagFilter(..), TextureMinFilter(..), TextureTarget(..), TextureWrap(..))
+
+import PureGL.Renderer.Framebuffer (RenderbufferFormat(..))
+import PureGL.Renderer.Program (ProgramParamQuery(..), ShaderParamQuery(..), ShaderType(..))
+import PureGL.Renderer.Texture (TexelDataType(..), TextureImageFormat(..), TextureInternalFormat(..), TextureMagFilter(..), TextureMinFilter(..), TextureTarget(..), TextureWrap(..))
+--import PureGL.Texture (TexelDataType(..), TextureImageFormat(..), TextureInternalFormat(..), TextureMagFilter(..), TextureMinFilter(..), TextureTarget(..), TextureWrap(..))
 
 -- | Typeclass used to extract WebGL constants wraped
 -- | in type constructors.

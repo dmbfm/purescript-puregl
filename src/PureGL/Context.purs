@@ -6,7 +6,7 @@ import Control.Monad.Eff (Eff)
 import DOM (DOM)
 import DOM.HTML.Types (HTMLCanvasElement)
 import Data.Maybe (Maybe(..))
-import PureGL.Extensions (EnabledExtensions, initExtensions)
+import PureGL.WebGL.Extensions (EnabledExtensions, initExtensions)
 import PureGL.Utils.DOM (getCanvasElement, getWebGL1Context, getWebGL2Context)
 import PureGL.WebGL.Types (WEBGL, WebGLContext)
 

@@ -20,10 +20,9 @@ module PureGL.Math.Matrix.Fast
   ) where
 
 import Prelude
-
 import Control.Monad.Eff (Eff)
 import Control.Monad.ST (ST, STRef)
-import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array, toTypedArray)
+import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array)
 import PureGL.Math.Vector.Fast (class FVector)
 
 -- | A 2x2 Matrix implemented as a Javascript `Float32Array`

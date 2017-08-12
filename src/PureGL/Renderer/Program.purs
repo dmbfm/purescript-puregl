@@ -1,4 +1,4 @@
-module PureGL.Program where
+module PureGL.Renderer.Program where
 
 import Data.StrMap (StrMap)
 import PureGL.Math.Matrix (Matrix2, Matrix3, Matrix4)

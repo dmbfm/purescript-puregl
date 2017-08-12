@@ -1,7 +1,7 @@
-module PureGL.Framebuffer where
+module PureGL.Renderer.Framebuffer where
 
 import Data.Maybe (Maybe)
-import PureGL.Types (ResourceId)
+import PureGL.Renderer.Types (ResourceId)
 import PureGL.WebGL.Types (WebGLFramebuffer, WebGLRenderbuffer)
 
 newtype Framebuffer = Framebuffer { color :: FBColorAttachment

@@ -1,67 +1,73 @@
-module PureGL.RenderResource where
+module PureGL.Renderer.RenderResource where
 
 import Prelude
-
+import PureGL.WebGL
 import Control.Monad.Error.Class (throwError)
-import Control.Monad.State (get, modify)
+import Control.Monad.State (modify)
 import Data.Array (mapWithIndex, unsafeIndex)
+import Data.Dynamic (toDynamic)
+import Data.Lens (set, view)
 import Data.Map (Map, lookup)
 import Data.Maybe (Maybe(..))
 import Data.Traversable (sequence)
+import Data.Tuple (Tuple(..))
 import Partial.Unsafe (unsafePartial)
-import PureGL.Framebuffer (FBColorAttachment(..), Framebuffer(..), LoadedFramebuffer(..), LoadedRenderbuffer(..), Renderbuffer(..))
-import PureGL.GLConstant (getValue)
-import PureGL.Geometry (Geometry(..), LoadedGeometry(..), VertexAttribute(..))
-import PureGL.Internal.Framebuffer (attachToFramebuffer)
-import PureGL.Internal.Program (buildProgram, getProgramAttribLocationsMap, getProgramUniformLocationsMap, setUniformsMap)
-import PureGL.Internal.Texture (setSamplerState)
-import PureGL.Program (LoadedProgram(..), Program(..))
-import PureGL.RenderState (RenderError(..), RenderState, RenderT, addLoadedFramebuffer, addLoadedGeometry, addLoadedProgram, addLoadedRenderbuffer, addLoadedTexture, genId)
-import PureGL.Texture (LoadedTexture(..), RenderTexture(..), Texture(..), TextureFormat(..), TexturePixels(..))
-import PureGL.Types (ResourceId)
-import PureGL.WebGL (bindBuffer, bindFramebuffer, bindRenderbuffer, bindTexture, bindVertexArray, bufferData, createBuffer, createFramebuffer, createRenderbuffer, createTexture, createVertexArray, enableVertexAttribArray, generateMipmap, renderbufferStorage, texImage2D, texImage2D', useProgram, vertexAttribPointer)
+import PureGL.Renderer.Framebuffer (FBColorAttachment(..), Framebuffer(..), LoadedFramebuffer(..), LoadedRenderbuffer(..), Renderbuffer(..))
+import PureGL.Renderer.GLConstant (getValue)
+import PureGL.Renderer.Geometry (Geometry(..), LoadedGeometry(..), VertexAttribute(..))
+import PureGL.Renderer.Internal.Framebuffer (attachToFramebuffer)
+import PureGL.Renderer.Internal.Program (buildProgram, getProgramAttribLocationsMap, getProgramUniformLocationsMap, setUniformsMap)
+import PureGL.Renderer.Internal.Texture (setSamplerState)
+import PureGL.Renderer.Program (LoadedProgram(..), Program(..))
+import PureGL.Renderer.RenderState (RenderError(..), RenderState, RenderT, _loadedFramebuffers, _loadedGeometries, _loadedPrograms, _loadedRenderbuffers, _loadedTextures, _renderState, _renderer', addLoadedFramebuffer, addLoadedGeometry, addLoadedProgram, addLoadedRenderbuffer, addLoadedTexture, getRenderer)
+import PureGL.Renderer.Texture (LoadedTexture(..), RenderTexture(..), Texture(..), TextureFormat(..), TexturePixels(..))
+import PureGL.Renderer.Types (ResourceId)
+import PureGL.Utils.HasID (requestId)
 import PureGL.WebGL.Constants (gl_ARRAY_BUFFER, gl_COLOR_ATTACHMENT0, gl_DEPTH_ATTACHMENT, gl_FLOAT, gl_FRAMEBUFFER, gl_RENDERBUFFER, gl_STATIC_DRAW)
-import PureGL.WebGL.Raw (nullBufferObject, nullFramebufferObject, nullVertexArrayObject)
+import PureGL.WebGL.Raw (glNullBufferObject, glNullFramebufferObject, glNullVertexArrayObject)
   
 class InsertResource a where
-  insertResource :: forall eff. a -> RenderT eff ResourceId
-  lookupResource :: forall eff. ResourceId -> RenderT eff a
+  insertResource :: forall e r. a -> RenderT r e ResourceId  
+  lookupResource :: forall e r. ResourceId -> RenderT r e a
 
 class LoadResource a where
-  loadResource :: forall eff. a -> RenderT eff ResourceId
+  loadResource :: forall e r. a -> RenderT r e ResourceId
 
 instance loadedGeometryInsertResource :: InsertResource LoadedGeometry where
   insertResource r = _insertResource r addLoadedGeometry
-  lookupResource id = _lookupResource id (\s -> s.loadedGeometries)
+  lookupResource id = _lookupResource id (view $ _renderState <<< _loadedGeometries)
 
 instance insertResourceLoadedTexture :: InsertResource LoadedTexture where
   insertResource r = _insertResource r addLoadedTexture
-  lookupResource id = _lookupResource id (\s -> s.loadedTextures)
+  lookupResource id = _lookupResource id (view $ _renderState <<< _loadedTextures)
 
 instance insertResourceLoadedRenderbuffer :: InsertResource LoadedRenderbuffer where
   insertResource r = _insertResource r addLoadedRenderbuffer
-  lookupResource id = _lookupResource id (\s -> s.loadedRenderbuffers)
-
-instance insertResourceLoadedProgram :: InsertResource LoadedProgram where
-  insertResource r = _insertResource r addLoadedProgram
-  lookupResource id = _lookupResource id (\s -> s.loadedPrograms)
+  lookupResource id = _lookupResource id (view $ _renderState <<< _loadedRenderbuffers)
 
 instance insertResourceLoadedFramebuffer :: InsertResource LoadedFramebuffer where
   insertResource r = _insertResource r addLoadedFramebuffer
-  lookupResource id = _lookupResource id (\s -> s.loadedFramebuffers)
+  lookupResource id = _lookupResource id (view $ _renderState <<< _loadedFramebuffers)
 
-_insertResource :: forall eff a. a -> (Int -> a -> RenderState -> RenderState) -> RenderT eff ResourceId
-_insertResource r f = do
-  id <- genId
-  modify $ f id r
-  pure id
+instance insertResourceLoadedProgram :: InsertResource LoadedProgram where
+  insertResource r = _insertResource r addLoadedProgram
+  lookupResource id = _lookupResource id (view $ _renderState <<< _loadedPrograms)
 
-_lookupResource :: forall eff a. ResourceId -> (RenderState -> Map ResourceId a) -> RenderT eff a 
+
+_insertResource :: forall r e a. a -> (Int -> a -> RenderState -> RenderState) -> RenderT r e ResourceId
+_insertResource res f = do
+  renderState <- getRenderer
+  case requestId renderState of
+    Tuple id renderState' -> do
+      modify $ set _renderer' $ f id res renderState'
+      pure id
+
+_lookupResource :: forall r e a. ResourceId -> (RenderState -> Map ResourceId a) -> RenderT r e a
 _lookupResource id f = do
-  state <- get
-  case lookup id (f state) of
+  renderState <- getRenderer
+  case lookup id (f renderState) of
     Just r -> pure r
-    Nothing -> throwError (LookupResourceError id)
+    Nothing -> throwError (toDynamic $ LookupResourceError id)
 
 instance loadResourceGeometry :: LoadResource Geometry where
   loadResource = loadGeometry    
@@ -81,7 +87,7 @@ instance loadResourceRenderbuffer :: LoadResource Renderbuffer where
 instance loadResourceFramebuffer :: LoadResource Framebuffer where
   loadResource = loadFramebuffer
 
-loadGeometry :: forall eff.  Geometry -> RenderT eff ResourceId
+loadGeometry :: forall r e.  Geometry -> RenderT r e ResourceId
 loadGeometry (Geometry g) = do
   buffer <- createBuffer
   vao <- createVertexArray
@@ -94,11 +100,11 @@ loadGeometry (Geometry g) = do
             vertexAttribPointer idx size gl_FLOAT false g.vertexSize (unsafePartial $ unsafeIndex g.offsets idx)
             enableVertexAttribArray idx
       ) g.attributes
-  bindVertexArray nullVertexArrayObject
-  bindBuffer gl_ARRAY_BUFFER nullBufferObject
+  bindVertexArray glNullVertexArrayObject
+  bindBuffer gl_ARRAY_BUFFER glNullBufferObject
   insertResource $  LoadedGeometry { buffer: buffer, vao: vao, vertexCount: g.vertexCount }
 
-loadProgram :: forall eff. Program -> RenderT eff ResourceId
+loadProgram :: forall r e. Program -> RenderT r e ResourceId
 loadProgram (Program p) = do
   program <- buildProgram p.vertexShaderSource p.fragmentShaderSource
   uniformLocs <- getProgramUniformLocationsMap program p.uniforms
@@ -110,7 +116,7 @@ loadProgram (Program p) = do
                                  , attributeLocations: attrLocs
                                  }
 
-loadTexture :: forall eff. Texture -> RenderT eff ResourceId
+loadTexture :: forall e r. Texture -> RenderT e r ResourceId
 loadTexture (Texture t) = do
   texture <- createTexture
   let target = getValue t.textureTarget
@@ -128,7 +134,7 @@ loadTexture (Texture t) = do
                                  , textureTarget: t.textureTarget
                                  }
 
-loadRenderTexture :: forall eff. RenderTexture -> RenderT eff ResourceId
+loadRenderTexture :: forall e a. RenderTexture -> RenderT e a ResourceId
 loadRenderTexture (RenderTexture t) = do
   texture <- createTexture
   let target = getValue (t.textureTarget)
@@ -140,14 +146,14 @@ loadRenderTexture (RenderTexture t) = do
                                  , textureTarget: t.textureTarget
                                  }
 
-loadRenderbuffer :: forall eff. Renderbuffer -> RenderT eff ResourceId
+loadRenderbuffer :: forall e r. Renderbuffer -> RenderT e r ResourceId
 loadRenderbuffer (Renderbuffer rb) = do
   renderbuffer <- createRenderbuffer
   bindRenderbuffer gl_RENDERBUFFER renderbuffer
   renderbufferStorage gl_RENDERBUFFER (getValue rb.format) rb.width rb.height
   insertResource $ LoadedRenderbuffer { renderbuffer: renderbuffer }
 
-loadFramebuffer :: forall eff. Framebuffer -> RenderT eff ResourceId
+loadFramebuffer :: forall e r. Framebuffer -> RenderT e r ResourceId
 loadFramebuffer (Framebuffer fb) = do
   fbo <- createFramebuffer
   bindFramebuffer gl_FRAMEBUFFER fbo
@@ -163,7 +169,7 @@ loadFramebuffer (Framebuffer fb) = do
     Just id -> do
       renderbuffer :: LoadedRenderbuffer <- lookupResource id
       attachToFramebuffer renderbuffer gl_DEPTH_ATTACHMENT
-  bindFramebuffer gl_FRAMEBUFFER nullFramebufferObject
+  bindFramebuffer gl_FRAMEBUFFER glNullFramebufferObject
   insertResource $ LoadedFramebuffer { fbo: fbo 
                                      , color: fb.color
                                      , depth: fb.depth 

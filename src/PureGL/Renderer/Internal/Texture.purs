@@ -1,17 +1,17 @@
-module PureGL.Internal.Texture where
+module PureGL.Renderer.Internal.Texture where
 
 import Prelude
 
 import Control.Monad.Reader (ask)
 import PureGL.Context (Context(..))
-import PureGL.GLConstant (getValue)
-import PureGL.RenderState (RenderT)
-import PureGL.Texture (TextureSampler(..))
+import PureGL.Renderer.GLConstant (getValue)
+import PureGL.Renderer.RenderState (RenderT)
+import PureGL.Renderer.Texture (TextureSampler(..))
 import PureGL.WebGL (texParameterf, texParameteri)
 import PureGL.WebGL.Constants (gl_TEXTURE_MAG_FILTER, gl_TEXTURE_MAX_ANISOTROPY_EXT, gl_TEXTURE_MIN_FILTER, gl_TEXTURE_WRAP_S, gl_TEXTURE_WRAP_T)
 import PureGL.WebGL.Types (WebGLTexture, GLenum)
 
-setSamplerState :: forall eff. WebGLTexture -> GLenum -> TextureSampler -> RenderT eff Unit
+setSamplerState :: forall e r. WebGLTexture -> GLenum -> TextureSampler -> RenderT e r Unit
 setSamplerState tex target (TextureSampler s) = do
   (Context context) <- ask
   texParameteri target gl_TEXTURE_MAG_FILTER (getValue s.magFilter)

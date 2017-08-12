@@ -1,4 +1,4 @@
-module PureGL.Texture where
+module PureGL.Renderer.Texture where
 
 import DOM.HTML.Types (HTMLCanvasElement, HTMLImageElement, HTMLVideoElement)
 import PureGL.Data.TypedArrays (Uint8Array)

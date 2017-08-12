@@ -1,35 +1,35 @@
-exports.nullBufferObject = null;
-exports.nullVertexArrayObject = null;
-exports.nullFramebufferObject = null;
+exports.glNullBufferObject = null;
+exports.glNullVertexArrayObject = null;
+exports.glNullFramebufferObject = null;
 
 // Buffers
-exports.createBuffer = ctx => () => ctx.createBuffer();
-exports.bindBuffer = ctx => target => buffer => () => { ctx.bindBuffer(target, buffer); };
-exports.bufferData = _ => ctx => target => array => usage => () => { ctx.bufferData(target, array, usage); };
-exports.bufferData2 = _ => ctx => target => size => usage => () => { ctx.bufferData(target, size, usage); };
-exports.bufferData3 = _ => ctx => target => array => 
+exports.glCreateBuffer = ctx => () => ctx.createBuffer();
+exports.glBindBuffer = ctx => target => buffer => () => { ctx.bindBuffer(target, buffer); };
+exports.glBufferData = _ => ctx => target => array => usage => () => { ctx.bufferData(target, array, usage); };
+exports.glBufferData2 = _ => ctx => target => size => usage => () => { ctx.bufferData(target, size, usage); };
+exports.glBufferData3 = _ => ctx => target => array => 
       usage => offset => length => () => { ctx.bufferData(target, array, usage, offset, length); };
-exports.deleteBuffer = ctx => buffer => () => { ctx.deleteBuffer(buffer); };
-exports.bufferSubData = _ => ctx => target => offset => array => () => { ctx.bufferSubData(target, offset, array); };
+exports.glDeleteBuffer = ctx => buffer => () => { ctx.deleteBuffer(buffer); };
+exports.glBufferSubData = _ => ctx => target => offset => array => () => { ctx.bufferSubData(target, offset, array); };
 
 
 // Shaders
-exports.createShader = ctx => type => () => ctx.createShader(type);
-exports.createProgram = ctx => () => ctx.createProgram();
-exports.shaderSource = ctx => shader => source => () => { ctx.shaderSource(shader, source); };
-exports.compileShader = ctx => shader => () => { ctx.compileShader(shader); };
-exports.getShaderInfoLog = ctx => shader => () => ctx.getShaderInfoLog(shader);
-exports.attachShader = ctx => program => shader => () => { ctx.attachShader(program, shader); };
-exports.deleteProgram = ctx => program => () => { ctx.deleteProgram(program); };
-exports.deleteShader = ctx => shader => () => { ctx.deleteShader(shader); };
-exports.getProgramInfoLog = ctx => program => () => ctx.getProgramInfoLog(program);
-exports.linkProgram = ctx => program => () => { ctx.linkProgram(program); };
-exports.useProgram = ctx => program => () => { ctx.useProgram(program); };
-exports.getShaderParameter = ctx => shader => pname => () => ctx.getShaderParameter(shader, pname);
-exports.getProgramParameter = ctx => program => pname => () => ctx.getProgramParameter(program, pname);
+exports.glCreateShader = ctx => type => () => ctx.createShader(type);
+exports.glCreateProgram = ctx => () => ctx.createProgram();
+exports.glShaderSource = ctx => shader => source => () => { ctx.shaderSource(shader, source); };
+exports.glCompileShader = ctx => shader => () => { ctx.compileShader(shader); };
+exports.glGetShaderInfoLog = ctx => shader => () => ctx.getShaderInfoLog(shader);
+exports.glAttachShader = ctx => program => shader => () => { ctx.attachShader(program, shader); };
+exports.glDeleteProgram = ctx => program => () => { ctx.deleteProgram(program); };
+exports.glDeleteShader = ctx => shader => () => { ctx.deleteShader(shader); };
+exports.glGetProgramInfoLog = ctx => program => () => ctx.getProgramInfoLog(program);
+exports.glLinkProgram = ctx => program => () => { ctx.linkProgram(program); };
+exports.glUseProgram = ctx => program => () => { ctx.useProgram(program); };
+exports.glGetShaderParameter = ctx => shader => pname => () => ctx.getShaderParameter(shader, pname);
+exports.glGetProgramParameter = ctx => program => pname => () => ctx.getProgramParameter(program, pname);
 
 // VAOs
-exports.createVertexArray = ctx => () => {
+exports.glCreateVertexArray = ctx => () => {
   if (ctx.createVertexArray)
     return ctx.createVertexArray();
 
@@ -42,7 +42,7 @@ exports.createVertexArray = ctx => () => {
 
 };
 
-exports.bindVertexArray = ctx => vao => () => {
+exports.glBindVertexArray = ctx => vao => () => {
   if (ctx.bindVertexArray)
     return ctx.bindVertexArray(vao);
 
@@ -54,7 +54,7 @@ exports.bindVertexArray = ctx => vao => () => {
   throw "OES_vertex_array_object extension not found.";
 }
 
-exports.deleteVertexArray = ctx => vao => () => {
+exports.glDeleteVertexArray = ctx => vao => () => {
   if (ctx.deleteVertexArray)
     return ctx.deleteVertexArray(vao);
 
@@ -68,85 +68,85 @@ exports.deleteVertexArray = ctx => vao => () => {
 
 
 // Vertex Attributes
-exports.enableVertexAttribArray = ctx => i => () => { ctx.enableVertexAttribArray(i); };
-exports.disableVertexAttribArray = ctx => i => () => { ctx.disableVertexAttribArray(i); };
-exports.getAttribLocation = ctx => program => name => () => ctx.getAttribLocation(program, name);
-exports.getUniformLocation = ctx => program => name => () => ctx.getUniformLocation(program, name);
-exports.vertexAttribPointer = ctx => i => s => t => n => st => o => () =>
+exports.glEnableVertexAttribArray = ctx => i => () => { ctx.enableVertexAttribArray(i); };
+exports.glDisableVertexAttribArray = ctx => i => () => { ctx.disableVertexAttribArray(i); };
+exports.glGetAttribLocation = ctx => program => name => () => ctx.getAttribLocation(program, name);
+exports.glGetUniformLocation = ctx => program => name => () => ctx.getUniformLocation(program, name);
+exports.glVertexAttribPointer = ctx => i => s => t => n => st => o => () =>
   { ctx.vertexAttribPointer(i, s, t, n, st, o); };
-exports.vertexAttribIPointer = ctx => i => s => t => n => st => o => () =>
+exports.glVertexAttribIPointer = ctx => i => s => t => n => st => o => () =>
   { ctx.vertexAttribIPointer(i, s, t, n, st, o); };
 
 // Uniforms
-exports.uniform1f = ctx => loc => v => () => { ctx.uniform1f(loc, v); };
-exports.uniform1i = ctx => loc => v => () => { ctx.uniform1i(loc, v); };
-exports.uniform1fv = ctx => loc => v => () => { ctx.uniform1fv(loc, v); };
-exports.uniform1iv = ctx => loc => v => () => { ctx.uniform1iv(loc, v); };
+exports.glUniform1f = ctx => loc => v => () => { ctx.uniform1f(loc, v); };
+exports.glUniform1i = ctx => loc => v => () => { ctx.uniform1i(loc, v); };
+exports.glUniform1fv = ctx => loc => v => () => { ctx.uniform1fv(loc, v); };
+exports.glUniform1iv = ctx => loc => v => () => { ctx.uniform1iv(loc, v); };
 
-exports.uniform2f = ctx => loc => v1 => v2 => () => { ctx.uniform2f(loc, v1, v2); };
-exports.uniform2i = ctx => loc => v1 => v2 => () => { ctx.uniform2i(loc, v1, v2); };
-exports.uniform2fv =  ctx => loc => v => () => { ctx.uniform2fv(loc, v); };
-exports.uniform2iv =  ctx => loc => v => () => { ctx.uniform2iv(loc, v); };
+exports.glUniform2f = ctx => loc => v1 => v2 => () => { ctx.uniform2f(loc, v1, v2); };
+exports.glUniform2i = ctx => loc => v1 => v2 => () => { ctx.uniform2i(loc, v1, v2); };
+exports.glUniform2fv =  ctx => loc => v => () => { ctx.uniform2fv(loc, v); };
+exports.glUniform2iv =  ctx => loc => v => () => { ctx.uniform2iv(loc, v); };
 
-exports.uniform3f = ctx => loc => v1 => v2 => v3 => () => { ctx.uniform3f(loc, v1, v2, v3); };
-exports.uniform3i = ctx => loc => v1 => v2 => v3 => () => { ctx.uniform3i(loc, v1, v2, v3); };
-exports.uniform3fv = ctx => loc => v => () => { ctx.uniform3fv(loc, v); };
-exports.uniform3iv = ctx => loc => v => () => { ctx.uniform3iv(loc, v); };
+exports.glUniform3f = ctx => loc => v1 => v2 => v3 => () => { ctx.uniform3f(loc, v1, v2, v3); };
+exports.glUniform3i = ctx => loc => v1 => v2 => v3 => () => { ctx.uniform3i(loc, v1, v2, v3); };
+exports.glUniform3fv = ctx => loc => v => () => { ctx.uniform3fv(loc, v); };
+exports.glUniform3iv = ctx => loc => v => () => { ctx.uniform3iv(loc, v); };
 
-exports.uniform4f = ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform4f(loc, v1, v2, v3, v4); };
-exports.uniform4i = ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform4i(loc, v1, v2, v3, v4); };
-exports.uniform4fv = ctx => loc => v => () => { ctx.uniform4fv(loc, v); };
-exports.uniform4iv = ctx => loc => v => () => { ctx.uniform4iv(loc, v); };
+exports.glUniform4f = ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform4f(loc, v1, v2, v3, v4); };
+exports.glUniform4i = ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform4i(loc, v1, v2, v3, v4); };
+exports.glUniform4fv = ctx => loc => v => () => { ctx.uniform4fv(loc, v); };
+exports.glUniform4iv = ctx => loc => v => () => { ctx.uniform4iv(loc, v); };
 
-exports.uniformMatrix2fv = ctx => loc => t => v => () => { ctx.uniformMatrix2fv(loc, t, v); };
-exports.uniformMatrix3fv = ctx => loc => t => v => () => { ctx.uniformMatrix3fv(loc, t, v); };
-exports.uniformMatrix4fv = ctx => loc => t => v => () => { ctx.uniformMatrix4fv(loc, t, v); };
+exports.glUniformMatrix2fv = ctx => loc => t => v => () => { ctx.uniformMatrix2fv(loc, t, v); };
+exports.glUniformMatrix3fv = ctx => loc => t => v => () => { ctx.uniformMatrix3fv(loc, t, v); };
+exports.glUniformMatrix4fv = ctx => loc => t => v => () => { ctx.uniformMatrix4fv(loc, t, v); };
 
-exports.uniform1ui = ctx => loc => v => () => { ctx.uniform1ui(loc, v); };
-exports.uniform2ui = ctx => loc => v1 => v2 => () => { ctx.uniform1ui(loc, v1, v2); };
-exports.uniform3ui = ctx => loc => v1 => v2 => v3 => () => { ctx.uniform1ui(loc, v1, v2, v3); };
-exports.uniform4ui = ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform1ui(loc, v1, v2, v3, v4); };
+exports.glUniform1ui = ctx => loc => v => () => { ctx.uniform1ui(loc, v); };
+exports.glUniform2ui = ctx => loc => v1 => v2 => () => { ctx.uniform1ui(loc, v1, v2); };
+exports.glUniform3ui = ctx => loc => v1 => v2 => v3 => () => { ctx.uniform1ui(loc, v1, v2, v3); };
+exports.glUniform4ui = ctx => loc => v1 => v2 => v3 => v4 => () => { ctx.uniform1ui(loc, v1, v2, v3, v4); };
 
-exports.uniform1uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
-exports.uniform2uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
-exports.uniform3uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
-exports.uniform4uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
+exports.glUniform1uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
+exports.glUniform2uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
+exports.glUniform3uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
+exports.glUniform4uiv = ctx => loc => v => () => { ctx.uniform1uiv(loc, v); };
 
-exports.drawArrays = ctx => mode => first => count => () => { ctx.drawArrays(mode, first, count); };
-exports.drawElements = ctx => mode => count => type => offset => () => { ctx.drawElements(mode, first, count); };
+exports.glDrawArrays = ctx => mode => first => count => () => { ctx.drawArrays(mode, first, count); };
+exports.glDrawElements = ctx => mode => count => type => offset => () => { ctx.drawElements(mode, first, count); };
 
-exports.getShaderParameter = ctx => shader => pname => () => ctx.getShaderParameter(shader, pname);
-exports.getProgramParameter = ctx => program => pname => () => ctx.getProgramParameter(program, pname);
+exports.glGetShaderParameter = ctx => shader => pname => () => ctx.getShaderParameter(shader, pname);
+exports.glGetProgramParameter = ctx => program => pname => () => ctx.getProgramParameter(program, pname);
 
-exports.clear = ctx => b => () => { ctx.clear(b); };
-exports.clearColor = ctx => r => g => b => a => () => { ctx.clearColor(r, g, b, a); };
+exports.glClear = ctx => b => () => { ctx.clear(b); };
+exports.glClearColor = ctx => r => g => b => a => () => { ctx.clearColor(r, g, b, a); };
 
-exports.getExtension = ctx => name => () => ctx.getExtension(name);
+exports.glGetExtension = ctx => name => () => ctx.getExtension(name);
 
-exports.createTexture = ctx => () => ctx.createTexture();
-exports.bindTexture = ctx => t => tex => () => { ctx.bindTexture(t, tex); };
-exports.texParameteri = ctx => t => pname => val => () => { ctx.texParameteri(t, pname, val); };
-exports.texParameterf = ctx => t => pname => val => () => { ctx.texParameterf(t, pname, val); };
-exports.generateMipmap = ctx => t => () => { ctx.generateMipmap(t); };
-exports.activeTexture = ctx => slot => () => { ctx.activeTexture(slot); };
-exports.texImage2D = _ => ctx => target => level => iformat => format => type => pixels => () =>
+exports.glCreateTexture = ctx => () => ctx.createTexture();
+exports.glBindTexture = ctx => t => tex => () => { ctx.bindTexture(t, tex); };
+exports.glTexParameteri = ctx => t => pname => val => () => { ctx.texParameteri(t, pname, val); };
+exports.glTexParameterf = ctx => t => pname => val => () => { ctx.texParameterf(t, pname, val); };
+exports.glGenerateMipmap = ctx => t => () => { ctx.generateMipmap(t); };
+exports.glActiveTexture = ctx => slot => () => { ctx.activeTexture(slot); };
+exports.glTexImage2D = _ => ctx => target => level => iformat => format => type => pixels => () =>
 { ctx.texImage2D(target, level, iformat, format, type, pixels); };
-exports.texImage2D2 = _ => ctx => target => level => iformat => width => height => format => type => () =>
+exports.glTexImage2D2 = _ => ctx => target => level => iformat => width => height => format => type => () =>
 { ctx.texImage2D(target, level, iformat, width, height, 0, format, type, null); };    
 
 
-exports.createFramebuffer = ctx => () => ctx.createFramebuffer();
-exports.bindFramebuffer = ctx => target => fbo => () => { ctx.bindFramebuffer(target, fbo); };
-exports.deleteFramebuffer = ctx => fbo => () => { ctx.deleteFramebuffer(fbo); };
-exports.framebufferTexture2D = ctx => target => att => textarget => texture => level => () =>
+exports.glCreateFramebuffer = ctx => () => ctx.createFramebuffer();
+exports.glBindFramebuffer = ctx => target => fbo => () => { ctx.bindFramebuffer(target, fbo); };
+exports.glDeleteFramebuffer = ctx => fbo => () => { ctx.deleteFramebuffer(fbo); };
+exports.glFramebufferTexture2D = ctx => target => att => textarget => texture => level => () =>
     { ctx.framebufferTexture2D(target, att, textarget, texture, level); };
-exports.framebufferRenderbuffer = ctx => target => att => rbtarget => rb => () =>
+exports.glFramebufferRenderbuffer = ctx => target => att => rbtarget => rb => () =>
     { ctx.framebufferRenderbuffer(target, att, rbtarget, rb); };    
 
-exports.createRenderbuffer = ctx => () => ctx.createRenderbuffer();
-exports.bindRenderbuffer = ctx => target => rb => () => { ctx.bindRenderbuffer(target, rb); };
-exports.deleteRenderbuffer = ctx => rb => () => { ctx.deleteRenderbuffer(rb); };
-exports.renderbufferStorage = ctx => target => format => w => h => () => { ctx.renderbufferStorage(target, format, w, h); };
+exports.glCreateRenderbuffer = ctx => () => ctx.createRenderbuffer();
+exports.glBindRenderbuffer = ctx => target => rb => () => { ctx.bindRenderbuffer(target, rb); };
+exports.glDeleteRenderbuffer = ctx => rb => () => { ctx.deleteRenderbuffer(rb); };
+exports.glRenderbufferStorage = ctx => target => format => w => h => () => { ctx.renderbufferStorage(target, format, w, h); };
 
 /*-------  VAO Polyfill from https://github.com/greggman/oes-vertex-array-object-polyfill -------*/
 

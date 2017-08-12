@@ -1,4 +1,4 @@
-module PureGL.Geometry where
+module PureGL.Renderer.Geometry where
 
 import Prelude
 

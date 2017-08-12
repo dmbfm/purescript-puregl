@@ -1,16 +1,16 @@
 'use strict';
 
-exports.nullBufferObject = null;
-exports.nullVertexArrayObject = null;
-exports.nullFramebufferObject = null;
+exports.glNullBufferObject = null;
+exports.glNullVertexArrayObject = null;
+exports.glNullFramebufferObject = null;
 
 // Buffers
-exports.createBuffer = function (ctx) {
+exports.glCreateBuffer = function (ctx) {
     return function () {
         return ctx.createBuffer();
     };
 };
-exports.bindBuffer = function (ctx) {
+exports.glBindBuffer = function (ctx) {
     return function (target) {
         return function (buffer) {
             return function () {
@@ -19,7 +19,7 @@ exports.bindBuffer = function (ctx) {
         };
     };
 };
-exports.bufferData = function (_) {
+exports.glBufferData = function (_) {
     return function (ctx) {
         return function (target) {
             return function (array) {
@@ -32,7 +32,7 @@ exports.bufferData = function (_) {
         };
     };
 };
-exports.bufferData2 = function (_) {
+exports.glBufferData2 = function (_) {
     return function (ctx) {
         return function (target) {
             return function (size) {
@@ -45,7 +45,7 @@ exports.bufferData2 = function (_) {
         };
     };
 };
-exports.bufferData3 = function (_) {
+exports.glBufferData3 = function (_) {
     return function (ctx) {
         return function (target) {
             return function (array) {
@@ -62,14 +62,14 @@ exports.bufferData3 = function (_) {
         };
     };
 };
-exports.deleteBuffer = function (ctx) {
+exports.glDeleteBuffer = function (ctx) {
     return function (buffer) {
         return function () {
             ctx.deleteBuffer(buffer);
         };
     };
 };
-exports.bufferSubData = function (_) {
+exports.glBufferSubData = function (_) {
     return function (ctx) {
         return function (target) {
             return function (offset) {
@@ -84,19 +84,19 @@ exports.bufferSubData = function (_) {
 };
 
 // Shaders
-exports.createShader = function (ctx) {
+exports.glCreateShader = function (ctx) {
     return function (type) {
         return function () {
             return ctx.createShader(type);
         };
     };
 };
-exports.createProgram = function (ctx) {
+exports.glCreateProgram = function (ctx) {
     return function () {
         return ctx.createProgram();
     };
 };
-exports.shaderSource = function (ctx) {
+exports.glShaderSource = function (ctx) {
     return function (shader) {
         return function (source) {
             return function () {
@@ -105,21 +105,21 @@ exports.shaderSource = function (ctx) {
         };
     };
 };
-exports.compileShader = function (ctx) {
+exports.glCompileShader = function (ctx) {
     return function (shader) {
         return function () {
             ctx.compileShader(shader);
         };
     };
 };
-exports.getShaderInfoLog = function (ctx) {
+exports.glGetShaderInfoLog = function (ctx) {
     return function (shader) {
         return function () {
             return ctx.getShaderInfoLog(shader);
         };
     };
 };
-exports.attachShader = function (ctx) {
+exports.glAttachShader = function (ctx) {
     return function (program) {
         return function (shader) {
             return function () {
@@ -128,42 +128,42 @@ exports.attachShader = function (ctx) {
         };
     };
 };
-exports.deleteProgram = function (ctx) {
+exports.glDeleteProgram = function (ctx) {
     return function (program) {
         return function () {
             ctx.deleteProgram(program);
         };
     };
 };
-exports.deleteShader = function (ctx) {
+exports.glDeleteShader = function (ctx) {
     return function (shader) {
         return function () {
             ctx.deleteShader(shader);
         };
     };
 };
-exports.getProgramInfoLog = function (ctx) {
+exports.glGetProgramInfoLog = function (ctx) {
     return function (program) {
         return function () {
             return ctx.getProgramInfoLog(program);
         };
     };
 };
-exports.linkProgram = function (ctx) {
+exports.glLinkProgram = function (ctx) {
     return function (program) {
         return function () {
             ctx.linkProgram(program);
         };
     };
 };
-exports.useProgram = function (ctx) {
+exports.glUseProgram = function (ctx) {
     return function (program) {
         return function () {
             ctx.useProgram(program);
         };
     };
 };
-exports.getShaderParameter = function (ctx) {
+exports.glGetShaderParameter = function (ctx) {
     return function (shader) {
         return function (pname) {
             return function () {
@@ -172,7 +172,7 @@ exports.getShaderParameter = function (ctx) {
         };
     };
 };
-exports.getProgramParameter = function (ctx) {
+exports.glGetProgramParameter = function (ctx) {
     return function (program) {
         return function (pname) {
             return function () {
@@ -183,7 +183,7 @@ exports.getProgramParameter = function (ctx) {
 };
 
 // VAOs
-exports.createVertexArray = function (ctx) {
+exports.glCreateVertexArray = function (ctx) {
     return function () {
         if (ctx.createVertexArray) return ctx.createVertexArray();
 
@@ -195,7 +195,7 @@ exports.createVertexArray = function (ctx) {
     };
 };
 
-exports.bindVertexArray = function (ctx) {
+exports.glBindVertexArray = function (ctx) {
     return function (vao) {
         return function () {
             if (ctx.bindVertexArray) return ctx.bindVertexArray(vao);
@@ -209,7 +209,7 @@ exports.bindVertexArray = function (ctx) {
     };
 };
 
-exports.deleteVertexArray = function (ctx) {
+exports.glDeleteVertexArray = function (ctx) {
     return function (vao) {
         return function () {
             if (ctx.deleteVertexArray) return ctx.deleteVertexArray(vao);
@@ -224,21 +224,21 @@ exports.deleteVertexArray = function (ctx) {
 };
 
 // Vertex Attributes
-exports.enableVertexAttribArray = function (ctx) {
+exports.glEnableVertexAttribArray = function (ctx) {
     return function (i) {
         return function () {
             ctx.enableVertexAttribArray(i);
         };
     };
 };
-exports.disableVertexAttribArray = function (ctx) {
+exports.glDisableVertexAttribArray = function (ctx) {
     return function (i) {
         return function () {
             ctx.disableVertexAttribArray(i);
         };
     };
 };
-exports.getAttribLocation = function (ctx) {
+exports.glGetAttribLocation = function (ctx) {
     return function (program) {
         return function (name) {
             return function () {
@@ -247,7 +247,7 @@ exports.getAttribLocation = function (ctx) {
         };
     };
 };
-exports.getUniformLocation = function (ctx) {
+exports.glGetUniformLocation = function (ctx) {
     return function (program) {
         return function (name) {
             return function () {
@@ -256,7 +256,7 @@ exports.getUniformLocation = function (ctx) {
         };
     };
 };
-exports.vertexAttribPointer = function (ctx) {
+exports.glVertexAttribPointer = function (ctx) {
     return function (i) {
         return function (s) {
             return function (t) {
@@ -273,7 +273,7 @@ exports.vertexAttribPointer = function (ctx) {
         };
     };
 };
-exports.vertexAttribIPointer = function (ctx) {
+exports.glVertexAttribIPointer = function (ctx) {
     return function (i) {
         return function (s) {
             return function (t) {
@@ -292,7 +292,7 @@ exports.vertexAttribIPointer = function (ctx) {
 };
 
 // Uniforms
-exports.uniform1f = function (ctx) {
+exports.glUniform1f = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -301,7 +301,7 @@ exports.uniform1f = function (ctx) {
         };
     };
 };
-exports.uniform1i = function (ctx) {
+exports.glUniform1i = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -310,7 +310,7 @@ exports.uniform1i = function (ctx) {
         };
     };
 };
-exports.uniform1fv = function (ctx) {
+exports.glUniform1fv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -319,7 +319,7 @@ exports.uniform1fv = function (ctx) {
         };
     };
 };
-exports.uniform1iv = function (ctx) {
+exports.glUniform1iv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -329,7 +329,7 @@ exports.uniform1iv = function (ctx) {
     };
 };
 
-exports.uniform2f = function (ctx) {
+exports.glUniform2f = function (ctx) {
     return function (loc) {
         return function (v1) {
             return function (v2) {
@@ -340,7 +340,7 @@ exports.uniform2f = function (ctx) {
         };
     };
 };
-exports.uniform2i = function (ctx) {
+exports.glUniform2i = function (ctx) {
     return function (loc) {
         return function (v1) {
             return function (v2) {
@@ -351,7 +351,7 @@ exports.uniform2i = function (ctx) {
         };
     };
 };
-exports.uniform2fv = function (ctx) {
+exports.glUniform2fv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -360,7 +360,7 @@ exports.uniform2fv = function (ctx) {
         };
     };
 };
-exports.uniform2iv = function (ctx) {
+exports.glUniform2iv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -370,7 +370,7 @@ exports.uniform2iv = function (ctx) {
     };
 };
 
-exports.uniform3f = function (ctx) {
+exports.glUniform3f = function (ctx) {
     return function (loc) {
         return function (v1) {
             return function (v2) {
@@ -383,7 +383,7 @@ exports.uniform3f = function (ctx) {
         };
     };
 };
-exports.uniform3i = function (ctx) {
+exports.glUniform3i = function (ctx) {
     return function (loc) {
         return function (v1) {
             return function (v2) {
@@ -396,7 +396,7 @@ exports.uniform3i = function (ctx) {
         };
     };
 };
-exports.uniform3fv = function (ctx) {
+exports.glUniform3fv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -405,7 +405,7 @@ exports.uniform3fv = function (ctx) {
         };
     };
 };
-exports.uniform3iv = function (ctx) {
+exports.glUniform3iv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -415,7 +415,7 @@ exports.uniform3iv = function (ctx) {
     };
 };
 
-exports.uniform4f = function (ctx) {
+exports.glUniform4f = function (ctx) {
     return function (loc) {
         return function (v1) {
             return function (v2) {
@@ -430,7 +430,7 @@ exports.uniform4f = function (ctx) {
         };
     };
 };
-exports.uniform4i = function (ctx) {
+exports.glUniform4i = function (ctx) {
     return function (loc) {
         return function (v1) {
             return function (v2) {
@@ -445,7 +445,7 @@ exports.uniform4i = function (ctx) {
         };
     };
 };
-exports.uniform4fv = function (ctx) {
+exports.glUniform4fv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -454,7 +454,7 @@ exports.uniform4fv = function (ctx) {
         };
     };
 };
-exports.uniform4iv = function (ctx) {
+exports.glUniform4iv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -464,7 +464,7 @@ exports.uniform4iv = function (ctx) {
     };
 };
 
-exports.uniformMatrix2fv = function (ctx) {
+exports.glUniformMatrix2fv = function (ctx) {
     return function (loc) {
         return function (t) {
             return function (v) {
@@ -475,7 +475,7 @@ exports.uniformMatrix2fv = function (ctx) {
         };
     };
 };
-exports.uniformMatrix3fv = function (ctx) {
+exports.glUniformMatrix3fv = function (ctx) {
     return function (loc) {
         return function (t) {
             return function (v) {
@@ -486,7 +486,7 @@ exports.uniformMatrix3fv = function (ctx) {
         };
     };
 };
-exports.uniformMatrix4fv = function (ctx) {
+exports.glUniformMatrix4fv = function (ctx) {
     return function (loc) {
         return function (t) {
             return function (v) {
@@ -498,7 +498,7 @@ exports.uniformMatrix4fv = function (ctx) {
     };
 };
 
-exports.uniform1ui = function (ctx) {
+exports.glUniform1ui = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -507,7 +507,7 @@ exports.uniform1ui = function (ctx) {
         };
     };
 };
-exports.uniform2ui = function (ctx) {
+exports.glUniform2ui = function (ctx) {
     return function (loc) {
         return function (v1) {
             return function (v2) {
@@ -518,7 +518,7 @@ exports.uniform2ui = function (ctx) {
         };
     };
 };
-exports.uniform3ui = function (ctx) {
+exports.glUniform3ui = function (ctx) {
     return function (loc) {
         return function (v1) {
             return function (v2) {
@@ -531,7 +531,7 @@ exports.uniform3ui = function (ctx) {
         };
     };
 };
-exports.uniform4ui = function (ctx) {
+exports.glUniform4ui = function (ctx) {
     return function (loc) {
         return function (v1) {
             return function (v2) {
@@ -547,7 +547,7 @@ exports.uniform4ui = function (ctx) {
     };
 };
 
-exports.uniform1uiv = function (ctx) {
+exports.glUniform1uiv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -556,7 +556,7 @@ exports.uniform1uiv = function (ctx) {
         };
     };
 };
-exports.uniform2uiv = function (ctx) {
+exports.glUniform2uiv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -565,7 +565,7 @@ exports.uniform2uiv = function (ctx) {
         };
     };
 };
-exports.uniform3uiv = function (ctx) {
+exports.glUniform3uiv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -574,7 +574,7 @@ exports.uniform3uiv = function (ctx) {
         };
     };
 };
-exports.uniform4uiv = function (ctx) {
+exports.glUniform4uiv = function (ctx) {
     return function (loc) {
         return function (v) {
             return function () {
@@ -584,7 +584,7 @@ exports.uniform4uiv = function (ctx) {
     };
 };
 
-exports.drawArrays = function (ctx) {
+exports.glDrawArrays = function (ctx) {
     return function (mode) {
         return function (first) {
             return function (count) {
@@ -595,7 +595,7 @@ exports.drawArrays = function (ctx) {
         };
     };
 };
-exports.drawElements = function (ctx) {
+exports.glDrawElements = function (ctx) {
     return function (mode) {
         return function (count) {
             return function (type) {
@@ -609,7 +609,7 @@ exports.drawElements = function (ctx) {
     };
 };
 
-exports.getShaderParameter = function (ctx) {
+exports.glGetShaderParameter = function (ctx) {
     return function (shader) {
         return function (pname) {
             return function () {
@@ -618,7 +618,7 @@ exports.getShaderParameter = function (ctx) {
         };
     };
 };
-exports.getProgramParameter = function (ctx) {
+exports.glGetProgramParameter = function (ctx) {
     return function (program) {
         return function (pname) {
             return function () {
@@ -628,14 +628,14 @@ exports.getProgramParameter = function (ctx) {
     };
 };
 
-exports.clear = function (ctx) {
+exports.glClear = function (ctx) {
     return function (b) {
         return function () {
             ctx.clear(b);
         };
     };
 };
-exports.clearColor = function (ctx) {
+exports.glClearColor = function (ctx) {
     return function (r) {
         return function (g) {
             return function (b) {
@@ -649,7 +649,7 @@ exports.clearColor = function (ctx) {
     };
 };
 
-exports.getExtension = function (ctx) {
+exports.glGetExtension = function (ctx) {
     return function (name) {
         return function () {
             return ctx.getExtension(name);
@@ -657,12 +657,12 @@ exports.getExtension = function (ctx) {
     };
 };
 
-exports.createTexture = function (ctx) {
+exports.glCreateTexture = function (ctx) {
     return function () {
         return ctx.createTexture();
     };
 };
-exports.bindTexture = function (ctx) {
+exports.glBindTexture = function (ctx) {
     return function (t) {
         return function (tex) {
             return function () {
@@ -671,7 +671,7 @@ exports.bindTexture = function (ctx) {
         };
     };
 };
-exports.texParameteri = function (ctx) {
+exports.glTexParameteri = function (ctx) {
     return function (t) {
         return function (pname) {
             return function (val) {
@@ -682,7 +682,7 @@ exports.texParameteri = function (ctx) {
         };
     };
 };
-exports.texParameterf = function (ctx) {
+exports.glTexParameterf = function (ctx) {
     return function (t) {
         return function (pname) {
             return function (val) {
@@ -693,21 +693,21 @@ exports.texParameterf = function (ctx) {
         };
     };
 };
-exports.generateMipmap = function (ctx) {
+exports.glGenerateMipmap = function (ctx) {
     return function (t) {
         return function () {
             ctx.generateMipmap(t);
         };
     };
 };
-exports.activeTexture = function (ctx) {
+exports.glActiveTexture = function (ctx) {
     return function (slot) {
         return function () {
             ctx.activeTexture(slot);
         };
     };
 };
-exports.texImage2D = function (_) {
+exports.glTexImage2D = function (_) {
     return function (ctx) {
         return function (target) {
             return function (level) {
@@ -726,7 +726,7 @@ exports.texImage2D = function (_) {
         };
     };
 };
-exports.texImage2D2 = function (_) {
+exports.glTexImage2D2 = function (_) {
     return function (ctx) {
         return function (target) {
             return function (level) {
@@ -748,12 +748,12 @@ exports.texImage2D2 = function (_) {
     };
 };
 
-exports.createFramebuffer = function (ctx) {
+exports.glCreateFramebuffer = function (ctx) {
     return function () {
         return ctx.createFramebuffer();
     };
 };
-exports.bindFramebuffer = function (ctx) {
+exports.glBindFramebuffer = function (ctx) {
     return function (target) {
         return function (fbo) {
             return function () {
@@ -762,14 +762,14 @@ exports.bindFramebuffer = function (ctx) {
         };
     };
 };
-exports.deleteFramebuffer = function (ctx) {
+exports.glDeleteFramebuffer = function (ctx) {
     return function (fbo) {
         return function () {
             ctx.deleteFramebuffer(fbo);
         };
     };
 };
-exports.framebufferTexture2D = function (ctx) {
+exports.glFramebufferTexture2D = function (ctx) {
     return function (target) {
         return function (att) {
             return function (textarget) {
@@ -784,7 +784,7 @@ exports.framebufferTexture2D = function (ctx) {
         };
     };
 };
-exports.framebufferRenderbuffer = function (ctx) {
+exports.glFramebufferRenderbuffer = function (ctx) {
     return function (target) {
         return function (att) {
             return function (rbtarget) {
@@ -798,12 +798,12 @@ exports.framebufferRenderbuffer = function (ctx) {
     };
 };
 
-exports.createRenderbuffer = function (ctx) {
+exports.glCreateRenderbuffer = function (ctx) {
     return function () {
         return ctx.createRenderbuffer();
     };
 };
-exports.bindRenderbuffer = function (ctx) {
+exports.glBindRenderbuffer = function (ctx) {
     return function (target) {
         return function (rb) {
             return function () {
@@ -812,14 +812,14 @@ exports.bindRenderbuffer = function (ctx) {
         };
     };
 };
-exports.deleteRenderbuffer = function (ctx) {
+exports.glDeleteRenderbuffer = function (ctx) {
     return function (rb) {
         return function () {
             ctx.deleteRenderbuffer(rb);
         };
     };
 };
-exports.renderbufferStorage = function (ctx) {
+exports.glRenderbufferStorage = function (ctx) {
     return function (target) {
         return function (format) {
             return function (w) {
