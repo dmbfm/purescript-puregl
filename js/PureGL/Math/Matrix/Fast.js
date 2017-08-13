@@ -522,3 +522,113 @@ exports.mkPerspective3 = ratio => fov => n => f => {
     ]
   );
 }
+
+exports.mkTranslation = x => y => z => {
+  return new Float32Array(
+    [
+      1.0, 0.0, 0.0, x,
+      0.0, 1.0, 0.0, y,
+      0.0, 0.0, 1.0, z,
+      0.0, 0.0, 0.0, 1.0
+    ]
+  );
+}
+
+exports.translate = x => y => z => out => () => {
+  let m = out.value;
+
+  
+
+}
+
+exports.mkTranslation2 = v => exports.mkTranslation(v[0])(v[1])(v[2]);
+
+exports.mkScale = x => y => z => {
+  return new Float32Array(
+    [
+        x, 0.0, 0.0, 0.0,
+      0.0,   y, 0.0, 0.0,
+      0.0, 0.0,   z, 0.0,
+      0.0, 0.0, 0.0, 1.0
+    ]
+  );
+}
+
+exports.mkScale2 = v => exports.mkScale(v[0])(v[1])(v[2]);
+
+exports.mkRotateZ = a => {
+
+  let x = a * (Math.PI / 180);
+  let s = Math.sin(x);
+  let c = Math.cos(x);
+
+  return new Float32Array(
+    [
+        c,  -s, 0.0, 0.0,
+        s,   c, 0.0, 0.0,
+      0.0, 0.0, 1.0, 0.0,
+      0.0, 0.0, 0.0, 1.0
+    ] 
+  );
+}
+
+exports.mkRotateY = a => {
+
+  let x = a * (Math.PI / 180);
+  let s = Math.sin(x);
+  let c = Math.cos(x);
+
+  return new Float32Array(
+    [
+        c, 0.0,   s, 0.0, 
+      0.0, 1.0, 0.0, 0.0,
+       -s, 0.0,   c, 0.0,
+      0.0, 0.0, 0.0, 1.0
+    ]
+  );
+}
+
+exports.mkRotateX = a => {
+
+  let x = a * (Math.PI / 180);
+  let s = Math.sin(x);
+  let c = Math.cos(x);
+
+  return new Float32Array(
+    [
+      1.0, 0.0, 0.0, 0.0,
+      0.0,   c,  -s, 0.0,
+      0.0,   s,   c, 0.0,
+      0.0, 0.0, 0.0, 1.0
+    ]
+  );
+}
+
+exports.mkRotation = v => a => {
+
+  let norm = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+  let ux = v[0] / norm;
+  let uy = v[1] / norm;
+  let uz = v[2] / norm;
+  let x = a * (Math.PI / 180);
+  let s = Math.sin(x);
+  let c = Math.cos(x);
+
+  return new Float32Array(
+    [
+      c + (1 - c) * ux * ux,
+      (1 - c) * ux * uy - s * uz,
+      (1 - c) * ux * uz + s * uy, 0.0,
+
+      (1 - c) * ux * uy + s * uz,
+      c + (1 - c) * uy * uy,
+      (1 - c) * uy * uz - s * ux, 0.0,
+      
+      (1 - c) * ux * uz - s * uy,
+      (1 - c) * uy * uz + s * ux,
+      c + (1 - c) * uz * uz, 0.0,
+
+      0.0, 0.0, 0.0, 1.0
+    ]
+  );
+}
