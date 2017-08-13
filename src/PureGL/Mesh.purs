@@ -2,14 +2,17 @@ module PureGL.Mesh where
 
 import Prelude
 
+import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Error.Class (throwError)
 import Control.Monad.State (get, modify)
 import Data.Dynamic (toDynamic)
 import Data.Lens (Lens', _Just, lens, over, set, view, (^.))
 import Data.Lens.At (at)
 import Data.Lens.Record (prop)
+import Data.Map (empty, keys)
 import Data.Maybe (Maybe(..))
 import Data.Symbol (SProxy(..))
+import Data.Traversable (traverse, traverse_)
 import Data.Typeable (class Typeable, mkTyRep)
 import PureGL.ECS (SystemWithComponents, Entity, _components, _ecsManager, _systemStates)
 import PureGL.ECS.Component (hasComponent, insertComponent)
@@ -17,6 +20,7 @@ import PureGL.Renderer.Geometry (Geometry)
 import PureGL.Renderer.RenderResource (loadResource)
 import PureGL.Renderer.RenderState (ECSManagerRenderer, RenderT)
 import PureGL.Renderer.Types (ResourceId)
+import PureGL.Utils.Log (logObject, secretLog)
 
 data MeshError 
   = MeshNotFound Entity
@@ -41,6 +45,9 @@ type MeshSystemState = SystemWithComponents Mesh ()
 -- | The `ECSManager` type for the mesh system inclues a dependency on the
 -- | renderer system.
 type ECSManagerMesh r = ECSManagerRenderer ( mesh :: MeshSystemState | r )
+
+meshEmptyState :: MeshSystemState
+meshEmptyState = { components: empty }
 
 -- | Create a `Mesh` from a given `Geometry`.
 mkMesh :: Geometry -> Mesh 
@@ -67,6 +74,11 @@ loadMeshGeometry e = do
     Just mesh -> do
       id <- loadResource $ mesh ^. _mesh <<< _geometry
       modifyMesh e $ (set (_mesh <<< _loaded ) true) <<< (set (_mesh <<< _geometryId) id)
+
+loadAllMeshGeometries :: ∀ r e. RenderT ( mesh :: MeshSystemState | r) e Unit
+loadAllMeshGeometries = do
+  state <- get
+  traverse_ loadMeshGeometry (keys $ state ^. (_ecsManager <<< _systemStates <<< _meshSystem <<< _components))  
 
  -- LENSES and setters/getters
 _meshSystem :: ∀ r.  Lens'{ mesh :: MeshSystemState | r } MeshSystemState

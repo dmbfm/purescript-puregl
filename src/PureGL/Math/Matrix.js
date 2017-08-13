@@ -4,18 +4,9 @@
 var fromArray = function fromArray(n) {
   return function (arr) {
     var out = new Array(n);
-    if (arr.length < n) {
-      for (var i = 0; i < arr.length; i++) {
-        out[i] = arr[i];
-      }
 
-      for (var _i = arr.length; _i < n; _i++) {
-        out[_i] = 0;
-      }
-    } else {
-      for (var _i2 = 0; _i2 < n; _i2++) {
-        out[_i2] = arr[_i2];
-      }
+    for (var i = 0; i < n; i++) {
+      out[i] = arr[i] || 0;
     }
     return out;
   };
@@ -396,6 +387,17 @@ exports.mkPerspective3 = function (ratio) {
         var S = n / f * (1 / Math.tan(fov / 2));
         return [S, 0, 0, 0, 0, ratio * S, 0, 0, 0, 0, -(f + n) / (f - n), -2 * f * n / (f - n), 0, 0, -1, 0];
       };
+    };
+  };
+};
+
+exports.applyTransform = function (m) {
+  return function (v) {
+    return {
+      x: m[0] * v.x + m[1] * v.y + m[2] * v.z + m[3] * v.w,
+      y: m[4] * v.x + m[5] * v.y + m[6] * v.z + m[7] * v.w,
+      z: m[8] * v.x + m[9] * v.y + m[10] * v.z + m[11] * v.w,
+      w: m[12] * v.x + m[13] * v.y + m[14] * v.z + m[15] * v.w
     };
   };
 };

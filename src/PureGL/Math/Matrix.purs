@@ -17,14 +17,27 @@ module PureGL.Math.Matrix
   , mkPerspective
   , mkPerspective'
   , mkPerspective''
+  , mkTranslation
+  , mkTranslation'
+  , mkScale
+  , mkScale'
+  , mkRotateX
+  , mkRotateY
+  , mkRotateZ
+  , mkRotation
+  , applyTransform
   ) where
 
 import Prelude
 
+import Data.Foreign.Index ((!))
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe)
+import Math (cos, sin)
 import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array)
-import PureGL.Math.Vector (class Vector)
+import PureGL.Math.Vector (class Vector, Vector3(..), Vector4(..), mkVector3, normalize)
+import PureGL.Utils.Math (toRadians)
+import Unsafe.Coerce (unsafeCoerce)
 
 -- | A 2x2 Matrix (Implemented as a javascript array)
 foreign import data Matrix2 :: Type
@@ -195,6 +208,80 @@ mkPerspective' = mkPerspective2
 -- | view angle in radians. 
 mkPerspective'' :: Number -> Number -> Number -> Number -> Matrix4
 mkPerspective'' = mkPerspective3
+
+-- | Create a translation `Matrix4` from `x`, `y` and `z` coordinates.
+mkTranslation :: Number -> Number -> Number -> Matrix4
+mkTranslation x y z = fromArray [ 1.0, 0.0, 0.0, x 
+                                 , 0.0, 1.0, 0.0, y
+                                 , 0.0, 0.0, 1.0, z
+                                 , 0.0, 0.0, 0.0, 1.0
+                                 ]
+
+-- | Create a translation `Matrix4` from a `Vector3`
+mkTranslation' :: Vector3 -> Matrix4
+mkTranslation' (Vector3 v) = mkTranslation v.x v.y v.z
+
+-- | Create a scaling `Matrix4` from a `Vector3`
+mkScale :: Number -> Number -> Number -> Matrix4
+mkScale sx sy sz = fromArray $ [  sx, 0.0, 0.0, 0.0,
+                                 0.0,  sy, 0.0, 0.0,
+                                 0.0, 0.0,  sz, 0.0,
+                                 0.0, 0.0, 0.0, 1.0 ]
+
+-- | Create a scaling `Matrix4` from `sx`, `sy` and `sz` factors. 
+mkScale' :: Vector3 -> Matrix4                               
+mkScale' (Vector3 v) = mkScale v.x v.y v.z
+
+-- | Create a `Matrix4` for rotations about the `z` axis.
+mkRotateZ :: Number -> Matrix4
+mkRotateZ a = fromArray $ [ c, ((-1.0) *s), 0.0, 0.0,
+                            s, c, 0.0, 0.0,
+                            0.0, 0.0, 1.0, 0.0,
+                            0.0, 0.0, 0.0, 1.0 ]
+  where
+    s = sin $ toRadians a
+    c = cos $ toRadians a
+
+-- | Create a `Matrix4` for rotations about the `y` axis.
+mkRotateY :: Number -> Matrix4
+mkRotateY a = fromArray $ [ c,  0.0, s, 0.0,
+                            0.0, 1.0, 0.0, 0.0,
+                            ((-1.0) * s), 0.0, c, 0.0,
+                            0.0, 0.0, 0.0, 1.0 ]
+  where
+    s = sin $ toRadians a
+    c = cos $ toRadians a
+
+-- | Create a `Matrix4` for rotations about the `x` axis.
+mkRotateX :: Number -> Matrix4
+mkRotateX a = fromArray $ [ 1.0, 0.0, 0.0, 0.0,
+                           0.0, c, ((-1.0) * s), 0.0,
+                           0.0, s, c, 0.0,
+                           0.0, 0.0, 0.0, 1.0 ]
+  where
+    s = sin $ toRadians a
+    c = cos $ toRadians a
+
+-- | Create a rotation `Matrix4`for rotations around an arbitrary axis, with
+-- | the angle in degrees. 
+mkRotation :: Vector3 -> Number -> Matrix4
+mkRotation v a = fromArray $ [ (c + (1.0 - c) * u.x * u.x),
+                           ((1.0 - c) * u.x * u.y - s * u.z),
+                           ((1.0 - c) * u.x * u.z + s * u.y), 0.0,
+                           ((1.0 - c) * u.x * u.y + s * u.z),
+                           (c + (1.0 -c) * u.y * u.y),
+                           ((1.0 - c) * u.y * u.z - s * u.x), 0.0,
+                           ((1.0 - c) * u.x * u.z - s * u.y),
+                           ((1.0 - c) * u.y * u.z + s * u.x),
+                           (c + (1.0 - c) * u.z * u.z), 0.0,
+                           0.0, 0.0, 0.0, 1.0 ]
+  where
+    s = sin $ toRadians a
+    c = cos $ toRadians a
+    (Vector3 u) = normalize v
+
+-- | Apply a `Matrix4` transform to a `Vector4`.
+foreign import applyTransform :: Matrix4 -> Vector4 -> Vector4
 
 -- other foreign imports
 foreign import _toFloat32Array :: forall m. m -> Float32Array

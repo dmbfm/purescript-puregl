@@ -1,9 +1,9 @@
 module PureGL.Math.Vector where
 
 import Prelude
-
 import Math (sqrt)
 import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array, fromArray)
+import PureGL.Utils.Math (class ApproxEq, approxEq)
 
 -- | A two component vector, defined as a record
 newtype Vector2 = Vector2 {x :: Number, y :: Number}
@@ -67,7 +67,10 @@ class InnerProduct a where
 
 -- | Computes the norm of an inner product space element
 norm :: forall a. InnerProduct a => a -> Number
-norm v = sqrt $ dot v v 
+norm v = sqrt $ dot v v
+
+normalize :: forall a. Vector a => InnerProduct a => a -> a
+normalize v = mul (norm v) v
 
 -- Vector and InnerProduct instances for Vector{2,3,4}
 instance vector2Vector :: Vector Vector2 where
@@ -111,6 +114,21 @@ instance toTypedArrayVector3 :: ToTypedArray Vector3 Float32Array Number where
 
 instance toTypedArrayVector4 :: ToTypedArray Vector4 Float32Array Number where
   toTypedArray = toFloat32Array
+
+instance approxEqVector2 :: ApproxEq Vector2 where
+  approxEq (Vector2 v1) (Vector2 v2) = (approxEq v1.x v2.x) && 
+                                       (approxEq v1.y v2.y)
+
+instance approxEqVector3 :: ApproxEq Vector3 where
+  approxEq (Vector3 v1) (Vector3 v2) = (approxEq v1.x v2.x) && 
+                                       (approxEq v1.y v2.y) &&
+                                       (approxEq v1.z v2.z)
+
+instance approxEqVector4 :: ApproxEq Vector4 where
+  approxEq (Vector4 v1) (Vector4 v2) = (approxEq v1.x v2.x) && 
+                                       (approxEq v1.y v2.y) &&
+                                       (approxEq v1.z v2.z) &&
+                                       (approxEq v1.w v2.w)
 
 -- | Computes the cross product between to `Vector3`
 cross :: Vector3 -> Vector3 -> Vector3 

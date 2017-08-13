@@ -3,8 +3,10 @@ module Test.PureGL.Math.Matrix where
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import PureGL.Math.Matrix (Matrix2, Matrix3, determinant, fromArray, identity, invert, mkMatrix2, mkMatrix3, mkMatrix4, mulMatrix, transpose)
+import PureGL.Math.Matrix (Matrix2, Matrix3, applyTransform, determinant, fromArray, identity, invert, mkMatrix2, mkMatrix3, mkMatrix4, mkRotateX, mkRotateY, mkRotateZ, mkRotation, mkScale, mkScale', mkTranslation, mkTranslation', mulMatrix, transpose)
+import PureGL.Math.Vector (mkVector3, mkVector4)
 import PureGL.Math.Vector as V
+import PureGL.Utils.Math (approxEq)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
@@ -249,3 +251,43 @@ matrixSpec = describe "Matrix" do
                         , 2.0, 1.0, 0.0, 1.0
                         , 2.0, 0.0, 1.0, 4.0 ]
       shouldEqual m r
+
+    it "mkTranslation / applyTransform" do
+      let t = mkTranslation 1.0 1.0 1.0
+      let x = applyTransform t (mkVector4 0.0 0.0 0.0 1.0)
+      shouldEqual x (mkVector4 1.0 1.0 1.0 1.0)
+
+    it "mkScale / applyTransform" do
+      let t = mkScale 2.0 2.0 2.0
+      let x = applyTransform t (mkVector4 1.0 1.0 1.0 1.0)
+      shouldEqual x (mkVector4 2.0 2.0 2.0 1.0)
+
+    it "mkRotateZ / applyTransform" do
+      let t = mkRotateZ 90.0
+      let x = applyTransform t (mkVector4 1.0 0.0 0.0 1.0)
+      shouldEqual (approxEq x (mkVector4 0.0 1.0 0.0 1.0)) true
+    
+    it "mkRotateY / applyTransform" do
+      let t = mkRotateY 90.0
+      let x = applyTransform t (mkVector4 1.0 0.0 0.0 1.0)
+      --shouldEqual x (mkVector4 2.0 2.0 2.0 1.0)
+      shouldEqual (approxEq x (mkVector4 0.0 0.0 (-1.0) 1.0)) true
+
+    it "mkRotateX / applyTransform" do
+      let t = mkRotateX 90.0
+      let x = applyTransform t (mkVector4 0.0 1.0 0.0 1.0)
+      --shouldEqual x (mkVector4 2.0 2.0 2.0 1.0)
+      shouldEqual (approxEq x (mkVector4 0.0 0.0 1.0 1.0)) true
+
+    it "mkRotation / applyTransform" do
+      let t1 = mkRotation (mkVector3 0.0 0.0 1.0) 90.0
+      let t2 = mkRotation (mkVector3 0.0 1.0 0.0) 90.0
+      let t3 = mkRotation (mkVector3 1.0 0.0 0.0) 90.0
+
+      let x1 = applyTransform t1 (mkVector4 1.0 0.0 0.0 1.0)
+      let x2 = applyTransform t2 (mkVector4 1.0 0.0 0.0 1.0)
+      let x3 = applyTransform t3 (mkVector4 0.0 1.0 0.0 1.0)
+      --shouldEqual x (mkVector4 2.0 2.0 2.0 1.0)
+      shouldEqual (approxEq x1 (mkVector4 0.0 1.0 0.0 1.0)) true
+      shouldEqual (approxEq x2 (mkVector4 0.0 0.0 (-1.0) 1.0)) true
+      shouldEqual (approxEq x3 (mkVector4 0.0 0.0 1.0 1.0)) true
