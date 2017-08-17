@@ -151,6 +151,7 @@ matrixFastSpec =
                                      318.0 342.0 366.0)
       it "Determinant" do                       
         shouldEqual (MF.determinant m) 13.0
+
       it "Matrix Inverse" do
         let x = pureST do
               res <- newSTRef out
@@ -159,3 +160,4 @@ matrixFastSpec =
         shouldEqual x (MF.mkFMatrix3 (1.0 / 13.0) (3.0 / 13.0) ((-3.0) / 13.0)
                                      ((-4.0) / 13.0) (1.0 / 13.0) (12.0 / 13.0)
                                      (4.0 / 13.0) ((-1.0) / 13.0) (1.0 / 13.0))
+    

@@ -720,20 +720,77 @@ exports.mkTranslation = function (x) {
   };
 };
 
+exports._mkTranslation2 = function (v) {
+  return exports.mkTranslation(v[0])(v[1])(v[2]);
+};
+
 exports.translate = function (x) {
   return function (y) {
     return function (z) {
-      return function (out) {
-        return function () {
-          var m = out.value;
+      return function (b) {
+        return function (out) {
+          return function () {
+            var m = out.value;
+
+            var a00 = 1,
+                a01 = 0,
+                a02 = 0,
+                a03 = x,
+                a10 = 0,
+                a11 = 1,
+                a12 = 0,
+                a13 = y,
+                a20 = 0,
+                a21 = 0,
+                a22 = 1,
+                a23 = z,
+                a30 = 0,
+                a31 = 0,
+                a32 = 0,
+                a33 = 1;
+
+            var b00 = b[0],
+                b01 = b[1],
+                b02 = b[2],
+                b03 = b[3];
+            b10 = b[4], b11 = b[5], b12 = b[6], b13 = b[7];
+            b20 = b[8], b21 = b[9], b22 = b[10], b23 = b[11];
+            b30 = b[12], b31 = b[13], b32 = b[14], b33 = b[15];
+
+            m[0] = a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30; // m00
+            m[1] = a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31; // m01
+            m[2] = a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32; // m02
+            m[3] = a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33; // m03
+
+            m[4] = a10 * b00 + a11 * b10 + a12 * b20 + a13 * b30; // m10
+            m[5] = a10 * b01 + a11 * b11 + a12 * b21 + a13 * b31; // m11
+            m[6] = a10 * b02 + a11 * b12 + a12 * b22 + a13 * b32; // m12
+            m[7] = a10 * b03 + a11 * b13 + a12 * b23 + a13 * b33; // m13
+
+            m[8] = a20 * b00 + a21 * b10 + a22 * b20 + a23 * b30; // m20
+            m[9] = a20 * b01 + a21 * b11 + a22 * b21 + a23 * b31; // m21
+            m[10] = a20 * b02 + a21 * b12 + a22 * b22 + a23 * b32; // m22
+            m[11] = a20 * b03 + a21 * b13 + a22 * b23 + a23 * b33; // m23
+
+            m[12] = a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30; // m30
+            m[13] = a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31; // m31
+            m[14] = a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32; // m32
+            m[15] = a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33; // m33
+          };
         };
       };
     };
   };
 };
 
-exports.mkTranslation2 = function (v) {
-  return exports.mkTranslation(v[0])(v[1])(v[2]);
+exports._translate2 = function (v) {
+  return function (b) {
+    return function (out) {
+      return function () {
+        exports.translate(v[0])(v[1])(v[2])(b)(out)();
+      };
+    };
+  };
 };
 
 exports.mkScale = function (x) {
@@ -744,7 +801,7 @@ exports.mkScale = function (x) {
   };
 };
 
-exports.mkScale2 = function (v) {
+exports._mkScale2 = function (v) {
   return exports.mkScale(v[0])(v[1])(v[2]);
 };
 
