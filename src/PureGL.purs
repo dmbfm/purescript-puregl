@@ -7,7 +7,7 @@ import PureGL.ECS (ECSManager, ECSManagerT, execECSManagerT, fromSystemStates)
 import PureGL.Mesh (MeshSystemState, meshEmptyState)
 import PureGL.Renderer.RenderState (RenderState, emptyRenderState)
 import PureGL.Utils.Misc (merge)
-import PureGL.WebGL.Types (WEBGL, WebGLEff)
+import PureGL.WebGL.Types (WEBGL, WebGLEff, WebGLEffRows)
 
 -- | Extendable record type alias for the base PureGL ECS system.
 type PureGLRec r = { renderer :: RenderState, mesh :: MeshSystemState | r}
@@ -26,7 +26,7 @@ type PureGL r = ECSManager (PureGLRec r)
 -- | ```purescript
 -- | type MyPureGLT e a = PureGLT ( mySystem :: MySystem ) e a
 -- | ```
-type PureGLT r e a = ECSManagerT (webgl :: WEBGL | e) Context (PureGLRec r) a
+type PureGLT r e a = ECSManagerT (WebGLEffRows e) Context (PureGLRec r) a
 
 -- | Create an initial, 'empty', `PureGL r` state from an initial value for the
 -- | user-defined extension `r`.

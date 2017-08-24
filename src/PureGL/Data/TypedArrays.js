@@ -1,14 +1,20 @@
 "use strict";
 
 exports.mkArrayBuffer = function (len) {
-  return new ArrayBuffer(len);
+  return function () {
+    return new ArrayBuffer(len);
+  };
 };
 
 exports.fromArrayFloat32Array = function (arr) {
-  return new Float32Array(arr);
+  return function () {
+    return new Float32Array(arr);
+  };
 };
 exports.toArrayFloat32Array = function (f) {
-  return Array.from(f);
+  return function () {
+    return Array.from(f);
+  };
 };
 exports.lengthFloat32Array = function (f) {
   return f.length;
@@ -31,7 +37,9 @@ exports.toStringFloat32Array = function (f) {
 };
 exports.getAtFloat32Array = function (f) {
   return function (i) {
-    return typeof f[i] === "undefined" ? null : f[i];
+    return function () {
+      return typeof f[i] === "undefined" ? null : f[i];
+    };
   };
 };
 exports.setAtFloat32Array = function (f) {
@@ -44,21 +52,29 @@ exports.setAtFloat32Array = function (f) {
   };
 };
 exports.fromBufferFloat32Array = function (b) {
-  return new Float32Array(b);
+  return function () {
+    return new Float32Array(b);
+  };
 };
 exports.fromBufferFloat32Array2 = function (b) {
   return function (o) {
     return function (l) {
-      return new Float32Array(b, o, l);
+      return function () {
+        return new Float32Array(b, o, l);
+      };
     };
   };
 };
 
 exports.fromArrayInt8Array = function (arr) {
-  return new Int8Array(arr);
+  return function () {
+    return new Int8Array(arr);
+  };
 };
 exports.toArrayInt8Array = function (f) {
-  return Array.from(f);
+  return function () {
+    return Array.from(f);
+  };
 };
 exports.lengthInt8Array = function (f) {
   return f.length;
@@ -81,7 +97,9 @@ exports.toStringInt8Array = function (f) {
 };
 exports.getAtInt8Array = function (f) {
   return function (i) {
-    return typeof f[i] === "undefined" ? null : f[i];
+    return function () {
+      return typeof f[i] === "undefined" ? null : f[i];
+    };
   };
 };
 exports.setAtInt8Array = function (f) {
@@ -94,21 +112,29 @@ exports.setAtInt8Array = function (f) {
   };
 };
 exports.fromBufferInt8Array = function (b) {
-  return new Int8Array(b);
+  return function () {
+    return new Int8Array(b);
+  };
 };
 exports.fromBufferInt8Array2 = function (b) {
   return function (o) {
     return function (l) {
-      return new Int8Array(b, o, l);
+      return function () {
+        return new Int8Array(b, o, l);
+      };
     };
   };
 };
 
 exports.fromArrayInt16Array = function (arr) {
-  return new Int16Array(arr);
+  return function () {
+    return new Int16Array(arr);
+  };
 };
 exports.toArrayInt16Array = function (f) {
-  return Array.from(f);
+  return function () {
+    return Array.from(f);
+  };
 };
 exports.lengthInt16Array = function (f) {
   return f.length;
@@ -131,7 +157,9 @@ exports.toStringInt16Array = function (f) {
 };
 exports.getAtInt16Array = function (f) {
   return function (i) {
-    return typeof f[i] === "undefined" ? null : f[i];
+    return function () {
+      return typeof f[i] === "undefined" ? null : f[i];
+    };
   };
 };
 exports.setAtInt16Array = function (f) {
@@ -144,12 +172,16 @@ exports.setAtInt16Array = function (f) {
   };
 };
 exports.fromBufferInt16Array = function (b) {
-  return new Int16Array(b);
+  return function () {
+    return new Int16Array(b);
+  };
 };
 exports.fromBufferInt16Array2 = function (b) {
   return function (o) {
     return function (l) {
-      return new Int16Array(b, o, l);
+      return function () {
+        return new Int16Array(b, o, l);
+      };
     };
   };
 };
@@ -158,10 +190,14 @@ exports._byteOffset = function (b) {
 };
 
 exports.fromArrayInt32Array = function (arr) {
-  return new Int32Array(arr);
+  return function () {
+    return new Int32Array(arr);
+  };
 };
 exports.toArrayInt32Array = function (f) {
-  return Array.from(f);
+  return function () {
+    return Array.from(f);
+  };
 };
 exports.lengthInt32Array = function (f) {
   return f.length;
@@ -184,7 +220,9 @@ exports.toStringInt32Array = function (f) {
 };
 exports.getAtInt32Array = function (f) {
   return function (i) {
-    return typeof f[i] === "undefined" ? null : f[i];
+    return function () {
+      return typeof f[i] === "undefined" ? null : f[i];
+    };
   };
 };
 exports.setAtInt32Array = function (f) {
@@ -197,12 +235,16 @@ exports.setAtInt32Array = function (f) {
   };
 };
 exports.fromBufferInt32Array = function (b) {
-  return new Int32Array(b);
+  return function () {
+    return new Int32Array(b);
+  };
 };
 exports.fromBufferInt32Array2 = function (b) {
   return function (o) {
     return function (l) {
-      return new Int32Array(b, o, l);
+      return function () {
+        return new Int32Array(b, o, l);
+      };
     };
   };
 };

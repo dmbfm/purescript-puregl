@@ -6,9 +6,9 @@ import Control.Monad.Eff (Eff)
 import DOM (DOM)
 import DOM.HTML.Types (HTMLCanvasElement)
 import Data.Maybe (Maybe(..))
-import PureGL.WebGL.Extensions (EnabledExtensions, initExtensions)
 import PureGL.Utils.DOM (getCanvasElement, getWebGL1Context, getWebGL2Context)
-import PureGL.WebGL.Types (WEBGL, WebGLContext)
+import PureGL.WebGL.Extensions (EnabledExtensions, initExtensions)
+import PureGL.WebGL.Types (WEBGL, WebGLContext, WebGLEff)
 
 -- | This type describes the possible WebGL Versions
 data GLVersion = WebGL1 | WebGL2
@@ -24,7 +24,7 @@ newtype Context = Context { glContext :: WebGLContext
 
 -- | Creates a `Context` from a HTMLCanvasElement id. If possible, it creates
 -- | a WebGL2 context; if this fails, it creates a WebGL1 context.
-fromCanvasId :: forall eff. String -> Eff (webgl :: WEBGL, dom :: DOM | eff) (Maybe Context)
+fromCanvasId :: forall eff. String -> WebGLEff eff (Maybe Context)
 fromCanvasId id = do
   canvas <- getCanvasElement id
   case canvas of    
@@ -33,7 +33,7 @@ fromCanvasId id = do
 
 -- | Creates a `Context` from a HTMLCanvasElement. If possible, it creates
 -- | a WebGL2 context; if this fails, it creates a WebGL1 context.
-fromCanvasElement:: forall eff. HTMLCanvasElement -> Eff (webgl :: WEBGL | eff) (Maybe Context)
+fromCanvasElement:: forall eff. HTMLCanvasElement -> WebGLEff eff (Maybe Context)
 fromCanvasElement canvas = do
   ctx2 <- getWebGL2Context canvas
   case ctx2 of 

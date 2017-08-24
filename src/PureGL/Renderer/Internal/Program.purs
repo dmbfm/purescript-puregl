@@ -1,8 +1,9 @@
 module PureGL.Renderer.Internal.Program where
 
 import Prelude
-import PureGL.WebGL 
-import Control.Monad.Eff.Class (class MonadEff)
+import PureGL.WebGL
+
+import Control.Monad.Eff.Class (class MonadEff, liftEff)
 import Control.Monad.Error.Class (class MonadThrow, throwError)
 import Control.Monad.Except (runExcept)
 import Control.Monad.Reader (class MonadAsk)
@@ -14,13 +15,13 @@ import Data.Maybe (Maybe(..))
 import Data.StrMap (StrMap, fromFoldable, lookup)
 import Data.Traversable (traverse)
 import PureGL.Context (Context)
-import PureGL.Data.TypedArrays (toTypedArray)
+import PureGL.Data.TypedArrays (ARRAY_BUFFER, toTypedArray)
 import PureGL.Renderer.GLConstant (getValue)
 import PureGL.Renderer.Program (ProgramParamQuery(..), ProgramParamResponse(..), ShaderParamQuery(..), ShaderParamResponse(..), ShaderType(..), Uniform(..), uniformName)
 import PureGL.Renderer.RenderState (RenderError(..))
-import PureGL.WebGL.Types (WEBGL, WebGLProgram, WebGLShader, WebGLUniformLocation, GLint)
+import PureGL.WebGL.Types (GLint, WEBGL, WebGLProgram, WebGLShader, WebGLUniformLocation, WebGLEffRows)
 
-getShaderParameter' :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+getShaderParameter' :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                                      MonadAsk Context m => 
                                      MonadThrow Dynamic  m =>
                                      WebGLShader -> 
@@ -45,7 +46,7 @@ getShaderParameter' s q = do
           Right v -> pure $ TypeOfShader v
 
 
-getProgramParameter' :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+getProgramParameter' :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                                       MonadAsk Context m => 
                                       MonadThrow Dynamic  m => 
                                       WebGLProgram -> 
@@ -63,7 +64,7 @@ getProgramParameter' p q = do
         Left _ -> throwError $ toDynamic GetProgramParameterError
         Right v -> pure $ LinkStatus v
 
-buildShader :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+buildShader :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                              MonadAsk Context m => 
                              MonadThrow Dynamic  m => 
                              String -> 
@@ -81,7 +82,7 @@ buildShader src t = do
       throwError $ toDynamic $ ShaderCompileError t log
     otherwise -> throwError $ toDynamic $ ShaderCompileError t "getShaderParameter error."
 
-buildProgram :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+buildProgram :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                               MonadAsk Context m => 
                               MonadThrow Dynamic m => 
                               String -> 
@@ -102,7 +103,7 @@ buildProgram vs fs = do
       throwError $ toDynamic $ ProgramLinkError log
     otherwise -> throwError $ toDynamic (ProgramLinkError "getProgramParameter error.")
 
-getProgramUniformLocation :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+getProgramUniformLocation :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                                            MonadAsk Context m => 
                                            MonadThrow Dynamic  m =>  
                                            WebGLProgram -> 
@@ -114,7 +115,7 @@ getProgramUniformLocation p u = do
     Nothing -> throwError $ toDynamic $ UniformNotFound $ "Uniform '" <> (uniformName u) <> "not found."
     Just loc -> pure $ loc
 
-getProgramUniformLocationsMap :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+getProgramUniformLocationsMap :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                                                MonadAsk Context m => 
                                                MonadThrow Dynamic  m => 
                                                WebGLProgram ->
@@ -124,7 +125,7 @@ getProgramUniformLocationsMap p us = do
   locs <- getProgramUniformLocations p us
   pure $ fromFoldable $ zip (uniformName <$> us) locs
 
-getProgramUniformLocations :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+getProgramUniformLocations :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                                       MonadAsk Context m => 
                                       MonadThrow Dynamic  m =>   
                                       WebGLProgram -> 
@@ -133,7 +134,7 @@ getProgramUniformLocations :: forall eff m. MonadEff (webgl :: WEBGL | eff) m =>
 getProgramUniformLocations p us = do
   traverse (getProgramUniformLocation p) us
 
-getProgramAttribLocation :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+getProgramAttribLocation :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                                       MonadAsk Context m => 
                                       MonadThrow Dynamic  m => 
                                       WebGLProgram -> 
@@ -145,7 +146,7 @@ getProgramAttribLocation p a = do
     true -> pure $  location
     false -> throwError $ toDynamic $ AttributeNotFount $ "Counld not fint attribute '" <> a <> "' in the shader program."
 
-getProgramAttribLocations :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+getProgramAttribLocations :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                                       MonadAsk Context m => 
                                       MonadThrow Dynamic  m => 
                                       WebGLProgram -> 
@@ -154,7 +155,7 @@ getProgramAttribLocations :: forall eff m. MonadEff (webgl :: WEBGL | eff) m =>
 getProgramAttribLocations p as = do
   traverse (getProgramAttribLocation p) as
 
-getProgramAttribLocationsMap :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+getProgramAttribLocationsMap :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                                               MonadAsk Context m => 
                                               MonadThrow Dynamic  m =>  
                                               WebGLProgram -> 
@@ -164,28 +165,28 @@ getProgramAttribLocationsMap p as = do
   locs <- getProgramAttribLocations p as
   pure $ fromFoldable $ zip as locs
 
-setUniform :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+setUniform :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                             MonadAsk Context m => 
                             MonadThrow Dynamic  m =>  
                             WebGLUniformLocation -> 
                             Uniform -> 
                             m Unit
 setUniform loc (UFloat _ v) = uniform1f loc v
-setUniform loc (UVec2 _ v) = uniform2fv loc (toTypedArray v)
-setUniform loc (UVec3 _ v) = uniform3fv loc (toTypedArray v)
-setUniform loc (UVec4 _ v) = uniform4fv loc (toTypedArray v)
-setUniform loc (UFVec2 _ v) = uniform2fv loc (toTypedArray v)
-setUniform loc (UFVec3 _ v) = uniform3fv loc (toTypedArray v)
-setUniform loc (UFVec4 _ v) = uniform4fv loc (toTypedArray v)
-setUniform loc (UMat2 _ v) = uniform2fv loc (toTypedArray v)
-setUniform loc (UMat3 _ v) = uniform3fv loc (toTypedArray v)
-setUniform loc (UMat4 _ v) = uniform4fv loc (toTypedArray v)
-setUniform loc (UFMat2 _ v) = uniform2fv loc (toTypedArray v)
-setUniform loc (UFMat3 _ v) = uniform3fv loc (toTypedArray v)
-setUniform loc (UFMat4 _ v) = uniform4fv loc (toTypedArray v)
+setUniform loc (UVec2 _ v) = liftEff (toTypedArray v) >>= uniform2fv loc
+setUniform loc (UVec3 _ v) = liftEff (toTypedArray v) >>= uniform3fv loc
+setUniform loc (UVec4 _ v) = liftEff (toTypedArray v) >>= uniform4fv loc
+setUniform loc (UFVec2 _ v) = liftEff (toTypedArray v) >>= uniform2fv loc
+setUniform loc (UFVec3 _ v) = liftEff (toTypedArray v) >>= uniform3fv loc
+setUniform loc (UFVec4 _ v) = liftEff (toTypedArray v) >>= uniform4fv loc
+setUniform loc (UMat2 _ v) = liftEff (toTypedArray v) >>= uniformMatrix2fv loc false
+setUniform loc (UMat3 _ v) = liftEff (toTypedArray v) >>= uniformMatrix3fv loc false
+setUniform loc (UMat4 _ v) = liftEff (toTypedArray v) >>= uniformMatrix4fv loc false
+setUniform loc (UFMat2 _ v) = liftEff (toTypedArray v) >>= uniformMatrix2fv loc false
+setUniform loc (UFMat3 _ v) = liftEff (toTypedArray v) >>= uniformMatrix3fv loc false
+setUniform loc (UFMat4 _ v) = liftEff (toTypedArray v) >>= uniformMatrix4fv loc false
 setUniform loc (USampler2D _ v) = uniform1i loc v
 
-setUniform' :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+setUniform' :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                              MonadAsk Context m => 
                              MonadThrow Dynamic  m =>  
                              StrMap WebGLUniformLocation -> 
@@ -196,7 +197,7 @@ setUniform' locs u =
     Nothing -> throwError $ toDynamic $ UniformNotFound (uniformName u)
     Just loc -> setUniform loc u
 
-setUniformsMap :: forall eff m. MonadEff (webgl :: WEBGL | eff) m => 
+setUniformsMap :: forall eff m. MonadEff (WebGLEffRows eff) m => 
                                       MonadAsk Context m => 
                                       MonadThrow Dynamic  m => 
                                       StrMap WebGLUniformLocation -> 

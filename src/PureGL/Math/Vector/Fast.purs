@@ -1,11 +1,30 @@
-module PureGL.Math.Vector.Fast where
+module PureGL.Math.Vector.Fast 
+  ( class FVector
+  , add
+  , sub
+  , zero
+  , inv
+  , mul
+  , FVector2
+  , FVector3
+  , FVector4
+  , class FromVector
+  , fromVector
+  , toVector
+  , mkFVector2
+  , mkFVector3
+  , mkFVector4
+  , cross
+  , class FInnerProduct
+  , dot
+  ) where
 
 import Prelude
 
 import Control.Monad.Eff (Eff)
-import Control.Monad.ST (ST, STRef)
-import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array)
-import PureGL.Math.Vector (class InnerProduct)
+import PureGL.Data.TypedArrays (class ToTypedArray, ARRAY_BUFFER, Float32Array)
+import PureGL.Math.Vector (Vector2, Vector3, Vector4)
+import PureGL.WebGL.Types (WebGLEff)
 
 -- | A two-component vector, implemented as a Javascript 
 -- | `Float32Array`
@@ -20,84 +39,69 @@ foreign import data FVector3 :: Type
 foreign import data FVector4 :: Type
 
 -- | Create a `FVector2`
-foreign import mkFVector2 :: Number -> Number -> FVector2
+foreign import mkFVector2 :: forall e. Number -> Number -> WebGLEff e FVector2
 
 -- | Create a `FVector3`
-foreign import mkFVector3 :: Number -> Number -> Number -> FVector3
+foreign import mkFVector3 :: forall e. Number -> Number -> Number -> WebGLEff e FVector3
 
 -- | Create a `FVector4`
-foreign import mkFVector4 :: Number -> Number -> Number -> Number -> FVector4
+foreign import mkFVector4 :: forall e. Number -> Number -> Number -> Number -> WebGLEff e FVector4
 
--- Eq and Show instances for FVector{2,3,4}
-instance fvector2Eq :: Eq FVector2 where
-  eq = eqFVector2
-
-instance fvector3Eq :: Eq FVector3 where
-  eq = eqFVector3
-
-instance fvector4Eq :: Eq FVector4 where
-  eq = eqFVector4
-
-instance fvector2Show :: Show FVector2 where
-  show = toStringFVector2
-
-instance fvector3Show :: Show FVector3 where
-  show = toStringFVector3
-
-instance fvector4Show :: Show FVector4 where
-  show = toStringFVector4
-
--- | The `FVector` class is similar to the `Vector`
--- | class, but defined as effectful operations that mutate
--- | a pre-allocated output vector, for improved performance,
--- | via `STRef`s.
--- |
--- | ```purescript
--- | let result = pureST do
--- |    ref <- newSTRef (mkFVector3 0.0 0.0 0.0)
--- |    add v1 v2 ref
--- |    readSTRef ref
--- | ``` 
 class FVector a where
-  add :: forall h eff. a -> a -> STRef h a -> Eff (st :: ST h | eff) Unit
-  sub :: forall h eff. a -> a -> STRef h a -> Eff (st :: ST h | eff) Unit
-  zero :: forall c. c -> a
-  inv :: forall h eff.  a -> STRef h a -> Eff (st :: ST h | eff) Unit
-  mul :: forall h eff. Number -> a -> STRef h a -> Eff (st :: ST h | eff) Unit
-  toFloat32Array :: a -> Float32Array
+  add :: forall e. a -> a -> a -> WebGLEff e Unit
+  sub :: forall e. a -> a -> a -> WebGLEff e Unit
+  zero :: forall e. WebGLEff e a
+  inv :: forall e.  a -> a -> WebGLEff e Unit
+  mul :: forall e. Number -> a -> a -> WebGLEff e Unit
+
+class FromVector a b | a -> b where 
+  fromVector :: forall e. b -> WebGLEff e a
+  toVector :: forall e. a -> WebGLEff e b
+
+class FInnerProduct a where
+  dot :: forall e. a -> a -> WebGLEff e Number
 
 -- FVector and InnerProduct instances for FVector{2,3,4}
 instance fvectorFVector2 :: FVector FVector2 where
   add = addFVector2
   sub = subFVector2
-  zero _ = mkFVector2 0.0 0.0
+  zero = mkFVector2 0.0 0.0
   inv = invFVector2
-  mul = mulFVector2
-  toFloat32Array = toFloat32ArrayFVector2
+  mul = mulFVector2 
 
-instance fvector2InnerProduct :: InnerProduct FVector2 where
+instance fromVectorFVector2 :: FromVector FVector2 Vector2 where
+  fromVector = fromVector2
+  toVector = toVector2  
+
+instance fvector2InnerProduct :: FInnerProduct FVector2 where
   dot = dotFVector2
 
 instance fvectorFVector3 :: FVector FVector3 where
   add = addFVector3
   sub = subFVector3
-  zero _ = mkFVector3 0.0 0.0 0.0
+  zero = mkFVector3 0.0 0.0 0.0
   inv = invFVector3
   mul = mulFVector3
-  toFloat32Array = toFloat32ArrayFVector3
 
-instance fvector3InnerProduct :: InnerProduct FVector3 where
+instance fromVectorFVector3 :: FromVector FVector3 Vector3 where
+  fromVector = fromVector3
+  toVector = toVector3
+
+instance fvector3InnerProduct :: FInnerProduct FVector3 where
   dot = dotFVector3
 
 instance fvectorFVector4 :: FVector FVector4 where
   add = addFVector4
   sub = subFVector4
-  zero _ = mkFVector4 0.0 0.0 0.0 0.0
+  zero = mkFVector4 0.0 0.0 0.0 0.0
   inv = invFVector4
   mul = mulFVector4
-  toFloat32Array = toFloat32ArrayFVector4
 
-instance fVector4InnerProduct :: InnerProduct FVector4 where
+instance fromVectorFVector4 :: FromVector FVector4 Vector4 where
+  fromVector = fromVector4
+  toVector = toVector4
+
+instance fVector4InnerProduct :: FInnerProduct FVector4 where
   dot = dotFVector4
 
 instance toTypedArrayFVector2 :: ToTypedArray FVector2 Float32Array Number where
@@ -107,35 +111,43 @@ instance toTypedArrayFVector3 :: ToTypedArray FVector3 Float32Array Number where
   toTypedArray = toFloat32ArrayFVector3
 
 instance toTypedArrayFVector4 :: ToTypedArray FVector4 Float32Array Number where
-  toTypedArray = toFloat32ArrayFVector4
-
+  toTypedArray = toFloat32ArrayFVector4 
 
 -- foreign imports
-foreign import eqFVector2 :: FVector2 -> FVector2 -> Boolean 
-foreign import eqFVector3 :: FVector3 -> FVector3 -> Boolean
-foreign import eqFVector4 :: FVector4 -> FVector4 -> Boolean
+foreign import cross :: forall e. FVector3 -> FVector3 -> FVector3 -> WebGLEff e Unit
 
-foreign import addFVector2 :: forall h eff. FVector2 -> FVector2 -> STRef h FVector2 -> Eff (st :: ST h | eff) Unit
-foreign import subFVector2 :: forall h eff. FVector2 -> FVector2 -> STRef h FVector2 -> Eff (st :: ST h | eff) Unit
-foreign import invFVector2 :: forall h eff. FVector2 -> STRef h FVector2 -> Eff (st :: ST h | eff) Unit
-foreign import mulFVector2 :: forall h eff. Number -> FVector2 -> STRef h FVector2 -> Eff (st :: ST h | eff) Unit
-foreign import toFloat32ArrayFVector2 :: FVector2 -> Float32Array
-foreign import toStringFVector2 :: FVector2 -> String
-foreign import dotFVector2 :: FVector2 -> FVector2 -> Number
+foreign import eqFVector2 :: forall e. FVector2 -> FVector2 -> WebGLEff e Boolean 
+foreign import eqFVector3 :: forall e. FVector3 -> FVector3 -> WebGLEff e Boolean
+foreign import eqFVector4 :: forall e. FVector4 -> FVector4 -> WebGLEff e Boolean
 
-foreign import addFVector3 :: forall h eff. FVector3 -> FVector3 -> STRef h FVector3 -> Eff (st :: ST h | eff) Unit
-foreign import subFVector3 :: forall h eff. FVector3 -> FVector3 -> STRef h FVector3 -> Eff (st :: ST h | eff) Unit
-foreign import invFVector3 :: forall h eff. FVector3 -> STRef h FVector3 -> Eff (st :: ST h | eff) Unit
-foreign import mulFVector3 :: forall h eff. Number -> FVector3 -> STRef h FVector3 -> Eff (st :: ST h | eff) Unit
-foreign import toFloat32ArrayFVector3 :: FVector3 -> Float32Array
-foreign import toStringFVector3 :: FVector3 -> String
-foreign import dotFVector3 :: FVector3 -> FVector3 -> Number
+foreign import addFVector2 :: forall e. FVector2 -> FVector2 -> FVector2 -> WebGLEff e Unit
+foreign import subFVector2 :: forall e. FVector2 -> FVector2 -> FVector2 -> WebGLEff e Unit
+foreign import invFVector2 :: forall e. FVector2 -> FVector2 -> WebGLEff e Unit
+foreign import mulFVector2 :: forall e. Number -> FVector2 -> FVector2 -> WebGLEff e Unit
+foreign import toFloat32ArrayFVector2 :: forall e. FVector2 -> Eff (arrayBuffer :: ARRAY_BUFFER | e) Float32Array
+foreign import toStringFVector2 :: forall e. FVector2 -> WebGLEff e String
+foreign import dotFVector2 :: forall e. FVector2 -> FVector2 -> WebGLEff e Number
 
+foreign import addFVector3 :: forall h e. FVector3 -> FVector3 -> FVector3 -> WebGLEff e Unit
+foreign import subFVector3 :: forall h e. FVector3 -> FVector3 -> FVector3 -> WebGLEff e Unit
+foreign import invFVector3 :: forall h e. FVector3 -> FVector3 -> WebGLEff e Unit
+foreign import mulFVector3 :: forall h e. Number -> FVector3 -> FVector3 -> WebGLEff e Unit
+foreign import toFloat32ArrayFVector3 :: forall e. FVector3 -> Eff (arrayBuffer :: ARRAY_BUFFER | e) Float32Array
+foreign import toStringFVector3 :: forall e. FVector3 -> WebGLEff e String
+foreign import dotFVector3 :: forall e. FVector3 -> FVector3 -> WebGLEff e Number
 
-foreign import addFVector4 :: forall h eff. FVector4 -> FVector4 -> STRef h FVector4 -> Eff (st :: ST h | eff) Unit
-foreign import subFVector4 :: forall h eff. FVector4 -> FVector4 -> STRef h FVector4 -> Eff (st :: ST h | eff) Unit
-foreign import invFVector4 :: forall h eff. FVector4 -> STRef h FVector4 -> Eff (st :: ST h | eff) Unit
-foreign import mulFVector4 :: forall h eff. Number -> FVector4 -> STRef h FVector4 -> Eff (st :: ST h | eff) Unit
-foreign import toFloat32ArrayFVector4 :: FVector4 -> Float32Array
-foreign import toStringFVector4 :: FVector4 -> String
-foreign import dotFVector4 :: FVector4 -> FVector4 -> Number
+foreign import addFVector4 :: forall e. FVector4 -> FVector4 -> FVector4 -> WebGLEff e Unit
+foreign import subFVector4 :: forall e. FVector4 -> FVector4 -> FVector4 -> WebGLEff e Unit
+foreign import invFVector4 :: forall e. FVector4 -> FVector4 -> WebGLEff e Unit
+foreign import mulFVector4 :: forall e. Number -> FVector4 -> FVector4 -> WebGLEff e Unit
+foreign import toFloat32ArrayFVector4 :: forall e. FVector4 -> Eff (arrayBuffer :: ARRAY_BUFFER | e) Float32Array
+foreign import toStringFVector4 :: forall e. FVector4 -> WebGLEff e String
+foreign import dotFVector4 :: forall e. FVector4 -> FVector4 -> WebGLEff e Number
+
+foreign import fromVector2 :: forall e. Vector2 -> WebGLEff e FVector2 
+foreign import fromVector3 :: forall e. Vector3 -> WebGLEff e FVector3
+foreign import fromVector4 :: forall e. Vector4 -> WebGLEff e FVector4
+
+foreign import toVector2 :: forall e. FVector2 -> WebGLEff e Vector2 
+foreign import toVector3 :: forall e. FVector3 -> WebGLEff e Vector3
+foreign import toVector4 :: forall e. FVector4 -> WebGLEff e Vector4

@@ -73,7 +73,9 @@ exports.invertMatrix2 = function (m) {
 };
 exports.fromArrayMatrix2 = fromArray(4);
 exports._toFloat32Array = function (m) {
-  return new toFloat32Array(m);
+  return function () {
+    return new toFloat32Array(m);
+  };
 };
 
 exports.mkMatrix3 = function (a) {

@@ -3,7 +3,7 @@ module PureGL.Math.Vector where
 import Prelude
 import Math (sqrt)
 import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array, fromArray)
-import PureGL.Utils.Math (class ApproxEq, approxEq)
+import PureGL.Utils.Math (class ApproxEq, approxEq, (~=))
 
 -- | A two component vector, defined as a record
 newtype Vector2 = Vector2 {x :: Number, y :: Number}
@@ -26,7 +26,7 @@ mkVector3 x y z = Vector3 {x: x, y: y, z: z}
 mkVector4 :: Number -> Number -> Number -> Number -> Vector4
 mkVector4 x y z w = Vector4 {x: x, y: y, z: z, w: w}
 
--- Eq and show instances for Vector{2,3,4}
+-- Eq, ApproxEq, and show instances for Vector{2,3,4}
 instance vec2Eq :: Eq Vector2 where
   eq (Vector2 v1) (Vector2 v2) = (v1.x == v2.x) && (v1.y == v2.y)
 
@@ -35,6 +35,15 @@ instance vec3Eq :: Eq Vector3 where
 
 instance vec4Eq :: Eq Vector4 where
   eq (Vector4 v1) (Vector4 v2) = (v1.x == v2.x) && (v1.y == v2.y) && (v1.z == v2.z) && (v1.w == v2.w)
+
+instance approxEq :: ApproxEq Vector2 where
+  approxEq (Vector2 v1) (Vector2 v2) = (v1.x ~= v2.x) && (v1.y ~= v2.y)
+
+instance approxVec3Eq :: ApproxEq Vector3 where
+  approxEq (Vector3 v1) (Vector3 v2) = (v1.x ~= v2.x) && (v1.y ~= v2.y) && (v1.z ~= v2.z)
+
+instance approxVec4Eq :: ApproxEq Vector4 where
+  approxEq (Vector4 v1) (Vector4 v2) = (v1.x ~= v2.x) && (v1.y ~= v2.y) && (v1.z ~= v2.z) && (v1.w ~= v2.w)  
 
 instance vec2Show :: Show Vector2 where
   show (Vector2 v) = "(" <> (show v.x) <> ", " <> (show v.y) <> ")"
@@ -50,15 +59,14 @@ instance vec4Show :: Show Vector4 where
 -- |  - Subtraction: `sub`
 -- |  - Zero element: `zero` 
 -- |  - Inverse: `inv`  
--- |  - Scalar multiplication: `mul`, 
--- | and a function to convert the vector to a `Float32Array` (`toFloat32Array`).
+-- |  - Scalar multiplication: `mul`
+-- | 
 class Vector a where
   add :: a -> a -> a
   sub :: a -> a -> a 
   zero :: a 
   inv :: a -> a 
-  mul :: Number -> a -> a
-  toFloat32Array :: a -> Float32Array
+  mul :: Number -> a -> a  
 
 -- | This class implements the dot, or inner product, between elements
 -- | in an Inner product space
@@ -79,7 +87,6 @@ instance vector2Vector :: Vector Vector2 where
   zero = Vector2 {x: 0.0, y: 0.0}
   inv (Vector2 v) = Vector2 {x: -v.x, y: -v.y}
   mul a (Vector2 v) = Vector2 {x: a * v.x, y: a * v.y}
-  toFloat32Array (Vector2 v) = fromArray [v.x, v.y]
 
 instance vector2InnerProduct :: InnerProduct Vector2 where
   dot (Vector2 v1) (Vector2 v2) = v1.x * v2.x + v1.y * v2.y 
@@ -90,7 +97,6 @@ instance vector3Vector :: Vector Vector3 where
   zero = Vector3 {x: 0.0, y: 0.0, z: 0.0}
   inv (Vector3 v) = Vector3 {x: -v.x, y: -v.y, z: -v.z}
   mul a (Vector3 v) = Vector3 {x: a * v.x, y: a * v.y, z: a * v.z}
-  toFloat32Array (Vector3 v) = fromArray [v.x, v.y, v.z]
 
 instance vector3InnerProduct :: InnerProduct Vector3 where
   dot (Vector3 v1) (Vector3 v2) = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z
@@ -101,19 +107,18 @@ instance vector4Vector :: Vector Vector4 where
   zero = Vector4 {x: 0.0, y: 0.0, z: 0.0, w: 0.0}
   inv (Vector4 v) = Vector4 {x: -v.x, y: -v.y, z: -v.z, w: -v.w}
   mul a (Vector4 v) = Vector4 {x: a * v.x, y: a * v.y, z: a * v.z, w: a * v.w}
-  toFloat32Array (Vector4 v) = fromArray [v.x, v.y, v.z, v.w]
 
 instance vector4InnerProduct :: InnerProduct Vector4 where
   dot (Vector4 v1) (Vector4 v2) = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w
 
 instance toTypedArrayVector2 :: ToTypedArray Vector2 Float32Array Number where
-  toTypedArray = toFloat32Array
+  toTypedArray (Vector2 v) = fromArray [v.x, v.y]
 
 instance toTypedArrayVector3 :: ToTypedArray Vector3 Float32Array Number where
-  toTypedArray = toFloat32Array
+  toTypedArray (Vector3 v) = fromArray [v.x, v.y, v.z]
 
 instance toTypedArrayVector4 :: ToTypedArray Vector4 Float32Array Number where
-  toTypedArray = toFloat32Array
+  toTypedArray (Vector4 v) = fromArray [v.x, v.y, v.z, v.w]
 
 instance approxEqVector2 :: ApproxEq Vector2 where
   approxEq (Vector2 v1) (Vector2 v2) = (approxEq v1.x v2.x) && 

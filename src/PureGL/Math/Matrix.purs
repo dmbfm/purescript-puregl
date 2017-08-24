@@ -30,11 +30,12 @@ module PureGL.Math.Matrix
 
 import Prelude
 
+import Control.Monad.Eff (Eff)
 import Data.Foreign.Index ((!))
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe)
 import Math (cos, sin)
-import PureGL.Data.TypedArrays (class ToTypedArray, Float32Array)
+import PureGL.Data.TypedArrays (class ToTypedArray, ARRAY_BUFFER, Float32Array)
 import PureGL.Math.Vector (class Vector, Vector3(..), Vector4(..), mkVector3, normalize)
 import PureGL.Utils.Math (toRadians)
 import Unsafe.Coerce (unsafeCoerce)
@@ -98,7 +99,6 @@ instance matrix2Vector :: Vector Matrix2 where
   zero = mkMatrix2 0.0 0.0 0.0 0.0
   inv = scalarMulMatrix2 (-1.0)
   mul = scalarMulMatrix2
-  toFloat32Array = _toFloat32Array
 
 instance matrix2SquareMatrix :: SquareMatrix Matrix2 where
   identity = mkMatrix2 1.0 0.0 0.0 1.0
@@ -120,7 +120,6 @@ instance matrix3Vector :: Vector Matrix3 where
   zero = mkMatrix3 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
   inv = scalarMulMatrix3 (-1.0)
   mul = scalarMulMatrix3
-  toFloat32Array = _toFloat32Array
 
 instance matrix3SquareMatrix :: SquareMatrix Matrix3 where
   identity = mkMatrix3 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0
@@ -129,7 +128,6 @@ instance matrix3SquareMatrix :: SquareMatrix Matrix3 where
   determinant = determinantMatrix3
   invert = toMaybe <<< invertMatrix3
   fromArray = fromArrayMatrix3
-
 
 instance matrix4Eq :: Eq Matrix4 where
   eq = eqMatrix4
@@ -146,7 +144,6 @@ instance matrix4Vector :: Vector Matrix4 where
                    0.0 0.0 0.0 0.0
   inv = scalarMulMatrix4 (-1.0)
   mul = scalarMulMatrix4
-  toFloat32Array = _toFloat32Array
 
 instance matrix4SquareMatrix :: SquareMatrix Matrix4 where
   identity = mkMatrix4 1.0 0.0 0.0 0.0 
@@ -284,7 +281,7 @@ mkRotation v a = fromArray $ [ (c + (1.0 - c) * u.x * u.x),
 foreign import applyTransform :: Matrix4 -> Vector4 -> Vector4
 
 -- other foreign imports
-foreign import _toFloat32Array :: forall m. m -> Float32Array
+foreign import _toFloat32Array :: forall e m. m -> Eff (arrayBuffer :: ARRAY_BUFFER | e) Float32Array
 foreign import _toStringMatrix :: forall m. m -> String
 
 foreign import eqMatrix2 :: Matrix2 -> Matrix2 -> Boolean

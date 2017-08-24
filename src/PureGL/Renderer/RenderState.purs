@@ -18,7 +18,7 @@ import PureGL.Renderer.Program (LoadedProgram, ShaderType)
 import PureGL.Renderer.Texture (LoadedTexture)
 import PureGL.Renderer.Types (ResourceId)
 import PureGL.Utils.HasID (class HasID)
-import PureGL.WebGL.Types (WEBGL)
+import PureGL.WebGL.Types (WEBGL, WebGLEffRows)
 
 -- | Possible Renderer error types
 data RenderError = 
@@ -46,7 +46,7 @@ newtype RenderState = RenderState RenderStateRec
 
 type ECSManagerRenderer r = ECSManager { renderer :: RenderState | r}
 
-type RenderT r e a = ECSManagerT (webgl :: WEBGL | e) Context { renderer :: RenderState | r} a
+type RenderT r e a = ECSManagerT (WebGLEffRows e) Context { renderer :: RenderState | r} a
 
 emptyRenderState :: RenderState 
 emptyRenderState = RenderState

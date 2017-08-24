@@ -1,14 +1,17 @@
 module PureGL.WebGL.Types where
 
 import Control.Monad.Eff (Eff, kind Effect)
+import DOM (DOM)
 import DOM.HTML.Types (HTMLCanvasElement, HTMLImageElement, HTMLVideoElement)
-import PureGL.Data.TypedArrays (Uint8Array)
+import PureGL.Data.TypedArrays (ARRAY_BUFFER, Uint8Array)
 
 -- | The Effect type for WebGL operations
 foreign import data WEBGL :: Effect
 
+type WebGLEffRows e = (webgl :: WEBGL, arrayBuffer :: ARRAY_BUFFER, dom :: DOM | e)
+
 -- | Type alias for Eff Monad with WebGL Effects
-type WebGLEff e = Eff (webgl :: WEBGL | e)
+type WebGLEff e = Eff (WebGLEffRows e)
 
 -- | This type refers to the Javascript WebGLContext object returned
 -- | by calling HTMLCanvasElement.getContext('webgl')

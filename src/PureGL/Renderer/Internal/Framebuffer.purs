@@ -8,7 +8,7 @@ import PureGL.Renderer.RenderState (RenderT)
 import PureGL.Renderer.Texture (LoadedTexture(..))
 import PureGL.WebGL (framebufferRenderbuffer, framebufferTexture2D)
 import PureGL.WebGL.Constants (gl_FRAMEBUFFER, gl_RENDERBUFFER)
-import PureGL.WebGL.Types (GLenum)
+import PureGL.WebGL.Types (GLenum) 
 
 class FBAttachable a where 
   attachToFramebuffer :: forall e r. a -> GLenum -> RenderT r e Unit

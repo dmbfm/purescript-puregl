@@ -2,13 +2,13 @@ const rollup = require('rollup');
 const pathExists = require('path-exists');
 const path = require('path');
 const purs = require('rollup-plugin-purs');
+const commonjs = require('rollup-plugin-commonjs');
+const nodeResolve = require('rollup-plugin-node-resolve');
 const watch = require('watch');
 const argv = require('minimist')(process.argv.slice(2));
 const fs = require('fs');
 const fe = require('file-extension');
 const spawn = require('cross-spawn');
-
-//const compileCommand = name => "pulp build -I examples/ -- --source-maps" + name;
 
 const compileCommand = "pulp"
 const compileArgs = name => ['build', '-I', 'examples/' + name, '--', '--source-maps'];
@@ -20,6 +20,7 @@ const buildExample = (name, w) => {
   }
 
   let entry = path.join('.', 'examples', name, 'Main.purs');
+  //let entry = path.join('.', 'examples', name, 'index.js');
   let bundle = path.join('.', 'examples', 'dist', name + '.bundle.js');
 
   if (!pathExists.sync(entry)) {
@@ -77,7 +78,7 @@ const buildExample = (name, w) => {
     }).then(b => {
       cache = b;
       b.write({
-        dest: bundle, format: "iife", sourceMap: true
+        dest: bundle, format: "iife", sourceMap: true, moduleName: "Main"
       }).then(() => {
         lock = false;
       });

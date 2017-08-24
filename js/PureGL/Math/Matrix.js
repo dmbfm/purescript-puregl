@@ -49,7 +49,7 @@ exports.invertMatrix2 = m => {
   return [a * m[3], -a * m[1], -a * m[2], a * m[0]];
 }
 exports.fromArrayMatrix2 = fromArray(4)
-exports._toFloat32Array = m => new toFloat32Array(m);
+exports._toFloat32Array = m => () => new toFloat32Array(m);
 
 exports.mkMatrix3 = a => b => c => d => e => f => g => h => i =>  [a, b, c, d, e, f, g, h, i];
 exports.eqMatrix3 = m1 => m2 => 
