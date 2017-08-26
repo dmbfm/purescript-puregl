@@ -120,21 +120,6 @@ instance toTypedArrayVector3 :: ToTypedArray Vector3 Float32Array Number where
 instance toTypedArrayVector4 :: ToTypedArray Vector4 Float32Array Number where
   toTypedArray (Vector4 v) = fromArray [v.x, v.y, v.z, v.w]
 
-instance approxEqVector2 :: ApproxEq Vector2 where
-  approxEq (Vector2 v1) (Vector2 v2) = (approxEq v1.x v2.x) && 
-                                       (approxEq v1.y v2.y)
-
-instance approxEqVector3 :: ApproxEq Vector3 where
-  approxEq (Vector3 v1) (Vector3 v2) = (approxEq v1.x v2.x) && 
-                                       (approxEq v1.y v2.y) &&
-                                       (approxEq v1.z v2.z)
-
-instance approxEqVector4 :: ApproxEq Vector4 where
-  approxEq (Vector4 v1) (Vector4 v2) = (approxEq v1.x v2.x) && 
-                                       (approxEq v1.y v2.y) &&
-                                       (approxEq v1.z v2.z) &&
-                                       (approxEq v1.w v2.w)
-
 -- | Computes the cross product between to `Vector3`
 cross :: Vector3 -> Vector3 -> Vector3 
 cross (Vector3 v1) (Vector3 v2) = 

@@ -10,7 +10,7 @@ toRadians x = x * (pi / 180.0)
 class ApproxEq a where
   approxEq :: a -> a -> Boolean
 
-infix 2 approxEq as ~=
+infix 4 approxEq as ~=
 
 instance approxEqNumber :: ApproxEq Number where
   approxEq x y = abs (x - y) <= 0.00000001

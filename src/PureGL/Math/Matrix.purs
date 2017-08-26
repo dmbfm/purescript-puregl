@@ -25,7 +25,12 @@ module PureGL.Math.Matrix
   , mkRotateY
   , mkRotateZ
   , mkRotation
+  , mkRotation'
   , applyTransform
+  , translate
+  , translate'
+  , rotate
+  , rotate'
   ) where
 
 import Prelude
@@ -36,17 +41,18 @@ import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe)
 import Math (cos, sin)
 import PureGL.Data.TypedArrays (class ToTypedArray, ARRAY_BUFFER, Float32Array)
+import PureGL.Math.Quaternion (Quaternion(..))
 import PureGL.Math.Vector (class Vector, Vector3(..), Vector4(..), mkVector3, normalize)
 import PureGL.Utils.Math (toRadians)
 import Unsafe.Coerce (unsafeCoerce)
 
--- | A 2x2 Matrix (Implemented as a javascript array)
+-- | A 2x2 Matrix (Implemented as a javascript array, in column-major order) 
 foreign import data Matrix2 :: Type
 
--- | A 3x3 Matrix (Implemented as a javascript array)
+-- | A 3x3 Matrix (Implemented as a javascript array, in column-major order)
 foreign import data Matrix3 :: Type 
 
--- | A 4x4 Matrix (Implemented as a javascript array)
+-- | A 4x4 Matrix (Implemented as a javascript array, in column-major order)
 foreign import data Matrix4 :: Type
 
 -- | Create a `Matrix2` from given numbers (row-major order, 
@@ -65,18 +71,18 @@ foreign import mkMatrix4 :: Number -> Number -> Number -> Number ->
                             Number -> Number -> Number -> Number -> 
                             Number -> Number -> Number -> Number -> Matrix4
 
--- | The `SquareMatrix` class extends the `Vector` class 
--- | by adding the following Matrix operations for square
--- | matrices:
+-- | The `SquareMatrix` class extends the `Vector` class | by adding the
+-- following Matrix operations for square | matrices:
 -- |
--- | - The identity matrix: `identity`
--- | - Matrix transpose: `transpose`
--- | - Matrix multiplication: `mulMatrix`
--- | - Matrix determinant: `determinant`
+-- | - The identity matrix: `identity` 
+-- | - Matrix transpose: `transpose` 
+-- | - Matrix multiplication: `mulMatrix` 
+-- | - Matrix determinant: `determinant` 
 -- | - Matrix inversion: `invert`
 -- |
--- | and a method, `fromArray`, to create a matrix from a
--- | purescript array.
+-- | and a method, `fromArray`, to create a matrix from a | purescript array
+-- | (unlinke the `mkMatrix` methods, the `fromArray` function expects the
+-- | elements in the array to be in column-major order).
 -- |
 class Vector a <= SquareMatrix a  where
   identity :: a
@@ -208,11 +214,11 @@ mkPerspective'' = mkPerspective3
 
 -- | Create a translation `Matrix4` from `x`, `y` and `z` coordinates.
 mkTranslation :: Number -> Number -> Number -> Matrix4
-mkTranslation x y z = fromArray [ 1.0, 0.0, 0.0, x 
-                                 , 0.0, 1.0, 0.0, y
-                                 , 0.0, 0.0, 1.0, z
-                                 , 0.0, 0.0, 0.0, 1.0
-                                 ]
+mkTranslation x y z = fromArray [ 1.0, 0.0, 0.0, 0.0
+                                , 0.0, 1.0, 0.0, 0.0
+                                , 0.0, 0.0, 1.0, 0.0
+                                , x, y, z, 1.0
+                                ]                                
 
 -- | Create a translation `Matrix4` from a `Vector3`
 mkTranslation' :: Vector3 -> Matrix4
@@ -231,30 +237,33 @@ mkScale' (Vector3 v) = mkScale v.x v.y v.z
 
 -- | Create a `Matrix4` for rotations about the `z` axis.
 mkRotateZ :: Number -> Matrix4
-mkRotateZ a = fromArray $ [ c, ((-1.0) *s), 0.0, 0.0,
-                            s, c, 0.0, 0.0,
-                            0.0, 0.0, 1.0, 0.0,
-                            0.0, 0.0, 0.0, 1.0 ]
+mkRotateZ a = fromArray $ [ c, s, 0.0, 0.0
+                          , ((-1.0) * s), c, 0.0, 0.0
+                          , 0.0, 0.0, 1.0, 0.0
+                          , 0.0, 0.0, 0.0, 1.0
+                          ]
   where
     s = sin $ toRadians a
     c = cos $ toRadians a
 
 -- | Create a `Matrix4` for rotations about the `y` axis.
 mkRotateY :: Number -> Matrix4
-mkRotateY a = fromArray $ [ c,  0.0, s, 0.0,
-                            0.0, 1.0, 0.0, 0.0,
-                            ((-1.0) * s), 0.0, c, 0.0,
-                            0.0, 0.0, 0.0, 1.0 ]
+mkRotateY a = fromArray [ c, 0.0, ((-1.0) * s), 0.0
+                        , 0.0, 1.0, 0.0, 0.0
+                        , s, 0.0, c, 0.0
+                        , 0.0, 0.0, 0.0, 1.0
+                        ]
   where
     s = sin $ toRadians a
     c = cos $ toRadians a
 
 -- | Create a `Matrix4` for rotations about the `x` axis.
 mkRotateX :: Number -> Matrix4
-mkRotateX a = fromArray $ [ 1.0, 0.0, 0.0, 0.0,
-                           0.0, c, ((-1.0) * s), 0.0,
-                           0.0, s, c, 0.0,
-                           0.0, 0.0, 0.0, 1.0 ]
+mkRotateX a = fromArray $ [ 1.0, 0.0, 0.0, 0.0
+                          , 0.0, c, s, 0.0
+                          , 0.0, ((-1.0) * s), c, 0.0
+                          , 0.0, 0.0, 0.0, 1.0
+                          ]
   where
     s = sin $ toRadians a
     c = cos $ toRadians a
@@ -262,25 +271,70 @@ mkRotateX a = fromArray $ [ 1.0, 0.0, 0.0, 0.0,
 -- | Create a rotation `Matrix4`for rotations around an arbitrary axis, with
 -- | the angle in degrees. 
 mkRotation :: Vector3 -> Number -> Matrix4
-mkRotation v a = fromArray $ [ (c + (1.0 - c) * u.x * u.x),
-                           ((1.0 - c) * u.x * u.y - s * u.z),
-                           ((1.0 - c) * u.x * u.z + s * u.y), 0.0,
-                           ((1.0 - c) * u.x * u.y + s * u.z),
-                           (c + (1.0 -c) * u.y * u.y),
-                           ((1.0 - c) * u.y * u.z - s * u.x), 0.0,
-                           ((1.0 - c) * u.x * u.z - s * u.y),
-                           ((1.0 - c) * u.y * u.z + s * u.x),
-                           (c + (1.0 - c) * u.z * u.z), 0.0,
-                           0.0, 0.0, 0.0, 1.0 ]
+mkRotation v a = fromArray $ [ (c + (1.0 - c) * u.x * u.x)
+                             , ((1.0 - c) * u.x * u.y + s * u.z)
+                             , ((1.0 - c) * u.x * u.z - s * u.y)
+                             , 0.0
+
+                             , ((1.0 - c) * u.x * u.y - s * u.z)
+                             , (c + (1.0 -c) * u.y * u.y)
+                             , ((1.0 - c) * u.y * u.z + s * u.x)
+                             , 0.0
+
+                             , ((1.0 - c) * u.x * u.z + s * u.y)
+                             , ((1.0 - c) * u.y * u.z - s * u.x)
+                             , (c + (1.0 - c) * u.z * u.z)
+                             , 0.0
+
+                             , 0.0, 0.0, 0.0, 1.0
+                             ]
   where
     s = sin $ toRadians a
     c = cos $ toRadians a
     (Vector3 u) = normalize v
 
+mkRotation' :: Quaternion -> Matrix4
+mkRotation' q = fromArray [ 1.0 - 2.0 * u.c * u.c - 2.0 * u.d * u.d
+                          , 2.0 * u.b * u.c - 2.0 * u.a * u. d
+                          , 2.0 * u.b * u.d + 2.0 * u.a * u.c
+                          , 0.0
+
+                          , 2.0 * u.b * u.c + 2.0 * u.a * u.d
+                          , 1.0 - 2.0 * u.b * u.b - 2.0 * u.d * u.d
+                          , 2.0 * u.c * u.d - 2.0 * u.a * u.b
+                          , 0.0
+
+                          , 2.0 * u.b * u.d - 2.0 * u.a * u.c
+                          , 2.0 * u.c * u.d + 2.0 * u.a * u.b
+                          , 1.0 - 2.0 * u.b * u.b - 2.0 * u.c * u.c
+                          , 0.0
+
+                          , 0.0, 0.0, 0.0, 1.0
+                          ]
+  where
+    (Quaternion u) = normalize q
+
 -- | Apply a `Matrix4` transform to a `Vector4`.
 foreign import applyTransform :: Matrix4 -> Vector4 -> Vector4
 
+-- | Left multiply a `Matrix4` by a translation `Matrix4` obtained from the
+-- | `Vector3`.
+foreign import translate :: Vector3 -> Matrix4 -> Matrix4 
+
+foreign import rotate :: Vector3 -> Number -> Matrix4 -> Matrix4
+
+rotate' :: Quaternion -> Matrix4 -> Matrix4
+rotate' = rotate2
+
+-- | Left multiply a `Matrix4` by a translation `Matrix4` obtained from the
+-- | xyz coordinates.
+translate' :: Number -> Number -> Number -> Matrix4 -> Matrix4
+translate' x y z = translate (Vector3 {x: x, y: y, z: z})
+
+
 -- other foreign imports
+foreign import rotate2 :: Quaternion -> Matrix4 -> Matrix4
+
 foreign import _toFloat32Array :: forall e m. m -> Eff (arrayBuffer :: ARRAY_BUFFER | e) Float32Array
 foreign import _toStringMatrix :: forall m. m -> String
 

@@ -3,7 +3,8 @@ module Test.PureGL.Math.Matrix where
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import PureGL.Math.Matrix (Matrix2, Matrix3, applyTransform, determinant, fromArray, identity, invert, mkMatrix2, mkMatrix3, mkMatrix4, mkRotateX, mkRotateY, mkRotateZ, mkRotation, mkScale, mkScale', mkTranslation, mkTranslation', mulMatrix, transpose)
+import PureGL.Math.Matrix (Matrix2, Matrix3, applyTransform, determinant, fromArray, identity, invert, mkMatrix2, mkMatrix3, mkMatrix4, mkRotateX, mkRotateY, mkRotateZ, mkRotation, mkScale, mkScale', mkTranslation, mkTranslation', mulMatrix, rotate, rotate', translate', transpose)
+import PureGL.Math.Quaternion (fromAxisRotation)
 import PureGL.Math.Vector (mkVector3, mkVector4)
 import PureGL.Math.Vector as V
 import PureGL.Utils.Math (approxEq)
@@ -71,7 +72,7 @@ matrixSpec = describe "Matrix" do
 
     it "fromArray" do
       let m1 = mkMatrix2 1.0 2.0 3.0 4.0
-      let m2 = fromArray [1.0, 2.0, 3.0, 4.0]
+      let m2 = fromArray [1.0, 3.0, 2.0, 4.0]
       shouldEqual m1 m2
 
   describe "Matrix3" do
@@ -171,7 +172,7 @@ matrixSpec = describe "Matrix" do
         Just r' -> shouldEqual r' r
 
     it "fromArray" do
-      let m2 = fromArray [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+      let m2 = fromArray [ 1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0 ]      
       shouldEqual m m2
 
   describe "Matrix4" do
@@ -246,10 +247,11 @@ matrixSpec = describe "Matrix" do
         Just r' -> shouldEqual r' r
 
     it "fromArray" do
-      let r = fromArray [ 1.0, 0.0, 0.0, 1.0
-                        , 0.0, 2.0, 1.0, 2.0
-                        , 2.0, 1.0, 0.0, 1.0
-                        , 2.0, 0.0, 1.0, 4.0 ]
+      let r = fromArray [ 1.0, 0.0, 2.0, 2.0
+                        , 0.0, 2.0, 1.0, 0.0
+                        , 0.0, 1.0, 0.0, 1.0
+                        , 1.0, 2.0, 1.0, 4.0 
+                        ]
       shouldEqual m r
 
     it "mkTranslation / applyTransform" do
@@ -291,3 +293,49 @@ matrixSpec = describe "Matrix" do
       shouldEqual (approxEq x1 (mkVector4 0.0 1.0 0.0 1.0)) true
       shouldEqual (approxEq x2 (mkVector4 0.0 0.0 (-1.0) 1.0)) true
       shouldEqual (approxEq x3 (mkVector4 0.0 0.0 1.0 1.0)) true
+
+    it "translate / applyTransform" do
+      let m = identity
+      let t1 = translate' 1.0 0.0 0.0 m
+      let t2 = translate' 0.0 1.0 0.0 m
+      let t3 = translate' 0.0 0.0 1.0 m
+      let t4 = translate' 3.0 8.0 5.0 m
+      let t5 = translate' 1.0 0.0 0.0 t1
+      let x1 = applyTransform t1 (mkVector4 0.0 0.0 0.0 1.0)
+      let x2 = applyTransform t2 (mkVector4 0.0 0.0 0.0 1.0)
+      let x3 = applyTransform t3 (mkVector4 0.0 0.0 0.0 1.0)
+      let x4 = applyTransform t4 (mkVector4 0.0 0.0 0.0 1.0)
+      let x5 = applyTransform t5 (mkVector4 0.0 0.0 0.0 1.0)
+      shouldEqual x1 (mkVector4 1.0 0.0 0.0 1.0)
+      shouldEqual x2 (mkVector4 0.0 1.0 0.0 1.0)
+      shouldEqual x3 (mkVector4 0.0 0.0 1.0 1.0)
+      shouldEqual x4 (mkVector4 3.0 8.0 5.0 1.0)
+      shouldEqual x5 (mkVector4 2.0 0.0 0.0 1.0)
+
+    it "rotate / applyTransform" do
+        let m = identity
+        let t1 = rotate (mkVector3 0.0 0.0 1.0) 90.0 m
+        let t2 = rotate (mkVector3 0.0 1.0 0.0) 90.0 m 
+        let t3 = rotate (mkVector3 1.0 0.0 0.0) 90.0 m
+
+        let x1 = applyTransform t1 (mkVector4 1.0 0.0 0.0 1.0)
+        let x2 = applyTransform t2 (mkVector4 1.0 0.0 0.0 1.0)
+        let x3 = applyTransform t3 (mkVector4 0.0 1.0 0.0 1.0)
+        --shouldEqual x (mkVector4 2.0 2.0 2.0 1.0)
+        shouldEqual (approxEq x1 (mkVector4 0.0 1.0 0.0 1.0)) true
+        shouldEqual (approxEq x2 (mkVector4 0.0 0.0 (-1.0) 1.0)) true
+        shouldEqual (approxEq x3 (mkVector4 0.0 0.0 1.0 1.0)) true
+
+    it "rotate' (Quaternion) / applyTransform" do
+        let m = identity
+        let t1 = rotate' (fromAxisRotation 90.0 $ mkVector3 0.0 0.0 1.0) m --(mkVector3 0.0 0.0 1.0) 90.0 m
+        let t2 = rotate' (fromAxisRotation 90.0 $ mkVector3 0.0 1.0 0.0) m 
+        let t3 = rotate' (fromAxisRotation 90.0 $ mkVector3 1.0 0.0 0.0) m
+
+        let x1 = applyTransform t1 (mkVector4 1.0 0.0 0.0 1.0)
+        let x2 = applyTransform t2 (mkVector4 1.0 0.0 0.0 1.0)
+        let x3 = applyTransform t3 (mkVector4 0.0 1.0 0.0 1.0)
+        
+        shouldEqual (approxEq x1 (mkVector4 0.0 1.0 0.0 1.0)) true
+        shouldEqual (approxEq x2 (mkVector4 0.0 0.0 (-1.0) 1.0)) true
+        shouldEqual (approxEq x3 (mkVector4 0.0 0.0 1.0 1.0)) true

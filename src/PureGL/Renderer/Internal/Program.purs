@@ -175,15 +175,9 @@ setUniform loc (UFloat _ v) = uniform1f loc v
 setUniform loc (UVec2 _ v) = liftEff (toTypedArray v) >>= uniform2fv loc
 setUniform loc (UVec3 _ v) = liftEff (toTypedArray v) >>= uniform3fv loc
 setUniform loc (UVec4 _ v) = liftEff (toTypedArray v) >>= uniform4fv loc
-setUniform loc (UFVec2 _ v) = liftEff (toTypedArray v) >>= uniform2fv loc
-setUniform loc (UFVec3 _ v) = liftEff (toTypedArray v) >>= uniform3fv loc
-setUniform loc (UFVec4 _ v) = liftEff (toTypedArray v) >>= uniform4fv loc
 setUniform loc (UMat2 _ v) = liftEff (toTypedArray v) >>= uniformMatrix2fv loc false
 setUniform loc (UMat3 _ v) = liftEff (toTypedArray v) >>= uniformMatrix3fv loc false
 setUniform loc (UMat4 _ v) = liftEff (toTypedArray v) >>= uniformMatrix4fv loc false
-setUniform loc (UFMat2 _ v) = liftEff (toTypedArray v) >>= uniformMatrix2fv loc false
-setUniform loc (UFMat3 _ v) = liftEff (toTypedArray v) >>= uniformMatrix3fv loc false
-setUniform loc (UFMat4 _ v) = liftEff (toTypedArray v) >>= uniformMatrix4fv loc false
 setUniform loc (USampler2D _ v) = uniform1i loc v
 
 setUniform' :: forall eff m. MonadEff (WebGLEffRows eff) m => 
