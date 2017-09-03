@@ -6,11 +6,12 @@ import PureGL.Context (Context)
 import PureGL.ECS (ECSManager, ECSManagerT, execECSManagerT, fromSystemStates)
 import PureGL.Mesh (MeshSystemState, meshEmptyState)
 import PureGL.Renderer.RenderState (RenderState, emptyRenderState)
+import PureGL.Scene (SceneState, emptySceneState)
 import PureGL.Utils.Misc (merge)
 import PureGL.WebGL.Types (WEBGL, WebGLEff, WebGLEffRows)
 
 -- | Extendable record type alias for the base PureGL ECS system.
-type PureGLRec r = { renderer :: RenderState, mesh :: MeshSystemState | r}
+type PureGLRec r = { renderer :: RenderState, mesh :: MeshSystemState, scene :: SceneState | r}
 
 -- | The `ECSManager` type for the PureGL system. It can be extend via the `r`
 -- | parameter to include user-defined systems.
@@ -32,7 +33,8 @@ type PureGLT r e a = ECSManagerT (WebGLEffRows e) Context (PureGLRec r) a
 -- | user-defined extension `r`.
 pureGL :: forall r. { | r } -> PureGL r
 pureGL r = fromSystemStates $ merge { renderer: emptyRenderState
-                                    , mesh: meshEmptyState 
+                                    , mesh: meshEmptyState
+                                    , scene: emptySceneState
                                     } r
 
 -- | Runs an initialization action for the PureGL system. Given an initial value

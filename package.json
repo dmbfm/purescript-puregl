@@ -6,10 +6,14 @@
   "author": "Daniel Fortes",
   "license": "MIT",
   "scripts": {
-    "build:js": "yarn run babel -- js --out-dir src",
-    "watch:js": "yarn run babel -- js --out-dir src --watch",
-    "watch:purs": "yarn run pulp -- -w build",
-    "dev": "concurrently \" yarn run webpack-dev-server\" \" yarn run watch:js \" "
+    "js": "gulp js",
+    "purs": "gulp purs",
+    "purs-watch": "gulp purs-watch",
+    "build": "gulp build",
+    "build-rollup": "gulp build-rollup",
+    "dev": "gulp dev",
+    "dev-rollup": "gulp dev-rollup",
+    "clean": "gulp clean"
   },
   "dependencies": {
     "rollup-stream": "^1.23.1"

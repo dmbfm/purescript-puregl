@@ -14,7 +14,9 @@
     "purescript-profunctor-lenses": "^3.3.0",
     "purescript-signal": "https://github.com/dmbfm/purescript-signal.git#50026d74e3d8cdca0cbe79d9790caa4002cc1fe4",
     "purescript-typeable": "^3.0.0",
-    "purescript-dynamic": "https://github.com/dmbfm/purescript-dynamic.git#bef9b5742cbe2a3da9415ba60da917a2fc6d5f62"
+    "purescript-dynamic": "https://github.com/dmbfm/purescript-dynamic.git#bef9b5742cbe2a3da9415ba60da917a2fc6d5f62",
+    "purescript-safely": "^3.0.0",
+    "purescript-lists": "^4.9.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^3.0.0",

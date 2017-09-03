@@ -556,3 +556,152 @@ exports.rotate2 = function (q) {
     return [a00 * b00 + a01 * b10 + a02 * b20, a10 * b00 + a11 * b10 + a12 * b20, a20 * b00 + a21 * b10 + a22 * b20, m[3], a00 * b01 + a01 * b11 + a02 * b21, a10 * b01 + a11 * b11 + a12 * b21, a20 * b01 + a21 * b11 + a22 * b21, m[7], a00 * b02 + a01 * b12 + a02 * b22, a10 * b02 + a11 * b12 + a12 * b22, a20 * b02 + a21 * b12 + a22 * b22, m[11], a00 * b03 + a01 * b13 + a02 * b23, a10 * b03 + a11 * b13 + a12 * b23, a20 * b03 + a21 * b13 + a22 * b23, m[15]];
   };
 };
+
+exports.projectOrtho = function (r) {
+  return function (l) {
+    return function (t) {
+      return function (b) {
+        return function (n) {
+          return function (f) {
+            return function (m) {
+
+              var a00 = 2 / (r - l),
+                  a03 = -(r + l) / (r - l),
+                  a11 = 2 / (t - b),
+                  a13 = -(t + b) / (t - b),
+                  a22 = -2 / (f - n),
+                  a23 = -(f + n) / (f - n),
+                  a33 = 1;
+
+              var b30 = m[3],
+                  b31 = m[7],
+                  b32 = m[11],
+                  b33 = m[15];
+
+              return [a00 * m[0] + a03 * b30, a11 * m[1] + a13 * b30, a22 * m[2] + a23 * b30, a33 * b30, a00 * m[4] + a03 * b31, a11 * m[5] + a13 * b31, a22 * m[6] + a23 * b31, a33 * b31, a00 * m[8] + a03 * b32, a11 * m[9] + a13 * b32, a22 * m[10] + a23 * b32, a33 * b32, a00 * m[12] + a03 * b33, a11 * m[13] + a13 * b33, a22 * m[14] + a23 * b33, a33 * b33];
+            };
+          };
+        };
+      };
+    };
+  };
+};
+
+exports.projectOrtho2 = function (w) {
+  return function (h) {
+    return function (n) {
+      return function (f) {
+        return function (m) {
+
+          var a00 = 2 / w,
+              a11 = 2 / h,
+              a22 = -2 / (f - n),
+              a23 = -(f + n) / (f - n),
+              a33 = 1;
+
+          var b30 = m[3],
+              b31 = m[7],
+              b32 = m[11],
+              b33 = m[15];
+
+          return [a00 * m[0], a11 * m[1], a22 * m[2] + a23 * b30, a33 * b30, a00 * m[4], a11 * m[5], a22 * m[6] + a23 * b31, a33 * b31, a00 * m[8], a11 * m[9], a22 * m[10] + a23 * b32, a33 * b32, a00 * m[12], a11 * m[13], a22 * m[14] + a23 * b33, a33 * b33];
+        };
+      };
+    };
+  };
+};
+
+exports.projectPerspective = function (r) {
+  return function (l) {
+    return function (t) {
+      return function (b) {
+        return function (n) {
+          return function (f) {
+            return function (m) {
+
+              var a00 = 2 * n / (r - l),
+                  //m1[0],
+              a02 = (r + l) / (r - l),
+                  //m1[8],
+              a11 = 2 * n / (t - b),
+                  //m1[5],
+              a12 = (t + b) / (t - b),
+                  //m1[9],
+              a22 = -(f + n) / (f - n),
+                  //m1[10],
+              a23 = -2 * f * n / (f - n),
+                  //m1[14],
+              a32 = -1; //m1[11];
+
+              var b20 = [2];b21 = m[6], b22 = m[10], b23 = m[14];
+
+              return [a00 * m[0] + a02 * b20, a11 * m[1] + a12 * b20, a22 * b20 + a23 * m[3], a32 * b20, a00 * m[4] + a02 * b21, a11 * m[5] + a12 * b21, a22 * b21 + a23 * m[7], a32 * b21, a00 * m[8] + a02 * b22, a11 * m[9] + a12 * b22, a22 * b22 + a23 * m[11], a32 * b22, a00 * m[12] + a02 * b23, a11 * m[13] + a12 * b23, a22 * b23 + a23 * m[15], a32 * b23];
+            };
+          };
+        };
+      };
+    };
+  };
+};
+
+exports.projectPerspective2 = function (w) {
+  return function (h) {
+    return function (n) {
+      return function (f) {
+        return function (m) {
+          var a00 = 2 * n / w,
+              //m1[0],
+          a11 = 2 * n / h,
+              //m1[5],
+          a22 = -(f + n) / (f - n),
+              //m1[10],
+          a23 = -2 * f * n / (f - n),
+              //m1[14],
+          a32 = -1; //m1[11];
+
+          var b20 = [2];b21 = m[6], b22 = m[10], b23 = m[14];
+
+          return [a00 * m[0], a11 * m[1], a22 * b20 + a23 * m[3], a32 * b20, a00 * m[4], a11 * m[5], a22 * b21 + a23 * m[7], a32 * b21, a00 * m[8], a11 * m[9], a22 * b22 + a23 * m[11], a32 * b22, a00 * m[12], a11 * m[13], a22 * b23 + a23 * m[15], a32 * b23];
+        };
+      };
+    };
+  };
+};
+
+exports.projectPerspective3 = function (ratio) {
+  return function (fov) {
+    return function (n) {
+      return function (f) {
+        return function (m) {
+          var S = n / f * (1 / Math.tan(fov / 2));
+
+          var a00 = S,
+              //m1[0],
+          a11 = ratio * S,
+              //m1[5],
+          a22 = -(f + n) / (f - n),
+              //m1[10],
+          a23 = -2 * f * n / (f - n),
+              //m1[14],
+          a32 = -1; //m1[11];
+
+          var b20 = [2];b21 = m[6], b22 = m[10], b23 = m[14];
+
+          return [a00 * m[0], a11 * m[1], a22 * b20 + a23 * m[3], a32 * b20, a00 * m[4], a11 * m[5], a22 * b21 + a23 * m[7], a32 * b21, a00 * m[8], a11 * m[9], a22 * b22 + a23 * m[11], a32 * b22, a00 * m[12], a11 * m[13], a22 * b23 + a23 * m[15], a32 * b23];
+        };
+      };
+    };
+  };
+};
+
+exports.scale = function (s) {
+  return function (m) {
+
+    var a00 = s.x * s.x,
+        a11 = s.y * s.y,
+        a22 = s.z * s.z,
+        a33 = 1.0;
+
+    return [a00 * m[0], a11 * m[1], a22 * m[2], a33 * m[3], a00 * m[4], a11 * m[5], a22 * m[6], a33 * m[7], a00 * m[8], a11 * m[9], a22 * m[10], a33 * m[11], a00 * m[12], a11 * m[13], a22 * m[14], a33 * m[15]];
+  };
+};

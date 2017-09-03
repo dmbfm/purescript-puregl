@@ -31,6 +31,12 @@ module PureGL.Math.Matrix
   , translate'
   , rotate
   , rotate'
+  , scale
+  , projectOrtho
+  , projectOrtho'
+  , projectPerspective
+  , projectPerspective'
+  , projectPerspective''
   ) where
 
 import Prelude
@@ -323,6 +329,32 @@ foreign import translate :: Vector3 -> Matrix4 -> Matrix4
 
 foreign import rotate :: Vector3 -> Number -> Matrix4 -> Matrix4
 
+foreign import scale :: Vector3 -> Matrix4 -> Matrix4
+
+foreign import projectOrtho :: Number -> Number -> Number -> Number -> Number -> Number -> Matrix4 -> Matrix4
+
+
+-- | `projectOrtho'  width height near far`
+-- | 
+projectOrtho' :: Number -> Number -> Number -> Number -> Matrix4 
+projectOrtho' = mkOrtho2
+
+foreign import projectPerspective :: Number -> Number -> Number -> Number -> Number -> Number -> Matrix4 -> Matrix4
+
+-- | `projectPerspective' width height near far`
+-- |
+projectPerspective' :: Number -> Number -> Number -> Number -> Matrix4  -> Matrix4
+projectPerspective' = projectPerspective2
+
+-- | `projectPerspective' aspect fov near far`
+-- |
+-- | where `aspect = width / height` is the aspect ratio 
+-- | of the view plane, `fov` is the horizontal field of
+-- | view angle in radians. 
+projectPerspective'' :: Number -> Number -> Number -> Number -> Matrix4 -> Matrix4
+projectPerspective'' = projectPerspective3
+
+-- | Left multiply a `Matrix4` by a `Quaternion` rotation `Matrix4`
 rotate' :: Quaternion -> Matrix4 -> Matrix4
 rotate' = rotate2
 
@@ -334,7 +366,9 @@ translate' x y z = translate (Vector3 {x: x, y: y, z: z})
 
 -- other foreign imports
 foreign import rotate2 :: Quaternion -> Matrix4 -> Matrix4
-
+foreign import projectOrtho2 :: Number -> Number -> Number -> Number -> Matrix4  -> Matrix4
+foreign import projectPerspective2 :: Number -> Number -> Number -> Number -> Matrix4 -> Matrix4
+foreign import projectPerspective3 :: Number -> Number -> Number -> Number -> Matrix4 -> Matrix4
 foreign import _toFloat32Array :: forall e m. m -> Eff (arrayBuffer :: ARRAY_BUFFER | e) Float32Array
 foreign import _toStringMatrix :: forall m. m -> String
 
