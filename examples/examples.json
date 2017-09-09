@@ -1,3 +1,5 @@
 {
-  "Scene": "Example.PureGL.Scene.Main"
+  "Scene": "Example.PureGL.Scene.Main",
+  "ECS": "Example.PureGL.ECS.Main",
+  "Basic": "Example.PureGL.Basic.Main"
 }

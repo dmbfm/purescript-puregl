@@ -1,4 +1,4 @@
-module PureGL.Examples.ECS.Main where
+module Example.PureGL.ECS.Main where
 
 import Prelude
 
@@ -17,7 +17,7 @@ import PureGL.Data.TypedArrays (fromArray)
 import PureGL.ECS.ECSManager (ecsRun, execECSManagerT, sampleECSRun)
 import PureGL.ECS.Entity (newEntity, removeEntity)
 import PureGL.ECS.Types (ECSManagerT, ecs2)
-import PureGL.Math.Matrix (mkTranslation')
+import PureGL.Math.Matrix (mkTranslation, mkTranslation')
 import PureGL.Mesh (addMesh, loadAllMeshGeometries, loadMeshGeometry, mkMesh)
 import PureGL.Renderer.Geometry (Geometry(..), VertexAttribute(..), mkGeometry)
 import PureGL.Renderer.Program (Program(..), Uniform(..))
@@ -57,14 +57,16 @@ simpleProgram =
           , attributes: []
           }
 
-triangleGeometry :: Geometry
-triangleGeometry = mkGeometry (fromArray triangleArray) [ FloatAttribute 3, FloatAttribute 2]
+triangleGeometry :: forall e. WebGLEff e Geometry
+triangleGeometry = do
+  arr <- fromArray triangleArray
+  pure $ mkGeometry arr [ FloatAttribute 3, FloatAttribute 2]
   where triangleArray = [ 0.0, 0.0, 0.0, 0.0, 0.0
                         , 0.0, 0.5, 0.0, 0.0, 1.0
                         , 0.5, 0.0, 0.0, 1.0, 0.0
                         ]
 
-main :: Eff (console :: CONSOLE, dom :: DOM, timer :: TIMER, webgl :: WEBGL) Unit
+main :: forall e. WebGLEff (console :: CONSOLE, timer :: TIMER | e) Unit 
 main = do
   ctxM <- fromCanvasId "canvas"
   case ctxM of
@@ -79,8 +81,9 @@ main = do
         removeEntity e1
         e2 <- newEntity
         e3 <- newEntity
-        addMesh e2 (mkMesh triangleGeometry)
-        --loadMeshGeometry e2
+        g <- liftEff $ triangleGeometry                
+        addMesh e2 (mkMesh g)
+        loadMeshGeometry e2
         loadAllMeshGeometries
         id <- loadProgram simpleProgram
         pure unit
@@ -90,8 +93,8 @@ main = do
 
     run _ = do 
       state <- get
-      let t = mkTranslation' 1.0 1.0 1.0
-      liftEff $ logObject "Translation" t
+      let t = mkTranslation 1.0 1.0 1.0
+      --liftEff $ logObject "Translation" t
       --e <- newEntity
       --modify incrementIdCounter
       --liftEff $ logObject "STATE: " state
