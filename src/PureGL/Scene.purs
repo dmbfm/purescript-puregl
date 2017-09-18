@@ -66,7 +66,12 @@ updateScene { root: root, components: cs } =
                                        (tailRec go { accum: m', nodes: (tail n), components: cs' }) 
                   }  
 
-
+-- | Update the `SceneState` in a `ECSManager` `MonadState` (like a `ECSManagerT` stack.)
+updateSceneSystem :: forall r m. MonadState (ECSManager { scene :: SceneState | r}) m =>
+                                 m Unit
+updateSceneSystem = 
+  modify $ over (_ecsManager <<< _systemStates <<< _sceneState) updateScene
+ 
 -- | Add a Scene Component to an Entity.
 addSceneComponent :: forall r m. MonadState (ECSManager { scene :: SceneState | r}) m =>  
                                  Entity -> 
@@ -105,29 +110,3 @@ _sceneComponent id = _components <<< at id
 -- Getters and Setters
 setPosition :: Entity -> V.Vector3 -> SceneState -> SceneState
 setPosition id p = set ((_sceneComponent id) <<< _Just <<< _position) p 
-
-
-
-
-
--- | Traverse a `SceneState`, updating the transformation matrices of all its |
--- | `Node`s and running an effectul action `(SceneComponent -> m Unit)` at each
--- | `Node`.
--- updateSceneM :: forall e m. MonadEff e m => MonadRec m => (SceneComponent -> m Unit) -> SceneState  -> m SceneState
--- updateSceneM action { root: root, components: cs } = do
---   cs' <- tailRecM go { accum: M.identity :: M.Matrix4, nodes: (tail root), components: cs }
---   pure $ { root: root, components:  cs'}
---   where
---     go ::_ -> m (Step _ (Map Entity SceneComponent))
---     go {accum: m, nodes: Nil, components: cs'} = pure $ Done cs'
---     go {accum: m, nodes: n:ns, components: cs'} =     
---       let key = (head n) in  
---       case (lookup key cs') of
---         Nothing -> pure $ Loop { accum: m, nodes: ns, components: cs'}
---         Just nodeData -> 
---           let m' =  M.translate nodeData.position $ M.rotate' nodeData.orientation $ M.scale nodeData.scale m
---               nodeData' = set _transform m' nodeData 
---           in do
---             cs' <- tailRecM go { accum: m', nodes: (tail n), components: cs' }
---             action nodeData'        
---             pure $ Loop { accum: m, nodes: ns, components: insert key nodeData' cs' }

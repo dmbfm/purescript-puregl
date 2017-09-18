@@ -54,11 +54,11 @@ ecsSignal ctx state input run =
 -- | function `(i -> ECSManagerT e c r Unit)`,  a context `c`, an initial state
 -- | `ECSManager r`, an input signal `Signal i` which will be sampled on each frame, 
 -- | and starts a loop via the `animationFrame` (i.e., `requestAnimationFrame`).
-ecsRun :: forall i e c r. c -> 
+ecsRun :: forall i e e' c r. c -> 
                           (ECSManager r) -> 
                           Signal i -> 
                           (i -> ECSManagerT e c r Unit) -> 
-                          Eff (dom :: DOM, timer :: TIMER | e) Unit
+                          Eff (dom :: DOM, timer :: TIMER | e') Unit
 
 ecsRun ctx state input run = do
   frame <- animationFrame

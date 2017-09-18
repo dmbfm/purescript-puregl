@@ -1,6 +1,8 @@
 module PureGL.WebGL.Types where
 
 import Control.Monad.Eff (Eff, kind Effect)
+import Control.Monad.Eff.Console (CONSOLE)
+import Control.Monad.Eff.Timer (TIMER)
 import DOM (DOM)
 import DOM.HTML.Types (HTMLCanvasElement, HTMLImageElement, HTMLVideoElement)
 import PureGL.Data.TypedArrays (ARRAY_BUFFER, Uint8Array)
@@ -8,7 +10,7 @@ import PureGL.Data.TypedArrays (ARRAY_BUFFER, Uint8Array)
 -- | The Effect type for WebGL operations
 foreign import data WEBGL :: Effect
 
-type WebGLEffRows e = (webgl :: WEBGL, arrayBuffer :: ARRAY_BUFFER, dom :: DOM | e)
+type WebGLEffRows e = (webgl :: WEBGL, arrayBuffer :: ARRAY_BUFFER, dom :: DOM, console :: CONSOLE, timer :: TIMER | e)
 
 -- | Type alias for Eff Monad with WebGL Effects
 type WebGLEff e = Eff (WebGLEffRows e)
