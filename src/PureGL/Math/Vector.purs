@@ -78,7 +78,7 @@ norm :: forall a. InnerProduct a => a -> Number
 norm v = sqrt $ dot v v
 
 normalize :: forall a. Vector a => InnerProduct a => a -> a
-normalize v = mul (norm v) v
+normalize v = mul (1.0 / (norm v)) v
 
 -- Vector and InnerProduct instances for Vector{2,3,4}
 instance vector2Vector :: Vector Vector2 where
@@ -126,4 +126,3 @@ cross (Vector3 v1) (Vector3 v2) =
   Vector3 { x: v1.y * v2.z - v1.z * v2.y 
           , y: v1.z * v2.x - v1.x * v2.z
           , z: v1.x * v2.y - v1.y * v2.x }
-

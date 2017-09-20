@@ -67,7 +67,7 @@ exports.invertMatrix2 = m => {
 
 exports.fromArrayMatrix2 = fromArray(4)
 
-exports._toFloat32Array = m => () => new toFloat32Array(m);
+exports._toFloat32Array = m => () => new Float32Array(m);
 
 exports.mkMatrix3 = a00 => a01 => a02 => a10 => a11 => a12 => a20 => a21 => a22 =>
   [a00, a10, a20, a01, a11, a21, a02, a12, a22];  
@@ -390,8 +390,9 @@ exports.mkPerspective2 = w => h => n => f =>
   ];
 
 exports.mkPerspective3 = ratio => fov => n => f => {
-  let S = (n / f) * (1 / Math.tan(fov / 2));
-  
+
+  let S = 1 / Math.tan((fov / 2) * (Math.PI / 180));
+
   return (
     [
       S, 0, 0, 0,
@@ -400,6 +401,17 @@ exports.mkPerspective3 = ratio => fov => n => f => {
       0, 0, -2 * f * n / (f - n), 0
     ]
   );
+
+  // let S = (n / f) * (1 / Math.tan(fov / 2));
+  
+  // return (
+  //   [
+  //     S, 0, 0, 0,
+  //     0, ratio * S, 0, 0,
+  //     0, 0, - (f + n) / (f - n), -1,
+  //     0, 0, -2 * f * n / (f - n), 0
+  //   ]
+  // );
 }
 
 exports.applyTransform = m => v => {  

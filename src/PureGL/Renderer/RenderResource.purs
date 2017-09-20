@@ -100,8 +100,8 @@ loadGeometry (Geometry g) = do
             vertexAttribPointer idx size gl_FLOAT false g.vertexSize (unsafePartial $ unsafeIndex g.offsets idx)
             enableVertexAttribArray idx
       ) g.attributes
-  bindVertexArray glNullVertexArrayObject
-  bindBuffer gl_ARRAY_BUFFER glNullBufferObject
+  --bindVertexArray glNullVertexArrayObject
+  --bindBuffer gl_ARRAY_BUFFER glNullBufferObject
   insertResource $  LoadedGeometry { buffer: buffer, vao: vao, vertexCount: g.vertexCount }
 
 loadProgram :: forall r e. Program -> RenderT r e ResourceId

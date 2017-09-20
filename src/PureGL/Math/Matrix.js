@@ -97,7 +97,7 @@ exports.fromArrayMatrix2 = fromArray(4);
 
 exports._toFloat32Array = function (m) {
   return function () {
-    return new toFloat32Array(m);
+    return new Float32Array(m);
   };
 };
 
@@ -447,9 +447,21 @@ exports.mkPerspective3 = function (ratio) {
   return function (fov) {
     return function (n) {
       return function (f) {
-        var S = n / f * (1 / Math.tan(fov / 2));
+
+        var S = 1 / Math.tan(fov / 2 * (Math.PI / 180));
 
         return [S, 0, 0, 0, 0, ratio * S, 0, 0, 0, 0, -(f + n) / (f - n), -1, 0, 0, -2 * f * n / (f - n), 0];
+
+        // let S = (n / f) * (1 / Math.tan(fov / 2));
+
+        // return (
+        //   [
+        //     S, 0, 0, 0,
+        //     0, ratio * S, 0, 0,
+        //     0, 0, - (f + n) / (f - n), -1,
+        //     0, 0, -2 * f * n / (f - n), 0
+        //   ]
+        // );
       };
     };
   };

@@ -5,8 +5,11 @@ import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Timer (TIMER)
 import DOM (DOM)
+import Data.Map (empty)
+import PureGL.Camera (CameraSystem, emptyCameraSystem)
 import PureGL.Context (Context)
 import PureGL.ECS (ECSManager, ECSManagerT, ecsRun, execECSManagerT, fromSystemStates)
+import PureGL.Material (MaterialSystem)
 import PureGL.Mesh (MeshSystemState, meshEmptyState)
 import PureGL.Renderer.RenderState (RenderState, emptyRenderState)
 import PureGL.Scene (SceneState, emptySceneState)
@@ -18,6 +21,8 @@ import Signal (Signal)
 type PureGLRec r = { renderer :: RenderState
                    , mesh :: MeshSystemState
                    , scene :: SceneState
+                   , camera :: CameraSystem
+                   , material :: MaterialSystem
                    | r
                    }
 
@@ -43,6 +48,8 @@ pureGL :: forall r. { | r } -> PureGL r
 pureGL r = fromSystemStates $ merge { renderer: emptyRenderState
                                     , mesh: meshEmptyState
                                     , scene: emptySceneState
+                                    , camera: emptyCameraSystem
+                                    , material: { components: empty }
                                     } r
 
 -- | Runs an initialization action for the PureGL system. Given an initial value

@@ -1,6 +1,14 @@
 module PureGL.Renderer.Program where
 
+import Prelude
+
+import Data.Lens (Lens', lens, view)
+import Data.Lens.At (at)
+import Data.Lens.Record (prop)
+import Data.Maybe (Maybe)
+import Data.Profunctor.Strong (class Strong)
 import Data.StrMap (StrMap)
+import Data.Symbol (SProxy(..))
 import PureGL.Math.Matrix (Matrix2, Matrix3, Matrix4)
 import PureGL.Math.Vector (Vector2, Vector3, Vector4)
 import PureGL.WebGL.Types (GLenum, GLint, WebGLProgram, WebGLUniformLocation, GLboolean)
@@ -60,3 +68,20 @@ data ProgramParamResponse =
   -- | AttachedShaders GLint 
   -- | ActiveAttributes GLint
   -- | ActiveUniforms GLint
+
+
+-- lenses
+_Program :: Lens' Program _
+_Program = lens (\(Program r) -> r) (\_ -> Program)
+
+_uniforms :: Lens' Program (Array Uniform)
+_uniforms = _Program <<< prop (SProxy :: SProxy "uniforms")
+
+_LoadedProgram :: Lens' LoadedProgram _
+_LoadedProgram = lens (\(LoadedProgram r) -> r) (\_ -> LoadedProgram)
+
+_program :: forall r. Lens' LoadedProgram WebGLProgram
+_program = _LoadedProgram <<< prop (SProxy :: SProxy "program")
+
+_uniformLocations :: Lens' LoadedProgram (StrMap WebGLUniformLocation)
+_uniformLocations = _LoadedProgram <<< prop (SProxy :: SProxy "uniformLocations")

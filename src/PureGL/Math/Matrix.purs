@@ -26,6 +26,7 @@ module PureGL.Math.Matrix
   , mkRotateZ
   , mkRotation
   , mkRotation'
+  , mkLookAt
   , applyTransform
   , translate
   , translate'
@@ -48,7 +49,7 @@ import Data.Nullable (Nullable, toMaybe)
 import Math (cos, sin)
 import PureGL.Data.TypedArrays (class ToTypedArray, ARRAY_BUFFER, Float32Array)
 import PureGL.Math.Quaternion (Quaternion(..))
-import PureGL.Math.Vector (class Vector, Vector3(..), Vector4(..), mkVector3, normalize)
+import PureGL.Math.Vector (class Vector, Vector3(..), Vector4(..), cross, dot, mkVector3, normalize, sub)
 import PureGL.Utils.Math (toRadians)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -319,6 +320,23 @@ mkRotation' q = fromArray [ 1.0 - 2.0 * u.c * u.c - 2.0 * u.d * u.d
                           ]
   where
     (Quaternion u) = normalize q
+
+-- | Create a Look At `Matrix4` from eye, point and up `Vector3`s.
+mkLookAt :: Vector3 -> Vector3 -> Vector3 -> Matrix4
+mkLookAt eye point up = 
+  let _z' = normalize (sub eye point)
+      _x' = normalize (cross up _z')
+      _y' = normalize (cross _z' _x')
+      (Vector3 z') = _z'
+      (Vector3 y') = _y'
+      (Vector3 x') = _x'
+      (Vector3 e) = eye
+      
+  in fromArray [ x'.x, y'.x, z'.x, 0.0  
+               , x'.y, y'.y, z'.y, 0.0
+               , x'.z, y'.z, z'.z, 0.0
+               , - (dot  _x' eye), -(dot _y' eye), -(dot _z' eye), 1.0
+               ]
 
 -- | Apply a `Matrix4` transform to a `Vector4`.
 foreign import applyTransform :: Matrix4 -> Vector4 -> Vector4
