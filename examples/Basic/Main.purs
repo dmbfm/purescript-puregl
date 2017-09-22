@@ -10,7 +10,7 @@ import Control.Monad.State (get)
 import DOM.HTML.HTMLProgressElement (position)
 import Data.Dynamic (toDynamic)
 import Data.Foldable (foldl, traverse_)
-import Data.Lens (view, (^.))
+import Data.Lens (view, (.~), (^.))
 import Data.Lens.At (at)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Symbol (SProxy(..))
@@ -18,8 +18,8 @@ import Data.Tree (showTree)
 import Math (cos, sin)
 import Partial.Unsafe (unsafePartial)
 import PureGL (init, run)
-import PureGL.Camera (CameraComponent(..), _projectionMatrix, _viewMatrix)
-import PureGL.Camera.LookAt (LookAtCamera(..), updateLookAtCameras)
+import PureGL.Camera (CameraComponent(..), _fov, _projectionMatrix, _viewMatrix, mkCamera, updateCameraSystem)
+import PureGL.Camera.LookAt (lookAt)
 import PureGL.Context (Context(..), fromCanvasId)
 import PureGL.Data.TypedArrays (Float32Array, fromArray)
 import PureGL.ECS (_ecsManager, _systemStates)
@@ -34,7 +34,7 @@ import PureGL.Renderer.Internal.Program (setUniform)
 import PureGL.Renderer.Program (LoadedProgram(..), Program(..), Uniform(..), _uniformLocations, _uniforms, uniformName)
 import PureGL.Renderer.RenderResource (loadProgram)
 import PureGL.Renderer.RenderState (getLoadedProgram, getRenderer)
-import PureGL.Scene (SceneComponent, _root, _sceneState, addSceneComponent, sceneRoot)
+import PureGL.Scene (SceneComponent, _position, _root, _sceneState, addSceneComponent, sceneRoot, updateSceneSystem)
 import PureGL.Utils.Log (logObject)
 import PureGL.Utils.Misc ((>-))
 import PureGL.WebGL (clear, clearColor, drawArrays, getUniformLocation)
@@ -85,16 +85,7 @@ sceneComponent = { position: V.mkVector3 0.0 0.0 0.0
                  }
 
 sampleLookAtCamera :: CameraComponent
-sampleLookAtCamera = CameraComponent { viewMatrix: M.identity
-                                     , projectionMatrix: M.identity
-                                     , cameraData: toDynamic $ LookAtCamera { point: V.mkVector3 0.0 0.0 0.0
-                                                                             , up: V.mkVector3 0.0 1.0 0.0
-                                                                             , aspect: 0.8
-                                                                             , fov: 60.0
-                                                                             , near: 0.1
-                                                                             , far: 1000.0
-                                                                             }
-                                     }
+sampleLookAtCamera = mkCamera 0.8 60.0
 
 triangle :: forall e. WebGLEff e Float32Array
 triangle = fromArray [ 0.0, 0.0, 0.0
@@ -168,7 +159,7 @@ main = do
 
       t <- newRef 0.0
 
-      run context initialState (constant 10) $ (\_ -> updateLookAtCameras) >- 
+      run context initialState (constant 10) $ (\_ -> updateSceneSystem) >- (\_ -> updateCameraSystem) >- 
         (\_ -> do
           
           
@@ -178,12 +169,17 @@ main = do
 
           now <- liftEff $ readRef t
 
-          let x = 1.2 * (sin now)
-              z = 1.2 * (cos now)
-              y = 1.4 * (sin (now * 0.2))
+          let x = 0.2 * (sin now)
+              z = 0.2 * (cos now)
+              y = 4.2 * (cos $ 0.2 * now)
+              fov = 70.0 + 10.0 * (sin now)
+
+          modifyComponent (SProxy :: SProxy "camera") e' (_fov .~ fov)
 
           modifyComponent (SProxy :: SProxy "scene") e' 
-            (\sc -> sc { position =  V.mkVector3 x y z })
+            ( _position .~ (V.mkVector3 x y 2.0))
+
+          lookAt e' (V.mkVector3 0.0 0.0 0.0) (V.mkVector3 x y z)
 
           liftEff $ writeRef t (now + 0.04)
 

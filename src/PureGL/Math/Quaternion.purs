@@ -2,7 +2,7 @@ module PureGL.Math.Quaternion where
 
 import Prelude
 
-import Math (cos, sin)
+import Math (abs, cos, sin, sqrt)
 import PureGL.Math.Vector as V
 import PureGL.Utils.Math (class ApproxEq, approxEq, toRadians, (~=))
 
@@ -25,6 +25,12 @@ fromVector4 (V.Vector4 v) = Quaternion { a: v.x
                                        , c: v.z
                                        , d: v.w
                                        }
+
+realPart :: Quaternion -> Number
+realPart (Quaternion q) = q.a
+
+imaginaryPart :: Quaternion -> V.Vector3
+imaginaryPart (Quaternion q) = V.mkVector3 q.b q.c q.d
 
 fromAxisRotation :: Number -> V.Vector3 -> Quaternion
 fromAxisRotation t v = 
@@ -59,7 +65,7 @@ instance innerProductQuaternion :: V.InnerProduct Quaternion where
     q1.a * q2.a + q1.b * q2.b + q1.c * q2.c + q1.d * q2.d
 
 instance divisionRingQuaternion :: DivisionRing Quaternion where
-  recip q = V.mul (1.0 / ( V.dot q q)) (conjugate q)
+  recip q = V.mul (1.0 / ( V.norm q)) (conjugate q)
 
 instance eqQuaternion :: Eq Quaternion where
   eq (Quaternion q1) (Quaternion q2) = 
@@ -130,3 +136,30 @@ mulQuaternion (Quaternion q1) (Quaternion q2) =
              , d: q1.a * q2.d + q1.b * q2.c - q1.c * q2.b + q1.d * q2.a
              }
 
+rotateVector :: Quaternion -> V.Vector3 -> V.Vector3
+rotateVector q v = imaginaryPart $ q * (fromVector3 0.0 v) * (recip q)
+
+fromTwoVectors :: V.Vector3 -> V.Vector3 -> Quaternion
+fromTwoVectors u@(V.Vector3 u') v@(V.Vector3 v') = 
+  let x = sqrt $ (V.dot u u) * (V.dot v v)
+      r = x + (V.dot u v)
+      w = if ((abs u'.x) > (abs u'.z)) 
+            then (V.mkVector3 (-u'.y) u'.x 0.0) 
+            else  (V.mkVector3 0.0 (-u'.z) u'.y)
+  in 
+    if (r < (0.000001 * x))
+      then 
+        V.normalize $ fromVector3 0.0 w
+      else 
+        V.normalize $ fromVector3 r (V.cross u v)
+
+
+lookAt :: V.Vector3 -> V.Vector3 -> V.Vector3 -> Quaternion
+lookAt eye point up = 
+  let z' = V.sub eye point
+      x' = V.cross up z'
+      y' = V.cross z' x'
+      q1 = fromTwoVectors (V.mkVector3 0.0 0.0 1.0) z' 
+      newUp = rotateVector q1 (V.mkVector3 0.0 1.0 0.0)
+      q2 = fromTwoVectors newUp y'
+  in q2 * q1
