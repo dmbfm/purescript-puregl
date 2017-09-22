@@ -6,7 +6,7 @@ import Control.Monad.State (class MonadState, get, modify)
 import Data.Lens (_Just, over, (^.))
 import Data.Lens.At (at)
 import Data.Lens.Record (prop)
-import Data.Map (insert, member)
+import Data.Map (Map, insert, member)
 import Data.Maybe (Maybe)
 import Data.Symbol (class IsSymbol, SProxy)
 import PureGL.ECS (ECSManager, Entity, SystemWithComponents, _components, _ecsManager, _systemStates)
@@ -76,3 +76,15 @@ insertComponent :: ∀ t r1 s r2 c m. MonadState (ECSManager { | r1 }) m ⇒
                                     m Unit
 insertComponent sp e c =
   modify $ over (_ecsManager <<< _systemStates <<< prop sp <<< _components) (insert e c)
+
+-- | Get the entity-component `Map` for a given system `s`.
+getComponents :: ∀ c m t r1 s r2. Bind m ⇒ 
+                                 MonadState (ECSManager { | r1 }) m ⇒ 
+                                 IsSymbol s ⇒                                  
+                                 RowCons s (SystemWithComponents c r2) t r1 ⇒ 
+                                 SProxy s →
+                                 m (Map Entity c)
+getComponents sp = do
+  state <- get
+  pure $ state ^. _ecsManager <<< _systemStates <<< prop sp <<< _components  
+

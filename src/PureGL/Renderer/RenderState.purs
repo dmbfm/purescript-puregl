@@ -19,6 +19,7 @@ import PureGL.Renderer.Texture (LoadedTexture)
 import PureGL.Renderer.Types (ResourceId)
 import PureGL.Utils.HasID (class HasID)
 import PureGL.WebGL.Types (WEBGL, WebGLEffRows)
+import PureGL.Math.Vector as V
 
 -- | Possible Renderer error types
 data RenderError = 
@@ -32,6 +33,7 @@ data RenderError =
   | AttributeNotFount String
   | OtherErrors
 
+
 -- | This type holds the state of the Renderer
 type RenderStateRec = { loadedGeometries :: Map ResourceId LoadedGeometry                 
                       , loadedPrograms :: Map ResourceId LoadedProgram
@@ -40,6 +42,7 @@ type RenderStateRec = { loadedGeometries :: Map ResourceId LoadedGeometry
                       , loadedRenderbuffers :: Map ResourceId LoadedRenderbuffer
                       , idCounter :: ResourceId
                       , idPool :: Array ResourceId
+                      , clearColor :: V.Vector4
                       }
 
 newtype RenderState = RenderState RenderStateRec
@@ -57,6 +60,7 @@ emptyRenderState = RenderState
               , loadedRenderbuffers: empty
               , idCounter: 0
               , idPool: []
+              , clearColor: V.mkVector4 0.0 0.0 0.0 1.0
               }
 
 -- Instances

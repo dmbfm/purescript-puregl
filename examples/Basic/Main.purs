@@ -91,6 +91,9 @@ triangle :: forall e. WebGLEff e Float32Array
 triangle = fromArray [ 0.0, 0.0, 0.0
                      , 0.0, 0.5, 0.0
                      , 0.5, 0.0, 0.0
+                     , 0.5, 0.0, 0.0
+                     , 0.0, 0.5, 0.0
+                     , 0.5, 0.5, 0.0
                      ]
 
 triangleGeo :: forall e. WebGLEff e Geometry
@@ -204,7 +207,7 @@ main = do
           
           clearColor 0.0 0.0 0.0 1.0
           clear gl_COLOR_BUFFER_BIT
-          drawArrays gl_TRIANGLES 0 3
+          drawArrays gl_TRIANGLES 0 6
           --liftEff $ logObject "state" state
           pure unit
         )

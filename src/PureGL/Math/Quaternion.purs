@@ -65,7 +65,7 @@ instance innerProductQuaternion :: V.InnerProduct Quaternion where
     q1.a * q2.a + q1.b * q2.b + q1.c * q2.c + q1.d * q2.d
 
 instance divisionRingQuaternion :: DivisionRing Quaternion where
-  recip q = V.mul (1.0 / ( V.norm q)) (conjugate q)
+  recip q = V.mul (1.0 / ( V.dot q q)) (conjugate q)
 
 instance eqQuaternion :: Eq Quaternion where
   eq (Quaternion q1) (Quaternion q2) = 
